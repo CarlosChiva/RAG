@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
-
+from langchain.llms import Ollama
 from langchain_community.chains import RetrievalQA
 from langchain import hub
 
