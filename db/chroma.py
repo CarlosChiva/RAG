@@ -1,19 +1,18 @@
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
 
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.chains import RetrievalQA
+from langchain import hub
 
-# Load the PDF
-loader = PyPDFLoader("https://arxiv.org/pdf/2303.08774.pdf")
-
-docs = loader.load()
-
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-splits = text_splitter.split_documents(docs)
-vectorstore = Chroma.from_documents(documents=splits, embedding=OllamaEmbeddings())
-
-retriever = vectorstore.as_retriever()
-
-
-
+QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
+embedding_model=OllamaEmbeddings()
+Model = "llama2"
+model=Ollama(model=Model)
+vector_store= Chroma(persist_directory="db", embedding=embedding_model)
+retrieval= vector_store.as_retriever()
+qa_chain=RetrievalQA.from_chain_type(llm=Model,
+                                    retriever=retrieval,
+                                    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT})
+question = "What is the capital of France?"
+response=qa_chain.invoke({"query":question})
+print(response)
