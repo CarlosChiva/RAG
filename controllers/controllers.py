@@ -1,5 +1,5 @@
 
-from db.saver import show_collections, add_documents_to_collection,search_name_collection
+from db.saver import create_new_collection,show_collections, add_documents_to_collection,search_name_collection
 async def index():
     return {"message": "Hello World"}
 
