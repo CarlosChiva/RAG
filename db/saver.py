@@ -14,8 +14,8 @@ def __text_split(documents):
    text_splitter = RecursiveCharacterTextSplitter(chunk_size=100, chunk_overlap=20)
    all_splits = text_splitter.split_documents(documents)
    return all_splits
-async def create_new_collection(collection_name, pdf_path):
-    documents = __load_pdf(pdf_path)
+async def create_new_collection(collection_name, document):
+    documents = __load_pdf(document)
     splits=__text_split(documents)
     vectorstore = Chroma.from_documents(
         documents=splits, 
@@ -27,8 +27,8 @@ async def create_new_collection(collection_name, pdf_path):
     print(f"Nueva colección '{collection_name}' creada con éxito.")
     return {"message": f"Nueva colección '{collection_name}' creada con éxito."}
 
-def add_documents_to_collection(collection_name, pdf_path):
-    documents = __load_pdf(pdf_path)
+def add_documents_to_collection(collection_name, document):
+    documents = __load_pdf(document)
     splits=__text_split(documents)
     vectorstore = Chroma(
         persist_directory=f"db1/{collection_name}",
@@ -38,6 +38,7 @@ def add_documents_to_collection(collection_name, pdf_path):
     vectorstore.add_documents(documents=splits)
     vectorstore.persist()
     print(f"Documentos añadidos a la colección '{collection_name}' con éxito.")
+    return {"message": f"Documento'{document}' añadido a la colección '{collection_name}' con éxito."}
 
 def __get_collections():
     base_directory = "db1"
@@ -49,10 +50,16 @@ def __get_collections():
     return collections
 
 def show_collections():
+    array_collect=[]
     collections = __get_collections()
     if collections:
         print("Colecciones existentes:")
-        for collection in collections:
-            print(f"- {collection}")
+        array_collections=[collection for collection in collections]
+        return array_collections
     else:
-        print("No hay colecciones existentes.")
+        return []
+
+def search_name_collection(name):
+    base_directory = "db1"
+    if not os.path.exists(base_directory):
+        return name in os.listdir(base_directory)
