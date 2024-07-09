@@ -3,11 +3,11 @@ from controllers import controllers
 
 router = APIRouter()
 
-@router.get("/")
-async def index():
-    result = await controllers.index()
+@router.get("/llm-response")
+async def llm_response(input: str):
+    result = await controllers.user_input(input)
 
     if "error" in result:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=result["error"])
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
     
     return result
