@@ -3,7 +3,10 @@ from langchain.llms import Ollama
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
 from langchain import hub
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
+templete=os.getenv("TEMPLATE")
 
 # Función para crear el RAG para una colección específica
 def create_rag(collection_name, model_name="llama3"):
@@ -17,16 +20,7 @@ def create_rag(collection_name, model_name="llama3"):
     # Crear el retriever
     retriever = vectorstore.as_retriever()
     
-    rag_prompt_template = """<|start_header_id|>system<|end_header_id|>
-    You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
-    <|eot_id|>
-    <|start_header_id|>user<|end_header_id|>
-    Context: {context}
-
-    Question: {question}
-    <|eot_id|>
-    <|start_header_id|>assistant<|end_header_id|>
-    """
+    rag_prompt_template = 
 
     RAG_PROMPT = PromptTemplate(
         template=rag_prompt_template,
