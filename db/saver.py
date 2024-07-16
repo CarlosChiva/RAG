@@ -6,7 +6,7 @@ from langchain import hub
 from dotenv import load_dotenv
 import os
 load_dotenv()
-templete=os.getenv("TEMPLATE")
+TEMPLATE=os.getenv("TEMPLATE")
 
 # Función para crear el RAG para una colección específica
 def create_rag(collection_name, model_name="llama3"):
@@ -20,7 +20,7 @@ def create_rag(collection_name, model_name="llama3"):
     # Crear el retriever
     retriever = vectorstore.as_retriever()
     
-    rag_prompt_template = 
+    rag_prompt_template = TEMPLATE
 
     RAG_PROMPT = PromptTemplate(
         template=rag_prompt_template,
