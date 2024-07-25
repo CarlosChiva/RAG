@@ -1,4 +1,4 @@
-from chroma_db import Chroma_custom
+import Chroma_services
 from langchain.llms import Ollama
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -9,7 +9,7 @@ load_dotenv()
 TEMPLATE=os.getenv("TEMPLATE")
 
 # Función para crear el RAG para una colección específica
-def create_rag(collection_name, model_name="llama3"):
+def create_rag(collection_name, model_name="llama3.1"):
     # Inicializar el modelo de lenguaje
     llm = Ollama(model=model_name)
     QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
