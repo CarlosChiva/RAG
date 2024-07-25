@@ -1,17 +1,17 @@
 import chromadb
 from db.tools import load_pdf, text_split, init_embedding_model
 from langchain_community.vectorstores import Chroma
-
-
+import os
+PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
 
 async def get_collections():
-    chroma_client= chromadb.PersistentClient(path="./db")
+    chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
     collections = chroma_client.list_collections()
     collection_names = [collection.name for collection in collections]
     return collection_names
 # Función principal para añadir el PDF a una colección específica
 async def add_pdf_to_collection(collection_name, filename=None):
-    chroma_client= chromadb.PersistentClient(path="./db")
+    chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
 
         # Crear o obtener la colección
     if chroma_client.get_collection(name=collection_name) is None:
@@ -39,8 +39,7 @@ async def add_pdf_to_collection(collection_name, filename=None):
     return {"message": f"Added documents to collection '{collection_name}'"}
 
 async def get_chroma_client():
-
-        return chromadb.PersistentClient(path="./db")
+        return chromadb.PersistentClient(path=PERSIT_DIRECTORY)
 async def get_vectorstore(collection_name):
     cli=await get_chroma_client()
             # Inicializar el almacén de vectores para la colección específica
@@ -51,3 +50,4 @@ async def get_vectorstore(collection_name):
         embedding_function=embedding_func
     )
     return vectorstore
+#-------------------------------------Mocks to try funcionalities -----------------
