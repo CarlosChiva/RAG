@@ -17,3 +17,6 @@ def text_split(documents, chunk_size=100, chunk_overlap=20):
 def init_embedding_model():
     embedding_func = OllamaEmbeddings()
     return embedding_func
+
+def docs_post_processing(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
