@@ -3,11 +3,16 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import Chroma
 from langchain_nomic.embeddings import NomicEmbeddings
-from db.chroma_db import get_vectorstore
+import sys
+sys.path.append('../api-sindicato/')
+from db.chroma_db import get_vectorstore_mock
 import os
+from langchain.prompts import PromptTemplate
+
 
 ### Add to vectorDB
-retriever=get_vectorstore().as_retriever()
+vectorStore = get_vectorstore_mock("first")
+retriever = vectorStore.as_retriever()
 ### LLm
 local_llm = os.getenv("MODEL")
 #---------------------------------------------------------------
@@ -19,14 +24,9 @@ from langchain_core.output_parsers import JsonOutputParser
 
 llm_router = ChatOllama(model=local_llm, format="json", temperature=0)
 
-
+ROUTER_TEMPLATE= os.getenv("ROUTER_TEMPLATE")
 prompt = PromptTemplate(
-    template="""You are an expert at routing a user question to a vectorstore or web search. \n
-    Use the vectorstore for questions on LLM  agents, prompt engineering, and adversarial attacks. \n
-    You do not need to be stringent with the keywords in the question related to these topics. \n
-    Otherwise, use web-search. Give a binary choice 'web_search' or 'vectorstore' based on the question. \n
-    Return the a JSON with a single key 'datasource' and no premable or explanation. \n
-    Question to route: {question}""",
+    template=ROUTER_TEMPLATE,
     input_variables=["question"],
 )
 
@@ -48,15 +48,9 @@ from langchain_core.output_parsers import JsonOutputParser
 
 # LLM
 llm_retrieval_grader = ChatOllama(model=local_llm, format="json", temperature=0)
-
+PROMT_RETRIEVAL_GRADER = os.getenv("PROMT_RETRIEVAL_GRADER")
 prompt = PromptTemplate(
-    template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
-    Here is the retrieved document: \n\n {document} \n\n
-    Here is the user question: {question} \n
-    If the document contains keywords related to the user question, grade it as relevant. \n
-    It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
-    Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
-    Provide the binary score as a JSON with a single key 'score' and no premable or explanation.""",
+    template=PROMT_RETRIEVAL_GRADER,
     input_variables=["question", "document"],
 )
 
@@ -100,17 +94,10 @@ rag_chain = prompt | llm_generate | StrOutputParser()
 
 # LLM
 llm_hallucination_grader = ChatOllama(model=local_llm, format="json", temperature=0)
-
+HALLUCINATION_GRADER_PROMPT= os.getenv("HALLUCINATION_GRADER_PROMPT")
 # Prompt
 prompt = PromptTemplate(
-    template="""You are a grader assessing whether an answer is grounded in / supported by a set of facts. \n 
-    Here are the facts:
-    \n ------- \n
-    {documents} 
-    \n ------- \n
-    Here is the answer: {generation}
-    Give a binary score 'yes' or 'no' score to indicate whether the answer is grounded in / supported by a set of facts. \n
-    Provide the binary score as a JSON with a single key 'score' and no preamble or explanation.""",
+    template=HALLUCINATION_GRADER_PROMPT,
     input_variables=["generation", "documents"],
 )
 
@@ -122,38 +109,33 @@ hallucination_grader = prompt | llm_hallucination_grader | JsonOutputParser()
 
 # LLM
 llm_answer_grader = ChatOllama(model=local_llm, format="json", temperature=0)
-
+ANSWER_GRADER_PROMPT= os.getenv("ANSWER_GRADER_PROMPT")
 # Prompt
 prompt = PromptTemplate(
-    template="""You are a grader assessing whether an answer is useful to resolve a question. \n 
-    Here is the answer:
-    \n ------- \n
-    {generation} 
-    \n ------- \n
-    Here is the question: {question}
-    Give a binary score 'yes' or 'no' to indicate whether the answer is useful to resolve a question. \n
-    Provide the binary score as a JSON with a single key 'score' and no preamble or explanation.""",
+    template=ANSWER_GRADER_PROMPT,
     input_variables=["generation", "question"],
 )
 
 answer_grader = prompt | llm_answer_grader | JsonOutputParser()
-answer_grader.invoke({"question": question, "generation": generation})
+
+#Example
+#answer_grader.invoke({"question": question, "generation": generation})
 
 ### Question Re-writer
 
 # LLM
 llm_question_rewriter = ChatOllama(model=local_llm, temperature=0)
-
+QUESTION_REWRITER_PROMT= os.getenv("QUESTION_REWRITER_PROMPT")
 # Prompt
 re_write_prompt = PromptTemplate(
-    template="""You a question re-writer that converts an input question to a better version that is optimized \n 
-     for vectorstore retrieval. Look at the initial and formulate an improved question. \n
-     Here is the initial question: \n\n {question}. Improved question with no preamble: \n """,
+    template=QUESTION_REWRITER_PROMT,
     input_variables=["generation", "question"],
 )
 
 question_rewriter = re_write_prompt | llm_question_rewriter | StrOutputParser()
-question_rewriter.invoke({"question": question})
+
+#Example
+#question_rewriter.invoke({"question": question})
 
 
 
@@ -184,7 +166,6 @@ class GraphState(TypedDict):
 
 from langchain.schema import Document
 
-
 def retrieve(state):
     """
     Retrieve documents
@@ -193,13 +174,17 @@ def retrieve(state):
         state (dict): The current graph state
 
     Returns:
-        state (dict): New key added to state, documents, that contains retrieved documents
+        dict: New key added to state, documents, that contains retrieved documents
     """
     print("---RETRIEVE---")
     question = state["question"]
 
-    # Retrieval
-    documents = retriever.get_relevant_documents(question)
+    # Retrieval using invoke
+    documents = retriever.invoke({"question": question})
+    # Asegúrate de que `documents` es una lista
+    if not isinstance(documents, list):
+        raise ValueError("Expected `documents` to be a list.")
+    
     return {"documents": documents, "question": question}
 
 
@@ -240,9 +225,11 @@ def grade_documents(state):
     # Score each doc
     filtered_docs = []
     for d in documents:
+        print("---DOCUMENT: ", d.page_content, "---")
         score = retrieval_grader.invoke(
             {"question": question, "document": d.page_content}
         )
+        print("SCore........", score)
         grade = score["score"]
         if grade == "yes":
             print("---GRADE: DOCUMENT RELEVANT---")
@@ -290,15 +277,10 @@ def route_question(state):
     print("---ROUTE QUESTION---")
     question = state["question"]
     print(question)
-    source = question_router.invoke({"question": question})
-    print(source)
-    print(source["datasource"])
-    if source["datasource"] == "web_search":
-        print("---ROUTE QUESTION TO WEB SEARCH---")
-        return "web_search"
-    elif source["datasource"] == "vectorstore":
-        print("---ROUTE QUESTION TO RAG---")
-        return "vectorstore"
+    source={'datasource','vectorstore'}
+    print("1",source)
+    print("---ROUTE QUESTION TO RAG---")
+    return "vectorstore"
 
 
 def decide_to_generate(state):
@@ -313,18 +295,12 @@ def decide_to_generate(state):
     """
 
     print("---ASSESS GRADED DOCUMENTS---")
-    state["question"]
     filtered_documents = state["documents"]
 
     if not filtered_documents:
-        # All documents have been filtered check_relevance
-        # We will re-generate a new query
-        print(
-            "---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---"
-        )
+        print("---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---")
         return "transform_query"
     else:
-        # We have relevant documents, so generate answer
         print("---DECISION: GENERATE---")
         return "generate"
 
@@ -345,16 +321,12 @@ def grade_generation_v_documents_and_question(state):
     documents = state["documents"]
     generation = state["generation"]
 
-    score = hallucination_grader.invoke(
-        {"documents": documents, "generation": generation}
-    )
+    score = hallucination_grader.invoke({"documents": documents, "generation": generation})
     grade = score["score"]
 
     # Check hallucination
     if grade == "yes":
         print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-        # Check question-answering
-        print("---GRADE GENERATION vs QUESTION---")
         score = answer_grader.invoke({"question": question, "generation": generation})
         grade = score["score"]
         if grade == "yes":
@@ -364,7 +336,7 @@ def grade_generation_v_documents_and_question(state):
             print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
             return "not useful"
     else:
-        pprint("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
+        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
         return "not supported"
 
 from langgraph.graph import END, StateGraph, START
@@ -372,44 +344,47 @@ from langgraph.graph import END, StateGraph, START
 workflow = StateGraph(GraphState)
 
 # Define the nodes
-workflow.add_node("retrieve", retrieve)  # retrieve
+workflow.add_node("retrieve", retrieve)  # retrieve documents
 workflow.add_node("grade_documents", grade_documents)  # grade documents
-workflow.add_node("generate", generate)  # generatae
-workflow.add_node("transform_query", transform_query)  # transform_query
+workflow.add_node("generate", generate)  # generate answer
+workflow.add_node("transform_query", transform_query)  # transform query
 
 # Build graph
 workflow.add_conditional_edges(
-    START,  # start node
-    route_question, # route to node function to call
+    START,
+    route_question,
     {
-        "vectorstore": "retrieve" # route to node to call
+        "vectorstore": "retrieve",
     },
 )
 
-workflow.add_edge("retrieve", "grade_documents") # route to next node to call
+workflow.add_edge("retrieve", "grade_documents")  # route to next node to call
 
 workflow.add_conditional_edges(
-    "grade_documents",  # start node and his function -> grade_documents
-    decide_to_generate, # execute function to decide if answer is founded    
+    "grade_documents",  # start node and its function -> grade_documents
+    decide_to_generate,  # execute function to decide if answer is found
     {
-        "transform_query": "transform_query",  #if  answer is no founded, route to next node
-        "generate": "generate", # if answer is founded, route to next node
+        "transform_query": "transform_query",  # if answer is not found, route to next node
+        "generate": "generate",  # if answer is found, route to next node
     },
 )
-workflow.add_edge("transform_query", "retrieve") # add route between nodes
+
+workflow.add_edge("transform_query", "retrieve")  # add route between nodes
 
 workflow.add_conditional_edges(
-    "generate", # node and his function called generate -> generate 
-    grade_generation_v_documents_and_question, # function to check if generation is grounded in documents and answers question
+    "generate",  # node and its function called generate -> generate 
+    grade_generation_v_documents_and_question,  # function to check if generation is grounded in documents and answers question
     {
-        "not supported": "generate",
-        "useful": END,
-        "not useful": "transform_query",
+        "not supported": "generate",  # if generation is not supported, route back to generate
+        "useful": END,  # if generation is useful, end workflow
+        "not useful": "transform_query",  # if generation is not useful, route to transform_query
     },
 )
 
 # Compile
 app = workflow.compile()
+
+
 
 #-----------------------------------------------------------------------------------
 
@@ -428,3 +403,15 @@ app = workflow.compile()
 
 # # Final generation
 # pprint(value["generation"])
+
+from pprint import pprint
+
+# Run
+inputs = {"question": "Gobernar al Imperio es como freír un pequeño pez"}
+for output in app.stream(inputs):
+    for key, value in output.items():
+        # Node
+        pass
+print("\n---\n")
+    #     pprint(f"Node '{key}':")
+    # print(output)

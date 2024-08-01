@@ -15,7 +15,7 @@ def text_split(documents, chunk_size=100, chunk_overlap=20):
     return all_splits
 # Función para inicializar el modelo y tokenizer de embeddings
 def init_embedding_model():
-    embedding_func = OllamaEmbeddings()
+    embedding_func = OllamaEmbeddings(model="llama3.1")
     return embedding_func
 
 def docs_post_processing(docs):
