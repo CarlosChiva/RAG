@@ -9,8 +9,8 @@ def load_pdf(filename):
     return documents
 
 # Función para dividir el texto de los documentos
-def text_split(documents, chunk_size=100, chunk_overlap=20):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+def text_split(documents, chunk_size=1500, chunk_overlap=100):
+    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     all_splits = text_splitter.split_documents(documents)
     return all_splits
 # Función para inicializar el modelo y tokenizer de embeddings

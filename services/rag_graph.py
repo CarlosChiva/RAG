@@ -5,7 +5,10 @@ from langchain_community.vectorstores import Chroma
 from langchain_nomic.embeddings import NomicEmbeddings
 import sys
 sys.path.append('../api-sindicato/')
+from langchain.chains import RetrievalQA
+from langchain import hub
 from db.chroma_db import get_vectorstore_mock
+QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
 import os
 from langchain.prompts import PromptTemplate
 
@@ -49,12 +52,8 @@ from langchain_core.output_parsers import JsonOutputParser
 # LLM
 llm_retrieval_grader = ChatOllama(model=local_llm, format="json", temperature=0)
 PROMT_RETRIEVAL_GRADER = os.getenv("PROMT_RETRIEVAL_GRADER")
-prompt = PromptTemplate(
-    template=PROMT_RETRIEVAL_GRADER,
-    input_variables=["question", "document"],
-)
-
 retrieval_grader = prompt | llm_retrieval_grader | JsonOutputParser()
+
 ## Examples:
 # question = "agent memory"
 # docs = retriever.get_relevant_documents(question)
@@ -124,7 +123,7 @@ answer_grader = prompt | llm_answer_grader | JsonOutputParser()
 ### Question Re-writer
 
 # LLM
-llm_question_rewriter = ChatOllama(model=local_llm, temperature=0)
+llm_question_rewriter = ChatOllama(model=local_llm, temperature=0.1)
 QUESTION_REWRITER_PROMT= os.getenv("QUESTION_REWRITER_PROMPT")
 # Prompt
 re_write_prompt = PromptTemplate(
@@ -177,15 +176,35 @@ def retrieve(state):
         dict: New key added to state, documents, that contains retrieved documents
     """
     print("---RETRIEVE---")
+
     question = state["question"]
 
-    # Retrieval using invoke
-    documents = retriever.invoke({"question": question})
-    # Asegúrate de que `documents` es una lista
-    if not isinstance(documents, list):
-        raise ValueError("Expected `documents` to be a list.")
-    
-    return {"documents": documents, "question": question}
+    llm = ChatOllama(model=local_llm, format="json", temperature=0)
+
+    prompt = PromptTemplate(
+        template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
+        Here is the retrieved document: \n\n {document} \n\n
+        Here is the user question: {question} \n
+        If the document contains keywords related to the user question, grade it as relevant. \n
+        It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
+        Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
+        Provide the binary score as a JSON with a single key 'score' and no premable or explanation.""",
+        input_variables=["question", "document"],
+    )
+    retrieval_grader = prompt | llm | JsonOutputParser()
+
+
+    vector_store= get_vectorstore_mock(collection_name="first")
+    retrieval= vector_store.as_retriever()
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=llm_retrieval_grader, retriever=retrieval, chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
+    )
+    response=qa_chain.invoke({"query":question})
+    doc_txt=response["result"]
+    print(retrieval_grader.invoke({"question": question, "document": doc_txt}))
+    print("REsponse----------",response["result"])
+    print("Output----------",{"documents": [doc_txt], "question": question})
+    return {"documents": [doc_txt], "question": question}
 
 
 def generate(state):
@@ -220,24 +239,26 @@ def grade_documents(state):
 
     print("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
     question = state["question"]
-    documents = state["documents"]
-
-    # Score each doc
-    filtered_docs = []
-    for d in documents:
-        print("---DOCUMENT: ", d.page_content, "---")
+    print("Question: ", question)
+    documents = state["documents"][0]
+    documents=documents.replace("\n","")
+    documents=dict(eval(documents))
+    print("Documents replaced characters : ", documents)
+    response_documents=[]
+    for key , value in documents.items():
+        print("Second for------",value)
         score = retrieval_grader.invoke(
-            {"question": question, "document": d.page_content}
+            {"question": question, "document": value}
         )
-        print("SCore........", score)
-        grade = score["score"]
-        if grade == "yes":
-            print("---GRADE: DOCUMENT RELEVANT---")
-            filtered_docs.append(d)
-        else:
-            print("---GRADE: DOCUMENT NOT RELEVANT---")
-            continue
-    return {"documents": filtered_docs, "question": question}
+    print("SCore........", score)
+    grade = score["relevance"]
+    if grade == "yes":
+        response_documents.append(documents)
+        print("---GRADE: DOCUMENT RELEVANT---")
+        return {"documents": response_documents, "question": question}
+    else:
+        print("---GRADE: DOCUMENT NOT RELEVANT---")
+        return {"documents": "", "question": question}
 
 
 def transform_query(state):
@@ -340,6 +361,7 @@ def grade_generation_v_documents_and_question(state):
         return "not supported"
 
 from langgraph.graph import END, StateGraph, START
+from langgraph.checkpoint.memory import MemorySaver
 
 workflow = StateGraph(GraphState)
 
@@ -381,9 +403,7 @@ workflow.add_conditional_edges(
     },
 )
 
-# Compile
 app = workflow.compile()
-
 
 
 #-----------------------------------------------------------------------------------
@@ -407,11 +427,10 @@ app = workflow.compile()
 from pprint import pprint
 
 # Run
-inputs = {"question": "Gobernar al Imperio es como freír un pequeño pez"}
-for output in app.stream(inputs):
+# Run
+question = {"question":"Que tengo que llevar a la cita?"}
+for output in app.stream(question):
     for key, value in output.items():
-        # Node
-        pass
-print("\n---\n")
-    #     pprint(f"Node '{key}':")
-    # print(output)
+        pprint(f"Node '{key}':")
+    print(output)
+

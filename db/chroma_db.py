@@ -74,32 +74,32 @@ def get_collections_mock():
     collection_names = [collection.name for collection in collections]
     return collection_names
 
-# def add_pdf_to_collection_mock(collection_name, filename=None):
-#     chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
-#     collections=get_collections_mock()    # Crear o obtener la colección
-#     if collection_name not in collections:
-#         collection = chroma_client.create_collection(name=collection_name)
+def add_pdf_to_collection_mock(collection_name, filename=None):
+    chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
+    collections=get_collections_mock()    # Crear o obtener la colección
+    if collection_name not in collections:
+        collection = chroma_client.create_collection(name=collection_name)
 
-#     collection= chroma_client.get_collection(name=collection_name)
+    collection= chroma_client.get_collection(name=collection_name)
         
-#     documents = load_pdf(filename)
-#     splits = text_split(documents)
-#     embedding_func = init_embedding_model()
+    documents = load_pdf(filename)
+    splits = text_split(documents)
+    embedding_func = init_embedding_model()
 
-#         # Añadir documentos a la colección
-#     for i, split in enumerate(splits):
-#         text = split.page_content
-#         metadata = split.metadata
-#         embedding = embedding_func.embed_query(text)
-#         collection.add(
-#             documents=[text],
-#             metadatas=[metadata],
-#             ids=[f"{collection_name}_{i}"],
-#             embeddings=[embedding]
-#         )
+        # Añadir documentos a la colección
+    for i, split in enumerate(splits):
+        text = split.page_content
+        metadata = split.metadata
+        embedding = embedding_func.embed_query(text)
+        collection.add(
+            documents=[text],
+            metadatas=[metadata],
+            ids=[f"{collection_name}_{i}"],
+            embeddings=[embedding]
+        )
         
-#     print(f"Added {len(splits)} documents to collection '{collection_name}'")
-#     return {"message": f"Added documents to collection '{collection_name}'"}
+    print(f"Added {len(splits)} documents to collection '{collection_name}'")
+    return {"message": f"Added documents to collection '{collection_name}'"}
 
-# add_pdf_to_collection_mock("first","/home/dread/VsCode/api-sindicato/Dao_te_king.pdf")
+add_pdf_to_collection_mock("first","/home/dread/VsCode/api-sindicato/cita_previa_labora.pdf")
 
