@@ -92,6 +92,16 @@ rag_chain = prompt | llm_generate | StrOutputParser()
 ### Hallucination Grader
 
 # LLM
+llm_hallucination_grader = ChatOllama(model=local_llm, format="json", temperature=0)
+HALLUCINATION_GRADER_PROMPT= os.getenv("HALLUCINATION_GRADER_PROMPT")
+# Prompt
+prompt = PromptTemplate(
+    template=HALLUCINATION_GRADER_PROMPT,
+    input_variables=["generation", "documents"],
+)
+
+hallucination_grader = prompt | llm_hallucination_grader | JsonOutputParser()
+# hallucination_grader.invoke({"documents": docs, "generation": generation})
 
 
 ### Answer Grader
@@ -149,6 +159,7 @@ class GraphState(TypedDict):
     question: str
     generation: str
     documents: List[str]
+    context: str
 
 #-----------------------------------------------------------------------------------
 ### Nodes
@@ -196,13 +207,12 @@ def generate(state):
     print("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
+    print("Documents----------",documents[0])
     documents = documents[0]
-    print("documents",documents)
-    # documents=documents.replace("\n","")
-    # documents=dict(eval(documents))
+    documents=documents.replace("\n","")
+    
     # RAG generation
     generation = rag_chain.invoke({"context": documents, "question": question})
-    print("generation",generation)
     return {"documents": documents, "question": question, "generation": generation}
 
 
@@ -234,17 +244,17 @@ def grade_documents(state):
     
     question = state["question"]
     print("Question: ", question)
-    documents = state["documents"][0]
-    documents=documents.replace("\n","")
-    documents=dict(eval(documents))
-    score=retrieval_grader.invoke({"question": question, "document": documents})
+    # documents = state["documents"][0]
+    # documents=documents.replace("\n","")
+    # documents=dict(eval(documents))
+    score=retrieval_grader.invoke({"question": question, "document": state["documents"]})
     print("Score:--------->",score)
     print("---------------------------")
     grade = score["score"]
     print("grade:--------->",grade)
     if grade == "yes":
         print("---GRADE: DOCUMENT RELEVANT---")
-        return {"documents": [documents], "question": question}
+        return {"documents": state["documents"], "question": question}
     else:
         print("---GRADE: DOCUMENT NOT RELEVANT---")
         return {"documents": "", "question": question}
@@ -325,43 +335,25 @@ def grade_generation_v_documents_and_question(state):
     Returns:
         str: Decision for next node to call
     """
-    HALLUCINATION_GRADER_PROMPT= os.getenv("HALLUCINATION_GRADER_PROMPT")
-    llm_hallucination_grader = ChatOllama(model=local_llm, format="json", temperature=0)
-    # Prompt
-    prompt = PromptTemplate(
-        template=HALLUCINATION_GRADER_PROMPT,
-        input_variables=["generation", "documents"],
-    )
-    hallucination_grader = prompt | llm_hallucination_grader | JsonOutputParser()
-    # hallucination_grader.invoke({"documents": docs, "generation": generation})
+
     print("---CHECK HALLUCINATIONS---")
     question = state["question"]
     documents = state["documents"]
-    print("Documents: ", documents)
-    for key, value in documents.items():
-        print(key, value)
-        documents=value
     generation = state["generation"]
-    print("Generation: ", generation)
-    print(hallucination_grader.invoke({"documents": documents, "generation": generation}))
-    score = hallucination_grader.invoke({"documents": documents, "generation": generation})
-    print("Score: ", score)
-    grade = score["score"]
+    print(documents)
+    print(generation)
+    #score = hallucination_grader.invoke({"documents": documents, "generation": generation})
+    score=hallucination_grader.invoke({"question": question, "generation": generation})
+    print("score:--------->",score["answer"])
+    grade = score["answer"]
+
     # Check hallucination
     if grade == "yes":
-        print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-        score = answer_grader.invoke({"question": question, "generation": generation})
-        grade = score["score"]
-        if grade == "yes":
-            print("---DECISION: GENERATION ADDRESSES QUESTION---")
-            return "useful"
-        else:
+        return "useful"
+    else:
             print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
             return "not useful"
-    else:
-        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
-        return "not supported"
-
+    
 from langgraph.graph import END, StateGraph, START
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -399,7 +391,6 @@ workflow.add_conditional_edges(
     "generate",  # node and its function called generate -> generate 
     grade_generation_v_documents_and_question,  # function to check if generation is grounded in documents and answers question
     {
-        "not supported": "generate",  # if generation is not supported, route back to generate
         "useful": END,  # if generation is useful, end workflow
         "not useful": "transform_query",  # if generation is not useful, route to transform_query
     },
@@ -430,9 +421,14 @@ from pprint import pprint
 
 # Run
 # Run
-question = {"question":"Que tengo que llevar a la cita?"}
+question = {"question":"Cuando cita tengo?"}
+response=""
 for output in app.stream(question):
     for key, value in output.items():
-        pprint(f"Node '{key}':")
-    print(output)
+        pass
+    #     pprint(f"Node '{key}':")
+    # print(output)
+    pass
+    response=output
+print(output['generate']['generation'])    
 
