@@ -101,5 +101,5 @@ def add_pdf_to_collection_mock(collection_name, filename=None):
     print(f"Added {len(splits)} documents to collection '{collection_name}'")
     return {"message": f"Added documents to collection '{collection_name}'"}
 
-add_pdf_to_collection_mock("first","/home/dread/VsCode/api-sindicato/cita_previa_labora.pdf")
+#add_pdf_to_collection_mock("first","/home/dread/VsCode/api-sindicato/cita_previa_labora.pdf")
 

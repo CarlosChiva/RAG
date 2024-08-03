@@ -92,16 +92,6 @@ rag_chain = prompt | llm_generate | StrOutputParser()
 ### Hallucination Grader
 
 # LLM
-llm_hallucination_grader = ChatOllama(model=local_llm, format="json", temperature=0)
-HALLUCINATION_GRADER_PROMPT= os.getenv("HALLUCINATION_GRADER_PROMPT")
-# Prompt
-prompt = PromptTemplate(
-    template=HALLUCINATION_GRADER_PROMPT,
-    input_variables=["generation", "documents"],
-)
-
-hallucination_grader = prompt | llm_hallucination_grader | JsonOutputParser()
-# hallucination_grader.invoke({"documents": docs, "generation": generation})
 
 
 ### Answer Grader
@@ -179,19 +169,6 @@ def retrieve(state):
 
     question = state["question"]
 
-    llm = ChatOllama(model=local_llm, format="json", temperature=0)
-
-    prompt = PromptTemplate(
-        template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
-        Here is the retrieved document: \n\n {document} \n\n
-        Here is the user question: {question} \n
-        If the document contains keywords related to the user question, grade it as relevant. \n
-        It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
-        Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
-        Provide the binary score as a JSON with a single key 'score' and no premable or explanation.""",
-        input_variables=["question", "document"],
-    )
-    retrieval_grader = prompt | llm | JsonOutputParser()
 
 
     vector_store= get_vectorstore_mock(collection_name="first")
@@ -201,7 +178,6 @@ def retrieve(state):
     )
     response=qa_chain.invoke({"query":question})
     doc_txt=response["result"]
-    print(retrieval_grader.invoke({"question": question, "document": doc_txt}))
     print("REsponse----------",response["result"])
     print("Output----------",{"documents": [doc_txt], "question": question})
     return {"documents": [doc_txt], "question": question}
@@ -220,9 +196,13 @@ def generate(state):
     print("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
-
+    documents = documents[0]
+    print("documents",documents)
+    # documents=documents.replace("\n","")
+    # documents=dict(eval(documents))
     # RAG generation
     generation = rag_chain.invoke({"context": documents, "question": question})
+    print("generation",generation)
     return {"documents": documents, "question": question, "generation": generation}
 
 
@@ -238,24 +218,33 @@ def grade_documents(state):
     """
 
     print("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
+    llm = ChatOllama(model=local_llm, format="json", temperature=0)
+
+    prompt = PromptTemplate(
+        template="""You are a grader assessing relevance of a retrieved document to a user question. \n 
+        Here is the retrieved document: \n\n {document} \n\n
+        Here is the user question: {question} \n
+        If the document contains keywords related to the user question, grade it as relevant. \n
+        It does not need to be a stringent test. The goal is to filter out erroneous retrievals. \n
+        Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question. \n
+        Provide the binary score as a JSON with a single key 'score' and no premable or explanation.""",
+        input_variables=["question", "document"],
+    )
+    retrieval_grader = prompt | llm | JsonOutputParser()
+    
     question = state["question"]
     print("Question: ", question)
     documents = state["documents"][0]
     documents=documents.replace("\n","")
     documents=dict(eval(documents))
-    print("Documents replaced characters : ", documents)
-    response_documents=[]
-    for key , value in documents.items():
-        print("Second for------",value)
-        score = retrieval_grader.invoke(
-            {"question": question, "document": value}
-        )
-    print("SCore........", score)
-    grade = score["relevance"]
+    score=retrieval_grader.invoke({"question": question, "document": documents})
+    print("Score:--------->",score)
+    print("---------------------------")
+    grade = score["score"]
+    print("grade:--------->",grade)
     if grade == "yes":
-        response_documents.append(documents)
         print("---GRADE: DOCUMENT RELEVANT---")
-        return {"documents": response_documents, "question": question}
+        return {"documents": [documents], "question": question}
     else:
         print("---GRADE: DOCUMENT NOT RELEVANT---")
         return {"documents": "", "question": question}
@@ -317,7 +306,7 @@ def decide_to_generate(state):
 
     print("---ASSESS GRADED DOCUMENTS---")
     filtered_documents = state["documents"]
-
+    print("Filtered documents: ", filtered_documents)
     if not filtered_documents:
         print("---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---")
         return "transform_query"
@@ -336,15 +325,28 @@ def grade_generation_v_documents_and_question(state):
     Returns:
         str: Decision for next node to call
     """
-
+    HALLUCINATION_GRADER_PROMPT= os.getenv("HALLUCINATION_GRADER_PROMPT")
+    llm_hallucination_grader = ChatOllama(model=local_llm, format="json", temperature=0)
+    # Prompt
+    prompt = PromptTemplate(
+        template=HALLUCINATION_GRADER_PROMPT,
+        input_variables=["generation", "documents"],
+    )
+    hallucination_grader = prompt | llm_hallucination_grader | JsonOutputParser()
+    # hallucination_grader.invoke({"documents": docs, "generation": generation})
     print("---CHECK HALLUCINATIONS---")
     question = state["question"]
     documents = state["documents"]
+    print("Documents: ", documents)
+    for key, value in documents.items():
+        print(key, value)
+        documents=value
     generation = state["generation"]
-
+    print("Generation: ", generation)
+    print(hallucination_grader.invoke({"documents": documents, "generation": generation}))
     score = hallucination_grader.invoke({"documents": documents, "generation": generation})
+    print("Score: ", score)
     grade = score["score"]
-
     # Check hallucination
     if grade == "yes":
         print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
