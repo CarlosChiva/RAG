@@ -158,14 +158,28 @@ class GraphState(TypedDict):
 
     question: str
     generation: str
-    documents: List[str]
+    documents: str
     context: str
 
 #-----------------------------------------------------------------------------------
 ### Nodes
 
 from langchain.schema import Document
+def preprocessing_query(state):
+    llm_preprocessor = ChatOllama(model=local_llm, temperature=0)
+    PREPROCESS_PROMPT= os.getenv("PREPROCESS_PROMPT")
+    # Prompt
+    preprocessor = PromptTemplate(
+        template=PREPROCESS_PROMPT,
+        input_variables=[ "question"],
+    )
 
+    preprocessor_chain = preprocessor | llm_preprocessor | StrOutputParser()
+
+    question = state["question"]
+    question =preprocessor_chain.invoke(question)
+    print("Preprocessed Question----------",question)
+    return {"question": question}
 def retrieve(state):
     """
     Retrieve documents
@@ -185,13 +199,13 @@ def retrieve(state):
     vector_store= get_vectorstore_mock(collection_name="first")
     retrieval= vector_store.as_retriever()
     qa_chain = RetrievalQA.from_chain_type(
-        llm=llm_retrieval_grader, retriever=retrieval, chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
+        llm=llm_retrieval_grader, retriever=retrieval, chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
     )
     response=qa_chain.invoke({"query":question})
     doc_txt=response["result"]
     print("REsponse----------",response["result"])
-    print("Output----------",{"documents": [doc_txt], "question": question})
-    return {"documents": [doc_txt], "question": question}
+    print("Output----------",{"documents": doc_txt, "question": question})
+    return {"documents": doc_txt, "question": question}
 
 
 def generate(state):
@@ -207,8 +221,8 @@ def generate(state):
     print("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
-    print("Documents----------",documents[0])
-    documents = documents[0]
+    print("Documents----------",documents)
+    documents = documents
     documents=documents.replace("\n","")
     
     # RAG generation
@@ -277,6 +291,7 @@ def transform_query(state):
 
     # Re-write question
     better_question = question_rewriter.invoke({"question": question})
+    print(better_question)
     return {"documents": documents, "question": better_question}
 
 
@@ -360,6 +375,7 @@ from langgraph.checkpoint.memory import MemorySaver
 workflow = StateGraph(GraphState)
 
 # Define the nodes
+workflow.add_node("preprocess",preprocessing_query)
 workflow.add_node("retrieve", retrieve)  # retrieve documents
 workflow.add_node("grade_documents", grade_documents)  # grade documents
 workflow.add_node("generate", generate)  # generate answer
@@ -370,9 +386,12 @@ workflow.add_conditional_edges(
     START,
     route_question,
     {
-        "vectorstore": "retrieve",
+        "vectorstore": "preprocess",
     },
 )
+
+
+workflow.add_edge("preprocess", "retrieve")  # route to next node to call
 
 workflow.add_edge("retrieve", "grade_documents")  # route to next node to call
 
@@ -421,7 +440,7 @@ from pprint import pprint
 
 # Run
 # Run
-question = {"question":"Cuando cita tengo?"}
+question = {"question":" soy profesora de secundaria. Me gustaría cogerme cuando dé a luz, 9 ó 10 semanas y a partir de septiembre el resto. ¿Es esto posible?"}
 response=""
 for output in app.stream(question):
     for key, value in output.items():

@@ -41,6 +41,3 @@ def create_rag(collection_name, model_name="llama3.1"):
 def rag_query(collection_name, query, model_name="llama3"):
     rag = create_rag(collection_name)
     return rag(query)
-#add_pdf_to_collection("sciq","/home/dread/VsCode/api-sindicato/db/documento.pdf")
-answer=rag_query("sciq","Cuales son las areas de mayor preocupacion?")
-print(answer)
