@@ -78,7 +78,7 @@ def add_pdf_to_collection_mock(collection_name, filename=None):
     chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
     collections=get_collections_mock()    # Crear o obtener la colección
     if collection_name not in collections:
-        collection = chroma_client.create_collection(name=collection_name,persist_directory=PERSIT_DIRECTORY)
+        collection = chroma_client.create_collection(name=collection_name)
 
     collection= chroma_client.get_collection(name=collection_name)
         
