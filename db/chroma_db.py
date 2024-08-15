@@ -103,5 +103,4 @@ def add_pdf_to_collection_mock(collection_name, filename=None):
     #chroma_client.persist()
     return {"message": f"Added documents to collection '{collection_name}'"}
 
-#add_pdf_to_collection_mock("first","/home/dread/VsCode/api-sindicato/database.pdf")
 
