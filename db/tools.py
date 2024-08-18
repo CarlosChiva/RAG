@@ -1,7 +1,8 @@
 from langchain.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OllamaEmbeddings
-
+import os
+model=os.getenv("MODEL")
 # Función para cargar un documento PDF
 def load_pdf(filename):
     loader = PyPDFLoader(filename)
@@ -15,5 +16,5 @@ def text_split(documents, chunk_size=2000, chunk_overlap=50):
     return all_splits
 # Función para inicializar el modelo y tokenizer de embeddings
 def init_embedding_model():
-    embedding_func = OllamaEmbeddings(model="llama3.1")
+    embedding_func = OllamaEmbeddings(model=model)
     return embedding_func

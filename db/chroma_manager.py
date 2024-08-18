@@ -7,18 +7,25 @@ import os
 PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
 from dotenv import load_dotenv
 load_dotenv()
+import uuid
 
 async def get_collections():
+    """Method to get the name of collections. Returns a list of collection names."""
+    
     chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
     collections = chroma_client.list_collections()
     collection_names = [collection.name for collection in collections]
     return collection_names
 # Función principal para añadir el PDF a una colección específica
-async def add_pdf_to_collection(collection_name, filename=None):
-    chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
+async def add_pdf_to_collection(collection_name, filename):
 
+    """Method to add a PDF to a collection."""
+    """ Collection_name and filename to pdf are required to add a pdf to a collection."""
+    """Returns a message indicating the success of the operation."""
+
+    chroma_client= await get_chroma_client()
         # Crear o obtener la colección
-    collections=get_collections()    # Crear o obtener la colección
+    collections= await get_collections()    # Crear o obtener la colección
     if collection_name not in collections:
         collection = chroma_client.create_collection(name=collection_name)
     collection= chroma_client.get_collection(name=collection_name)
@@ -35,16 +42,20 @@ async def add_pdf_to_collection(collection_name, filename=None):
         collection.add(
             documents=[text],
             metadatas=[metadata],
-            ids=[f"{collection_name}_{i}"],
+            ids=[f"{uuid.uuid4()}" for _ in range(len(splits))],
             embeddings=[embedding]
         )
         
-    print(f"Added {len(splits)} documents to collection '{collection_name}'")
-    return {"message": f"Added documents to collection '{collection_name}'"}
+    #print(f"Added {len(splits)} documents to collection '{collection_name}'")
+    return {"message": f"Added {splits} documents to collection '{collection_name}'"}
 
 async def get_chroma_client():
+        """Simple method to get the chroma client."""
         return chromadb.PersistentClient(path=PERSIT_DIRECTORY)
 async def get_vectorstore(collection_name):
+    
+    """ Simple method to get the vectorstore. Return vectorstore with the collection_name passed as argument."""
+
     cli=await get_chroma_client()
             # Inicializar el almacén de vectores para la colección específica
     embedding_func = init_embedding_model()
@@ -85,6 +96,9 @@ def add_pdf_to_collection_mock(collection_name, filename=None):
     documents = load_pdf(filename)
     splits = text_split(documents)
     embedding_func = init_embedding_model()
+    
+    num_documents = collection.count()
+    print(f"La colección '{collection_name}' tiene {num_documents} documentos.")
 
         # Añadir documentos a la colección
     for i, split in enumerate(splits):
@@ -95,12 +109,12 @@ def add_pdf_to_collection_mock(collection_name, filename=None):
         collection.add(
             documents=[text],
             metadatas=[metadata],
-            ids=[f"{collection_name}_{i}"],
+            ids=[f"{uuid.uuid4()}" for _ in range(len(splits))],
             embeddings=[embedding]
         )
         
-    print(f"Added {len(splits)} documents to collection '{collection_name}'")
-    #chroma_client.persist()
-    return {"message": f"Added documents to collection '{collection_name}'"}
 
+    print(f"La colección '{collection_name}' tiene {num_documents} documentos.")
+
+    return {"message": f"Added documents to collection '{collection_name}'"}
 
