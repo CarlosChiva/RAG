@@ -5,7 +5,7 @@ import tempfile
 import os
 
 router = APIRouter()
-def set_collection_name(new_name):
+async def set_collection_name(new_name):
     os.environ['COLLECTION_NAME'] = new_name    
 
 #-------------------------Principal routes-----------------------
@@ -21,10 +21,11 @@ async def llm_response(input: str):
 
 @router.post("/add_document")
 async def add_document(file: UploadFile = File(...), name_collection: str = Form(...)):
-
-    if os.getenv("COLLECTION_NAME") != name_collection:
-        set_collection_name(name_collection)
-
+    current_collection=os.getenv("COLLECTION_NAME")
+    if  current_collection!= name_collection:
+        
+        await set_collection_name(name_collection)
+        print("Change collection name:", os.getenv("COLLECTION_NAME"))
     if not file.filename:
         return {'error': 'Invalid file'}, 400
     if not name_collection:
@@ -54,6 +55,7 @@ async def get_collections_name():
 
 @router.get("/self-collection-name")
 async def collection_name():
+
     return {"collection_name": os.getenv("COLLECTION_NAME")}
 
 
@@ -62,4 +64,4 @@ async def collection_name():
 async def collection_name(collection_name: str = Form(...)):
     os.environ['COLLECTION_NAME'] = collection_name
 
-    return {"collection_name": os.environ.get("COLLECTION_NAME")}
+    return {"collection_name": os.getenv("COLLECTION_NAME")}
