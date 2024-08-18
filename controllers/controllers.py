@@ -16,6 +16,7 @@ async def show_name_collections():
     return names
 
 async def add_new_document_collections(collection_name,document):
+    
     names= await add_pdf_to_collection(collection_name,document)
     #print("Controllers:",names)
     return names

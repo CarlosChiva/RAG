@@ -1,16 +1,15 @@
 #from tempfile import NamedTemporaryFile
 from fastapi import *
 from controllers import controllers
-from fpdf import FPDF
 import tempfile
 import os
 
 router = APIRouter()
-
+#-------------------------Principal routes-----------------------
 @router.get("/llm-response")
 async def llm_response(input: str):
-  
-    result = await controllers.querier(collection_name="first", question=input)
+    collection_name = os.getenv("COLLECTION_NAME")
+    result = await controllers.querier(collection_name=collection_name, question=input)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
@@ -39,3 +38,22 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
     except Exception as e:
         print(f"Error in process_pdf: {e}")
         return {'error': 'An error occurred while processing the PDF'}, 500
+
+#-------------------------Collection routes-----------------------
+@router.get("/collections")
+async def get_collections_name():
+    collections= await controllers.show_name_collections()
+    return {"collections_name": collections}
+
+
+@router.get("/self-collection-name")
+async def collection_name():
+    return {"collection_name": os.getenv("COLLECTION_NAME")}
+
+
+
+@router.post("/new-collection-name")
+async def collection_name(collection_name: str = Form(...)):
+    os.environ['COLLECTION_NAME'] = collection_name
+
+    return {"collection_name": os.environ.get("COLLECTION_NAME")}
