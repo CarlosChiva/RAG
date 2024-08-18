@@ -15,6 +15,6 @@ async def text_split(documents, chunk_size=2000, chunk_overlap=50):
     all_splits = text_splitter.split_documents(documents)
     return all_splits
 # Función para inicializar el modelo y tokenizer de embeddings
-async def init_embedding_model():
+def init_embedding_model():
     embedding_func = OllamaEmbeddings(model=model)
     return embedding_func
