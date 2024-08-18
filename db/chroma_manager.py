@@ -12,7 +12,7 @@ import uuid
 async def get_collections():
     """Method to get the name of collections. Returns a list of collection names."""
     
-    chroma_client= chromadb.PersistentClient(path=PERSIT_DIRECTORY)
+    chroma_client= await get_chroma_client()
     collections = chroma_client.list_collections()
     collection_names = [collection.name for collection in collections]
     return collection_names
@@ -30,24 +30,33 @@ async def add_pdf_to_collection(collection_name, filename):
         collection = chroma_client.create_collection(name=collection_name)
     collection= chroma_client.get_collection(name=collection_name)
         
-    documents = load_pdf(filename)
-    splits = text_split(documents)
-    embedding_func = init_embedding_model()
+    documents = await load_pdf(filename)
+    splits = await text_split(documents)
+    embedding_func = await init_embedding_model()
+    ids = []
+    documents = []
+    metadatas = []
+    embeddings = []
 
-        # Añadir documentos a la colección
-    for i, split in enumerate(splits):
+    for split in splits:
         text = split.page_content
         metadata = split.metadata
         embedding = embedding_func.embed_query(text)
-        collection.add(
-            documents=[text],
-            metadatas=[metadata],
-            ids=[f"{uuid.uuid4()}" for _ in range(len(splits))],
-            embeddings=[embedding]
-        )
         
+        ids.append(str(uuid.uuid4()))
+        documents.append(text)
+        metadatas.append(metadata)
+        embeddings.append(embedding)
+
+    collection.add(
+        documents=documents,
+        metadatas=metadatas,
+        ids=ids,
+        embeddings=embeddings
+    )
+    
     #print(f"Added {len(splits)} documents to collection '{collection_name}'")
-    return {"message": f"Added {splits} documents to collection '{collection_name}'"}
+    return {"message": f"Added {len(splits)} documents to collection '{collection_name}'"}
 
 async def get_chroma_client():
         """Simple method to get the chroma client."""
