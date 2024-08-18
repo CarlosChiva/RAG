@@ -8,11 +8,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.prompts import PromptTemplate
 # TEMPLATE=os.getenv("TEMPLATE")
 # QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
-async def get_chain(model,collection_name="first"):
+async def get_chain(model):
     """ Function to get the chain. Based on the model and collection passed we get the chain."""
     """Return chain to use it :chain.invoke({"input":question})"""
     
-    vector_store= await get_vectorstore(collection_name=collection_name)
+    vector_store= await get_vectorstore()
     
     # Prompt 
     template = """Usa la siguiente información para responder la pregunta del usuario.

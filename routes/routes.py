@@ -5,11 +5,14 @@ import tempfile
 import os
 
 router = APIRouter()
+def set_collection_name(new_name):
+    os.environ['COLLECTION_NAME'] = new_name    
+
 #-------------------------Principal routes-----------------------
 @router.get("/llm-response")
 async def llm_response(input: str):
-    collection_name = os.getenv("COLLECTION_NAME")
-    result = await controllers.querier(collection_name=collection_name, question=input)
+
+    result = await controllers.querier(question=input)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
@@ -18,6 +21,9 @@ async def llm_response(input: str):
 
 @router.post("/add_document")
 async def add_document(file: UploadFile = File(...), name_collection: str = Form(...)):
+
+    if os.getenv("COLLECTION_NAME") != name_collection:
+        set_collection_name(name_collection)
 
     if not file.filename:
         return {'error': 'Invalid file'}, 400
@@ -30,7 +36,7 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
             temp_file.write(await file.read())
             temp_path = temp_file.name
         try:
-            data = await controllers.add_new_document_collections(name_collection, temp_path)
+            data = await controllers.add_new_document_collections(temp_path)
             return {'data': data}
         finally:
             os.unlink(temp_path)  # Asegura que el archivo temporal se elimine
