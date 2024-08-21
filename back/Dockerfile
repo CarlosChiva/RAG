@@ -2,7 +2,7 @@
 FROM python:3.10-slim
 
 # Establece el directorio de trabajo en /app
-WORKDIR /api-sindicato
+WORKDIR /app
 
 # Copia el archivo requirements.txt al directorio de trabajo
 COPY requirements.txt .

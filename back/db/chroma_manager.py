@@ -1,6 +1,6 @@
 import chromadb
 import sys
-sys.path.append('../api-sindicato/db/')
+sys.path.append('../app/db/')
 from tools import load_pdf, text_split, init_embedding_model
 from langchain_community.vectorstores import Chroma
 import os
