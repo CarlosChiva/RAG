@@ -1,0 +1,37 @@
+/* upload.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.upload-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+#dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+#fileInput {
+    display: none;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+select, input[type="text"] {
+    margin: 10px;
+    padding: 10px;
+    font-size: 16px;
+}

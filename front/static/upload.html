@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF</title>
+    <link rel="stylesheet" href="upload.css">
+</head>
+<body>
+    <div class="upload-container">
+        <h1>Upload PDF</h1>
+        <form id="uploadForm">
+            <input type="file" id="fileInput" accept=".pdf" multiple>
+            <div id="dropzone">Drag & Drop PDFs Here</div>
+            <div>
+                <label for="collectionSelect">Select Existing Collection:</label>
+                <select id="collectionSelect">
+                    <option value="">-- Select Collection --</option>
+                </select>
+                <input type="text" id="newCollection" placeholder="Or enter a new collection name">
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+        <a href="index.html">Back to Chat</a>
+    </div>
+    <script src="upload.js"></script>
+</body>
+</html>
