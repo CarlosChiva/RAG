@@ -30,36 +30,36 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const collectionsList = document.getElementById("collections-list");
-            const sendButton = document.getElementById("sendButton");
-            const inputText = document.getElementById("inputText");
-            const chatOutput = document.getElementById("chat-output");
+    const sendButton = document.getElementById("sendButton");
+    const inputText = document.getElementById("inputText");
+    const chatOutput = document.getElementById("chat-output");
 
-            let selectedCollection = null;
+    let selectedCollection = null;
 
-            // Función para cargar las colecciones desde el backend
-            function loadCollections() {
-                fetch('http://localhost:8000/collections')
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Received data:", data);  // Agrega esta línea
-
-                        collectionsList.innerHTML = "";  // Limpiar la lista antes de agregar nuevos elementos
-                        data.collections_name.forEach((collectionName, index) => {
-                            const listItem = document.createElement("li");
-                            listItem.textContent = collectionName;
-                            listItem.dataset.collectionId = index;  // Usar el índice como ID de la colección
-                            listItem.addEventListener("click", function() {
-                                selectCollection(this);
-                            });
-                            collectionsList.appendChild(listItem);
-                        });
-                        console.log("Updated collections list:", collectionsList.innerHTML);  // Agrega este log
-                    })
-                    .catch(error => console.error('Error fetching collections:', error));
-            }
+    // Función para cargar las colecciones desde el backend
+    function loadCollections() {
+        fetch('http://localhost:8000/collections')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Collections data:", data);  // Verifica los datos recibidos
+                collectionsList.innerHTML = "";  // Limpiar la lista antes de agregar nuevos elementos
+                data.collections_name.forEach((collectionName) => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = collectionName;
+                    listItem.dataset.collectionName = collectionName;  // Usar el nombre de la colección como atributo
+                    listItem.classList.add("collection-item");
+                    listItem.addEventListener("click", function() {
+                        selectCollection(this);
+                    });
+                    collectionsList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error fetching collections:', error));
+    }
 
         // Función para seleccionar una colección y enviar la solicitud POST
-        function selectCollection(element) {
+           // Función para seleccionar una colección y enviar la solicitud POST
+    function selectCollection(element) {
         const previouslySelected = document.querySelector(".selected");
         if (previouslySelected) {
             previouslySelected.classList.remove("selected");
@@ -84,6 +84,7 @@
         })
         .catch(error => console.error('Error changing collection name:', error));
     }
+
         // Función para enviar el mensaje
             // Cargar las colecciones al inicio
             loadCollections();
