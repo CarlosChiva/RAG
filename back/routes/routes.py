@@ -11,12 +11,12 @@ async def set_collection_name(new_name):
 #-------------------------Principal routes-----------------------
 @router.get("/llm-response")
 async def llm_response(input: str):
-
+    print("Back Pregunta:  ",input)
     result = await controllers.querier(question=input)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-
+    print("Back Respuesta:  ",result)
     return result
 
 @router.post("/add_document")
@@ -60,8 +60,8 @@ async def collection_name():
 
 
 
-@router.post("/new-collection-name")
+@router.post("/change-collection-name")
 async def collection_name(collection_name: str = Form(...)):
     os.environ['COLLECTION_NAME'] = collection_name
-
-    return {"collection_name": os.getenv("COLLECTION_NAME")}
+    collection_name=os.getenv("COLLECTION_NAME")
+    return {"collection_name": collection_name}

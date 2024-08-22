@@ -3,7 +3,15 @@ from routes.routes import router
 import uvicorn
 
 app = FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5000"],  # Cambia este valor al origen de tu frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos HTTP (GET, POST, etc.)
+    allow_headers=["*"],  
+)
 app.include_router(router)
 
 if __name__ == "__main__":
