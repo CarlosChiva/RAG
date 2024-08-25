@@ -51,14 +51,6 @@ body {
     box-sizing: border-box;
 }
 
-#chat-output {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #504f4f;
-    background-color: #504f4f;
-    margin-bottom: 10px;
-    overflow-y: auto;
-}
 
 .input-area {
     display: flex;
@@ -103,11 +95,14 @@ body {
 /* Estilos para el área de chat */
 
 #chat-output {
+    flex-grow: 1;
+    overflow-y: auto;
     border: 1px solid #504f4f;
     padding: 10px;
     height: 300px;
-    overflow-y: auto;
     background-color: #504f4f;
+    margin-bottom: 5px;
+
 }
 
 /* Estilo general para los mensajes */
@@ -115,14 +110,17 @@ body {
     margin: 10px;
     padding: 10px;
     border-radius: 5px;
-    max-width: 80%;
+    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
+    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
     clear: both;
+    max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
+
 }
 
 /* Mensajes del usuario alineados a la derecha */
 .user-message {
     background-color: #d1e7dd;
-    align-self: flex-end;
+    float: right;
     text-align: right;
     margin-left: auto;
 }
@@ -130,7 +128,7 @@ body {
 /* Mensajes del bot alineados a la izquierda */
 .bot-message {
     background-color: #e2e3e5;
-    align-self: flex-start;
+    float: left;
     text-align: left;
     margin-right: auto;
 }
