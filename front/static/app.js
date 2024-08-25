@@ -67,24 +67,37 @@ fetch('http://localhost:8000/change-collection-name', {
             return;
         }
 
+        const userMessageElement = document.createElement("div");
+        userMessageElement.textContent = `${message}`;
+        userMessageElement.classList.add("message", "user-message");
+        chatOutput.appendChild(userMessageElement);
+
+        // Desplazar al final del área de chat
+        chatOutput.scrollTop = chatOutput.scrollHeight;
+
+        // Limpiar el input
+        inputText.value = "";
+
         // Crear los parámetros para la solicitud GET
         const params = new URLSearchParams({
-            input: message,  // Usa 'input' como parámetro de consulta
+            input: message,
         });
 
         // Realizar la solicitud GET con fetch
         fetch(`http://localhost:8000/llm-response?${params.toString()}`)
             .then(response => response.json())
             .then(data => {
-                console.log("Received data:", data);  // Agrega esta línea
-                // Mostrar la respuesta en el área de chat
-                const messageElement = document.createElement("div");
-                messageElement.textContent = `Bot: ${data}`;  // Asume que la respuesta tiene una propiedad 'answer'
-                chatOutput.appendChild(messageElement);
-                chatOutput.scrollTop = chatOutput.scrollHeight; // Desplazar al final
-                inputText.value = ""; // Limpiar el input
+                console.log("Received data:", data);
+
+                // Crear el elemento del mensaje del bot
+                const botMessageElement = document.createElement("div");
+                botMessageElement.textContent = `${data}`;  // Asegúrate de que 'data.answer' es la estructura correcta
+                botMessageElement.classList.add("message", "bot-message");
+                chatOutput.appendChild(botMessageElement);
+
+                // Desplazar al final del área de chat
+                chatOutput.scrollTop = chatOutput.scrollHeight;
             })
             .catch(error => console.error('Error sending message:', error));
-
     });
 });

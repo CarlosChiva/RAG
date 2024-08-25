@@ -99,3 +99,38 @@ body {
     cursor: pointer;
     height: 40px;
 }
+
+/* Estilos para el área de chat */
+
+#chat-output {
+    border: 1px solid #504f4f;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+    background-color: #504f4f;
+}
+
+/* Estilo general para los mensajes */
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+    clear: both;
+}
+
+/* Mensajes del usuario alineados a la derecha */
+.user-message {
+    background-color: #d1e7dd;
+    align-self: flex-end;
+    text-align: right;
+    margin-left: auto;
+}
+
+/* Mensajes del bot alineados a la izquierda */
+.bot-message {
+    background-color: #e2e3e5;
+    align-self: flex-start;
+    text-align: left;
+    margin-right: auto;
+}
