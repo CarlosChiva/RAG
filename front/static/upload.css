@@ -4,6 +4,9 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    position: relative; /* Necesario para posicionar el botón "Back to Chat" */
+    background-color: #504f4f;
+
 }
 
 .upload-container {
@@ -11,6 +14,7 @@ body {
     margin: 0 auto;
     padding: 20px;
     text-align: center;
+    position: relative; /* Necesario para centrar el contenido en el contenedor */
 }
 
 #dropzone {
@@ -33,5 +37,34 @@ input[type="file"] {
 select, input[type="text"] {
     margin: 10px;
     padding: 10px;
+    font-size: 16px;
+}
+/* Estilo para el botón de carga */
+#uploadButton {
+    margin-top: 20px;
+    padding: 15px 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Estilo para el botón "Back to Chat" */
+#backButton {
+    position: fixed;
+    bottom: 20px; /* Ajusta la distancia desde la parte inferior */
+    left: 20px; /* Ajusta la distancia desde el borde izquierdo */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; /* Quita el subrayado del enlace */
     font-size: 16px;
 }

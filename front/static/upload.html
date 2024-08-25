@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="upload-container">
-        <h1>Upload PDF</h1>
+        <h1>Send PDF</h1>
         <form id="uploadForm">
             <input type="file" id="fileInput" accept=".pdf" multiple>
             <div id="dropzone">Drag & Drop PDFs Here</div>
@@ -19,9 +19,9 @@
                 </select>
                 <input type="text" id="newCollection" placeholder="Or enter a new collection name">
             </div>
-            <button type="submit">Upload</button>
+            <button type="submit" id="uploadButton">Upload</button>
         </form>
-        <a href="index.html">Back to Chat</a>
+        <a href="index.html" id="backButton">Back to Chat</a>
     </div>
     <script src="upload.js"></script>
 </body>

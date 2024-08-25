@@ -68,13 +68,19 @@ body {
 }
 
 #sendButton {
-    margin-left: 5px;
-    padding: 10px 10px;
+    margin: 10px;
+    padding: 0 15px; /* Añade más padding horizontal para acomodar el texto */
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
+    height: 50px;
+    display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
+    align-items: center; /* Centra verticalmente el texto dentro del botón */
+    justify-content: center; /* Centra horizontalmente el texto dentro del botón */
+    font-size: 15px; /* Ajusta el tamaño de fuente si es necesario */
+    text-align: center; /* Asegura que el texto esté centrado */
 }
 
 #sendButton:hover {
@@ -82,14 +88,19 @@ body {
     border : none;
 }
 #uploadButton{
-    margin-left: 5px;
-    padding: 10px;
+    margin: 10px;
+    padding: 0 20px; /* Añade más padding horizontal para acomodar el texto */
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
     height: 40px;
+    display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
+    align-items: center; /* Centra verticalmente el texto dentro del botón */
+    justify-content: center; /* Centra horizontalmente el texto dentro del botón */
+    font-size: 12px; /* Ajusta el tamaño de fuente si es necesario */
+    text-align: center; /* Asegura que el texto esté centrado */
 }
 
 /* Estilos para el área de chat */
