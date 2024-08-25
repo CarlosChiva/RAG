@@ -87,4 +87,15 @@ body {
 
 #sendButton:hover {
     background-color: #0056b3;
+    border : none;
+}
+#uploadButton{
+    margin-left: 5px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 40px;
 }
