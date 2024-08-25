@@ -82,6 +82,14 @@ async def get_vectorstore():
         embedding_function=embedding_func
     )
     return vectorstore
+
+async def remove_collection_db():
+    """Method to remove a collection. Returns a message indicating the success of the operation."""
+    collection_name=os.getenv("COLLECTION_NAME")
+    cli=await get_chroma_client()
+    cli.delete_collection(collection_name)
+    return {"message": f"Removed collection '{collection_name}'"}
+
 #-------------------------------------Mocks to try funcionalities -----------------
 def get_chroma_client_mock():
     """Simple method to get the chroma client."""

@@ -16,6 +16,16 @@ document.addEventListener("DOMContentLoaded", function() {
                     const listItem = document.createElement("li");
                     listItem.textContent = collectionName;
                     listItem.dataset.collectionId = index;  // Usar el índice como ID de la colección
+                                        // Crear botón de eliminación
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "❌";  // Símbolo de eliminación
+                    deleteButton.style.marginLeft = "10px";
+                    deleteButton.addEventListener("click", function(event) {
+                    event.stopPropagation();  // Evitar que se dispare el evento de selección
+                    deleteCollection(index);  // Llamar a la función para eliminar la colección
+                });
+                    listItem.appendChild(deleteButton);  // Agregar el botón al elemento de la lista
+
                     listItem.addEventListener("click", function() {
                         selectCollection(this);
                     });
@@ -24,7 +34,24 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error('Error fetching collections:', error));
     }
-
+    // Función para eliminar una colección
+    function deleteCollection(collectionId) {
+        fetch(`http://localhost:8000/collections/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: collectionId }),
+        })
+        .then(response => {
+            if (response.ok) {
+                loadCollections();  // Refrescar la lista tras la eliminación
+            } else {
+                console.error('Error deleting collection');
+            }
+        })
+        .catch(error => console.error('Error deleting collection:', error));
+    }
     // Función para seleccionar una colección
     function selectCollection(element) {
         const previouslySelected = document.querySelector(".selected");

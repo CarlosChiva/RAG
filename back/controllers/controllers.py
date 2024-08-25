@@ -1,15 +1,8 @@
-from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection
+from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection,remove_collection_db
 from db.chroma import get_chain
 from db.model_conf import get_model
 import os
-async def index():
 
-    return {"message": "Hello World"}
-
-async def new_collection(documents):
-
-    maker= await add_pdf_to_collection(collection_name="first", pdf_path=documents)
-    return maker
 
 async def show_name_collections():
 
@@ -19,6 +12,12 @@ async def show_name_collections():
 async def add_new_document_collections(document):
 
     names= await add_pdf_to_collection(document)
+    #print("Controllers:",names)
+    return names
+
+async def remove_collections():
+
+    names= await remove_collection_db()
     #print("Controllers:",names)
     return names
 

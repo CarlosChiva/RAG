@@ -65,3 +65,9 @@ async def collection_name(collection_name: str = Form(...)):
     os.environ['COLLECTION_NAME'] = collection_name
     collection_name=os.getenv("COLLECTION_NAME")
     return {"collection_name": collection_name}
+
+@router.post("/delete-collection")
+async def delete_collection():
+    collection_name=os.getenv("COLLECTION_NAME")
+    await controllers.remove_collections()
+    return {"collection_name deleted": collection_name}
