@@ -36,6 +36,7 @@ async def add_pdf_to_collection(filename):
         
     documents = await load_pdf(filename)
     splits = await text_split(documents)
+    print(splits)
     embedding_func = init_embedding_model()
     
     ids = []
@@ -52,7 +53,6 @@ async def add_pdf_to_collection(filename):
         documents.append(text)
         metadatas.append(metadata)
         embeddings.append(embedding)
-
     collection.add(
         documents=documents,
         metadatas=metadatas,
