@@ -1,5 +1,7 @@
 from langchain_community.llms import Ollama
+import os
 def get_model():
-    model=Ollama(model="llama3.1:8b-instruct-q8_0",temperature=0)
+    MODEL=os.getenv("MODEL")
+    model=Ollama(model=MODEL,temperature=0)
     return model
 
