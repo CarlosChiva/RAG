@@ -8,25 +8,59 @@ let selectedCollection = null;
 
 // Función para cargar las colecciones desde el backend
 function loadCollections() {
-fetch('http://localhost:8000/collections')
-    .then(response => response.json())
-    .then(data => {
-        console.log("Collections data:", data);  // Verifica los datos recibidos
-        collectionsList.innerHTML = "";  // Limpiar la lista antes de agregar nuevos elementos
+    fetch('http://localhost:8000/collections')
+      .then(response => response.json())
+      .then(data => {
+        console.log("Collections data:", data); // Verifica los datos recibidos
+        collectionsList.innerHTML = ""; // Limpiar la lista antes de agregar nuevos elementos
         data.collections_name.forEach((collectionName) => {
-            const listItem = document.createElement("li");
-            listItem.textContent = collectionName;
-            listItem.dataset.collectionName = collectionName;  // Usar el nombre de la colección como atributo
-            listItem.classList.add("collection-item");
-            listItem.addEventListener("click", function() {
-                selectCollection(this);
-            });
-            collectionsList.appendChild(listItem);
+          const listItem = document.createElement("li");
+          const button = document.createElement("button"); // Agregar botón para eliminar elemento
+  
+          listItem.textContent = collectionName;
+          listItem.dataset.collectionName = collectionName; // Usar el nombre de la colección como atributo
+          listItem.classList.add("collection-item");
+  
+          button.textContent = "Eliminar"; // Texto del botón
+          button.classList.add("delete-button"); // Clase para estilizar el botón
+  
+          listItem.appendChild(button); // Agregar botón a la lista
+          listItem.addEventListener("click", function() {
+            selectCollection(this);
+          });
+          collectionsList.appendChild(listItem);
+  
+          // Event listener para el botón de eliminación
+          button.addEventListener("click", function() {
+            deleteCollection(collectionName, this);
+          });
         });
+      })
+      .catch(error => console.error('Error fetching collections:', error));
+  }
+  
+  // Función para eliminar una colección y enviar la solicitud POST
+  function deleteCollection(name, element) {
+    const previouslySelected = document.querySelector(".selected");
+    if (previouslySelected && previouslySelected.dataset.collectionName === name) {
+      selectedCollection = null;
+      previouslySelected.classList.remove("selected");
+    }
+    const listItem = element.parentElement;
+  
+    fetch('http://localhost:8000/delete-collection', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: new URLSearchParams({ collection_name: selectedCollection })
     })
-    .catch(error => console.error('Error fetching collections:', error));
-}
-
+      .then(response => response.json())
+      .then(data => console.log("Collection deleted:", data))
+      .catch(error => console.error('Error deleting collection:', error));
+  
+    listItem.remove(); // Eliminar el elemento de la lista
+  }
 // Función para seleccionar una colección y enviar la solicitud POST
    // Función para seleccionar una colección y enviar la solicitud POST
 function selectCollection(element) {
