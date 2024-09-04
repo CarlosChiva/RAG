@@ -101,6 +101,8 @@ body {
     justify-content: center; /* Centra horizontalmente el texto dentro del botón */
     font-size: 12px; /* Ajusta el tamaño de fuente si es necesario */
     text-align: center; /* Asegura que el texto esté centrado */
+    text-decoration: none;
+
 }
 
 /* Estilos para el área de chat */
