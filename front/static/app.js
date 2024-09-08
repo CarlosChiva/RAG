@@ -100,6 +100,10 @@ fetch('http://localhost:8000/change-collection-name', {
             alert("Please enter a message and select a collection.");
             return;
         }
+        // Cambiar el botón a spinner
+        sendButton.innerHTML = '<div class="spinner"></div>';
+        sendButton.disabled = true;
+
 
         const userMessageElement = document.createElement("div");
         userMessageElement.textContent = `${message}`;
@@ -132,6 +136,10 @@ fetch('http://localhost:8000/change-collection-name', {
                 // Desplazar al final del área de chat
                 chatOutput.scrollTop = chatOutput.scrollHeight;
             })
-            .catch(error => console.error('Error sending message:', error));
+            .catch(error => console.error('Error sending message:', error)).finally(() => {
+              // Restaurar el botón a su estado original
+              sendButton.innerHTML = 'Send';
+              sendButton.disabled = false;
+          });
     });
 });
