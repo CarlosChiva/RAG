@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const collectionSelect = document.getElementById('collectionSelect');
     const newCollectionInput = document.getElementById('newCollection');
     const uploadForm = document.getElementById('uploadForm');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const progressBarContainer = document.querySelector('.progress-bar-container');
 
     // Cargar colecciones en el selector
     function loadCollections() {
@@ -49,20 +52,59 @@ document.addEventListener("DOMContentLoaded", function() {
 
         const collectionName = collectionSelect.value || newCollectionInput.value;
         formData.append('name_collection', collectionName);
+        // Usar XMLHttpRequest para monitorear el progreso
+        const xhr = new XMLHttpRequest();
 
-        fetch('http://localhost:8000/add_document', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Upload response:', data);
-            alert('Files uploaded successfully!');
-            fileInput.value = ''; // Limpiar el input
-            newCollectionInput.value = ''; // Limpiar el campo de colección nueva
-        })
-        .catch(error => console.error('Error uploading files:', error));
+        // Mostrar la barra de progreso
+        progressBarContainer.style.display = 'block';
+        progressPercent.style.display = 'block';
+        xhr.upload.addEventListener('progress', function(event) {
+            if (event.lengthComputable) {
+                const percentComplete = (event.loaded / event.total) * 100;
+                progressBar.style.width = percentComplete + "%";
+                progressPercent.textContent = Math.round(percentComplete) + "%";
+            }
+        });
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                alert('Files uploaded successfully!');
+                // Resetear la barra de progreso
+                progressBar.style.width = "0%";
+                progressPercent.textContent = "0%";
+                progressBarContainer.style.display = 'none';
+                progressPercent.style.display = 'none';
+
+                // Limpiar el input de archivo y el campo de colección
+                fileInput.value = '';
+                newCollectionInput.value = '';
+            } else {
+                alert('Error uploading files.');
+            }
+        };
+
+        xhr.onerror = function() {
+            alert('An error occurred during the upload.');
+        };
+
+        // Configurar la solicitud POST
+        xhr.open('POST', 'http://localhost:8000/add_document');
+        xhr.send(formData);
     });
+
+    //     fetch('http://localhost:8000/add_document', {
+    //         method: 'POST',
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log('Upload response:', data);
+    //         alert('Files uploaded successfully!');
+    //         fileInput.value = ''; // Limpiar el input
+    //         newCollectionInput.value = ''; // Limpiar el campo de colección nueva
+    //     })
+    //     .catch(error => console.error('Error uploading files:', error));
+    // });
 
     // Cargar colecciones al inicio
     loadCollections();
