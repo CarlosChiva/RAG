@@ -20,8 +20,23 @@ body {
     color: white;
     padding: 20px;
     box-sizing: border-box;
+    transition: width 0.3s ease;
+
+}
+.sidebar.collapsed {
+    width: 0%;
 }
 
+.collapse-btn {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    font-size: 20px;
+}
 .sidebar h2 {
     margin-top: 0;
 }
@@ -42,15 +57,25 @@ body {
 }
 
 .chat-area {
-    width: 75%;
+    width: 100%;
     display: flex;
     background-color: #504f4f;
     flex-direction: column;
     justify-content: space-between;
     padding: 20px;
     box-sizing: border-box;
+
+    
+}
+/* ------------------------------- */
+.chat-area.expanded {
+    width: 100%;
 }
 
+.chat-area.collapsed {
+    width: 75%;
+}
+/* ----------------------------- */
 
 .input-area {
     display: flex;
@@ -101,7 +126,10 @@ body {
     border : none;
 }
 #uploadButton{
+    position: relative;
     margin: 10px;
+    top: 15px; /* Ajusta la distancia desde el borde superior */
+    right: 15px; /* Ajusta la distancia desde el borde derecho */
     padding: 0 20px; /* Añade más padding horizontal para acomodar el texto */
     background-color: #007bff;
     color: white;
@@ -186,4 +214,21 @@ body {
 /* Efecto hover para el botón */
 .delete-button:hover {
     background-color: #ff4a4a;
+}
+
+
+/* Contenedor principal de contenido */
+.main-content {
+    display: flex;
+    width: 100%;
+    background-color: #504f4f;
+    flex-grow: 1;
+    transition: margin-left 0.3s;
+     /* Espacio dejado por la barra lateral */
+    position: relative; /* Necesario para el posicionamiento absoluto del botón */
+}
+
+/* Contenedor expandido */
+.main-content.expanded {
+    margin-left: 5px; /* Reducir el margen cuando la barra lateral esté colapsada */
 }

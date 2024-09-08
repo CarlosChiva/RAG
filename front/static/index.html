@@ -8,25 +8,27 @@
 </head>
 <body>
     <div class="container">
-        <div class="sidebar">
-            <h2>Collections</h2>
+        <div class="sidebar" id="sidebar">
+            <button id="toggleSidebar" class="collapse-btn">☰</button>
+            <h2 align="center">Collections</h2>
             <ul id="collections-list">
                 <!-- Las colecciones se cargarán aquí -->
             </ul>
         </div>
+        <div class="main-content">
 
-        <div class="chat-area">
-            <div id="chat-output">
-                <!-- Aquí se mostrarán las respuestas del chat -->
+            <div class="chat-area" id="chat-area">
+                <div id="chat-output">
+                    <!-- Aquí se mostrarán las respuestas del chat -->
+                </div>
+                <div class="input-area">
+                    <input type="text" id="inputText" placeholder="Type your message here...">
+                    <button id="sendButton">Send</button>
+                </div>
             </div>
-            <div class="input-area">
-                <input type="text" id="inputText" placeholder="Type your message here...">
-                <button id="sendButton">Send</button>
-            </div>
-        </div>
-        <a href="upload.html" id="uploadButton" class="button">Add PDF</a>
+            <a href="upload.html" id="uploadButton" class="button">Add PDF</a>
+        </div>    
     </div>
-
     <!-- Asegúrate de que el script se carga al final del body -->
     <script src="app.js"></script>
     
