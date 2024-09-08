@@ -100,6 +100,10 @@ fetch('http://localhost:8000/change-collection-name', {
             alert("Please enter a message and select a collection.");
             return;
         }
+        // Cambiar el botón a spinner
+        sendButton.innerHTML = '<div class="spinner"></div>';
+        sendButton.disabled = true;
+
 
         const userMessageElement = document.createElement("div");
         userMessageElement.textContent = `${message}`;
@@ -125,13 +129,32 @@ fetch('http://localhost:8000/change-collection-name', {
 
                 // Crear el elemento del mensaje del bot
                 const botMessageElement = document.createElement("div");
-                botMessageElement.textContent = `${data}`;  // Asegúrate de que 'data.answer' es la estructura correcta
+                //botMessageElement.textContent = `${data}`;  // Asegúrate de que 'data.answer' es la estructura correcta
                 botMessageElement.classList.add("message", "bot-message");
                 chatOutput.appendChild(botMessageElement);
+            // Función para simular la escritura progresiva
+                function typeText(element, text, speed = 20) {
+                  let index = 0;
+                  function addNextChar() {
+                      if (index < text.length) {
+                          element.textContent += text.charAt(index);
+                          index++;
+                          setTimeout(addNextChar, speed);
+                      }
+                  }
+                  addNextChar();
+              }
+
+              // Simular la escritura del mensaje
+              typeText(botMessageElement, data);  // Asegúrate de que 'data' es el texto correcto.
 
                 // Desplazar al final del área de chat
-                chatOutput.scrollTop = chatOutput.scrollHeight;
+              chatOutput.scrollTop = chatOutput.scrollHeight;
             })
-            .catch(error => console.error('Error sending message:', error));
+            .catch(error => console.error('Error sending message:', error)).finally(() => {
+              // Restaurar el botón a su estado original
+              sendButton.innerHTML = 'Send';
+              sendButton.disabled = false;
+          });
     });
 });

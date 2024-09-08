@@ -68,3 +68,25 @@ select, input[type="text"] {
     text-decoration: none; /* Quita el subrayado del enlace */
     font-size: 16px;
 }
+.progress-bar-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-top: 10px;
+    height: 20px;
+    display: none; /* Oculta la barra hasta que comience la carga */
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    transition: width 0.4s ease;
+}
+
+#progressPercent {
+    margin-top: 5px;
+    font-size: 14px;
+    text-align: center;
+    display: none; /* Oculta el porcentaje hasta que comience la carga */
+}
