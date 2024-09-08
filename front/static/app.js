@@ -133,7 +133,7 @@ fetch('http://localhost:8000/change-collection-name', {
                 botMessageElement.classList.add("message", "bot-message");
                 chatOutput.appendChild(botMessageElement);
             // Función para simular la escritura progresiva
-                function typeText(element, text, speed = 50) {
+                function typeText(element, text, speed = 20) {
                   let index = 0;
                   function addNextChar() {
                       if (index < text.length) {
