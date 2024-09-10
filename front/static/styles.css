@@ -15,27 +15,43 @@ body {
 }
 
 .sidebar {
-    width: 25%;
+    width: 250px;
     background-color: #333;
     color: white;
     padding: 20px;
     box-sizing: border-box;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, visibility 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
+.sidebar.collapsed {
+    width: 0px; /* Colapsa completamente */
+    padding: 0;
+    visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
 }
 .sidebar.collapsed {
-    width: 0%;
-}
-
-.collapse-btn {
+    visibility: visible; /* Mantiene visible el botón de colapsar */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px; /* Ajusta el ancho del botón para que se mantenga en pantalla */
+    height: 50px;
     background-color: #444;
+    text-align: center;
+}
+.collapse-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color:transparent;
     color: white;
     border: none;
     padding: 10px;
     cursor: pointer;
-    width: 100%;
-    text-align: left;
     font-size: 20px;
+    border-radius: 10px;
+    z-index: 1; /* Asegura que el botón esté por encima de todo */
 }
 .sidebar h2 {
     margin-top: 0;
@@ -64,16 +80,16 @@ body {
     justify-content: space-between;
     padding: 20px;
     box-sizing: border-box;
+    transition: width 0.3s ease;
 
-    
 }
-/* ------------------------------- */
+
 .chat-area.expanded {
     width: 100%;
 }
 
 .chat-area.collapsed {
-    width: 75%;
+    width: calc(100% - 50px); /* Ajustar el área de chat cuando el sidebar está colapsado */
 }
 /* ----------------------------- */
 
@@ -126,7 +142,7 @@ body {
     border : none;
 }
 #uploadButton{
-    position: relative;
+    position: absolute;
     margin: 10px;
     top: 15px; /* Ajusta la distancia desde el borde superior */
     right: 15px; /* Ajusta la distancia desde el borde derecho */
@@ -156,6 +172,7 @@ body {
     height: 300px;
     background-color: #504f4f;
     margin-bottom: 5px;
+    margin-right: 100px;
 
 }
 
@@ -199,16 +216,20 @@ body {
 
 /* Estilos para el botón de eliminación */
 .delete-button {
-    position: absolute; /* Posicionamiento absoluto dentro del contenedor */
-    right: 10px; /* A 10px del borde derecho */
-    top: 50%; /* Centrar verticalmente */
-    transform: translateY(-50%); /* Ajustar el centrado vertical */
+    display: flex; /* Utiliza Flexbox para facilitar el centrado */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
     padding: 5px 10px; /* Ajustar el tamaño del botón */
-    background-color: #ff6b6b; /* Color de fondo para el botón */
-    color: white; /* Color del texto del botón */
+    background-color: #ff6b6b; /* Color de fondo */
+    color: white; /* Color del texto */
     border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
+    border-radius: 10px; /* Bordes redondeados */
     cursor: pointer; /* Cambiar el cursor cuando esté sobre el botón */
+    height: 20px;
+    position: absolute; /* Mantener el posicionamiento absoluto */
+    right: 10px; /* A 10px del borde derecho */
+    top: 50%; /* Centrar verticalmente dentro del contenedor */
+    transform: translateY(-50%); /* Ajuste final del centrado vertical */
 }
 
 /* Efecto hover para el botón */

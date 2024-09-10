@@ -9,13 +9,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
   let selectedCollection = null;
   toggleButton.addEventListener('click', function() {
-    console.log("press")
-    // Alternar la clase 'collapsed' en el sidebar
     sidebar.classList.toggle('collapsed');
-    // Cambiar el margen del área de chat para ajustarse al sidebar
     mainContent.classList.toggle('expanded');
-    mainContent.classList.toggle('collapsed');
-  });
+});
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
       fetch('http://localhost:8000/collections')
