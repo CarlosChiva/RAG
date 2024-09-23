@@ -2,7 +2,8 @@
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 ```bash
-ollama pull llama3.1
+ollama pull mistral-nemo
+ollama pull mxbai-embed-large
 ```
 
 ```bash
