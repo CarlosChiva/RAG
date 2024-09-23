@@ -16,18 +16,18 @@ async def get_chain(model):
     
     # Prompt 
     template = """Usa la siguiente información para responder la pregunta del usuario.
-    Si no puedes encontrar la respuesta en la información proporcionada, di "No tengo suficiente información para responder a esta pregunta".
     
     Información: {context}
     
     Pregunta: {input}
-    
+    Si no hay información proporcionada, di "No tengo suficiente información para responder a esta pregunta".
+
     Respuesta:"""
     
     prompt = PromptTemplate(template=template, input_variables=["context", "input"])
     
     # build chain
-    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+    retriever = vector_store.as_retriever(search_type="mmr",search_kwargs={"k": 3})
     
     # Crear la cadena de pregunta-respuesta
     qa_chain = create_stuff_documents_chain(model, prompt)
