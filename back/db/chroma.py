@@ -16,11 +16,11 @@ async def get_chain(model):
     
     # Prompt 
     template = """Usa la siguiente información para responder la pregunta del usuario.
-    
+    Si no hay información proporcionada, di "No tengo suficiente información para responder a esta pregunta".
+
     Información: {context}
     
     Pregunta: {input}
-    Si no hay información proporcionada, di "No tengo suficiente información para responder a esta pregunta".
 
     Respuesta:"""
     
