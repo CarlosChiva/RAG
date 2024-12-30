@@ -14,6 +14,8 @@ The architecture of this project consists of a simple program with separate back
 
 > :memo: **Aviso**: There are some programs you need to have installed on your computer before launching the project.
 
+---
+
 ### Installing dependencies
 The first dependency required to run this RAG program is Ollama. You can download it from the official website.
 
@@ -35,6 +37,7 @@ ollama pull mxbai-embed-large
 ```
 Once Ollama and the necessary models are installed, you can download the project:
 
+---
 
 ### Download project
 
@@ -50,7 +53,10 @@ Navigate to the project's main directory:
 ```bash
 cd ~/RAG/
 ```
-#### Launch the Project
+
+---
+
+### Launch the Project
 
 Initialize the program by running the command:
 
