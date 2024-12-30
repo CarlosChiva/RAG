@@ -1,6 +1,7 @@
 ## RAG Project
 
 This is my first project using AI. It's a simple RAG (Retrieval-Augmented Generation) model that utilizes a vector database. By querying the database, users can ask questions about the information provided to the system. To use this program, you first need to install Ollama on your computer.
+
 ---
 
 **Architecture**
