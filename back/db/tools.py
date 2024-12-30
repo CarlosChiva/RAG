@@ -302,7 +302,7 @@ async def load_pdf(filename):
     return documents
 
 # Función para dividir el texto de los documentos
-async def text_split(documents, chunk_size=2000, chunk_overlap=50):
+async def text_split(documents, chunk_size=1000, chunk_overlap=20):
 # Supongamos que 'result' es el string que obtuviste previamente
 
     # Crear una lista con un solo documento, ya que split_documents espera un iterable
