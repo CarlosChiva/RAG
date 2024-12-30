@@ -1,62 +1,63 @@
 ## RAG Project
 
-This is my first project using AI, This project its a simple RAG that Use a vector database and fetching his collection the user can ask him any question about the information provided to system.
-To Use this program, first you need get to installing ollama in your computer. to do it, use the next command in linux or visit the official web-page of ollama
-
+This is my first project using AI. It's a simple RAG (Retrieval-Augmented Generation) model that utilizes a vector database. By querying the database, users can ask questions about the information provided to the system. To use this program, you first need to install Ollama on your computer.
 ---
 
 **Architecture**
-Tht architecture of this project its a simple program with a service backend and another for frontend
-- Backen: it has all logical to process pdf documents (if need OCR algoritms or not) and use the communication with ollama models to embbed documents to chromaDB and use ollama's llm to use them to ask about the documentation keeped in collections of vector database.  Api made with FastApi framework
+The architecture of this project consists of a simple program with separate backend and frontend services:
+- **Backen**: This component handles the logic for processing PDF documents, determining whether OCR algorithms are needed, and interacting with Ollama models. It embeds the documents into ChromaDB and utilizes Ollama's LLM to query the documentation stored in the vector database collections. The API is built using the FastAPI framework.
 
--  Frontend: A simple web service made with FastApi framework who has 2 windows, chat windows,and a windows to upload the documents and choice the collections where it will be added or create new collection with that 
+-  **Frontend**: The frontend is a simple web service created with the FastAPI framework. It features two main sections: a chat window for interacting with the system, and a window for uploading documents and selecting or creating a new collection to store the documents.
 
 ---
 
-> :memo: **Aviso**: There are some programs you shoud to have installing in your computer before to launch the project.
+> :memo: **Aviso**: There are some programs you need to have installed on your computer before launching the project.
 
 ### Installing dependencies
-The first dependecie you need to use this RAG's program is get ollama. For that, you can get it by his official web page.
+The first dependency required to run this RAG program is Ollama. You can download it from the official website.
 
-<a href="https://ollama.com/download" target="_blank">Ollama web page</a>
+<a href="https://ollama.com/download" target="_blank">Ollama Website</a>
 
-If you are going to use it in linux you can use directly the next commands in your terminal:
+If you're using Linux, you can install it directly by running the following commands in your terminal:
 
-#### Get Ollama service with the necesary models
-
+#### Install Ollama and required Models
+First, install ollama using the following command:
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
-Download the models used in this project write the next commands:
+Then, download the models required for this project by running the following commands:
 
 ```bash
 ollama pull llama3.2
 ollama pull mxbai-embed-large
 ```
-Once you get ollama service and get the necesary models you can download the project:
+Once Ollama and the necessary models are installed, you can download the project:
+
 
 ### Download project
 
-Download the project with:
+Clone the repository with the following command:
+
 ```bash
 git clone  https://github.com/CarlosChiva/RAG.git
 ```
 
-Go to main directory of project
+Navigate to the project's main directory:
+
 
 ```bash
 cd ~/RAG/
 ```
-#### Launch project
+#### Launch the Project
 
-Inicialize the program using the next command:
+Initialize the program by running the command:
 
 ```bash
 docker compose up -d
 ```
 
-To interact with program you find it in the next URL
+To interact with the program, visit the following URL
 
 http://localhost:5000
 
