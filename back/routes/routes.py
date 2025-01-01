@@ -3,6 +3,7 @@ from fastapi import *
 from controllers import controllers
 import tempfile
 import os
+from pydantic import BaseModel
 
 router = APIRouter()
 async def set_collection_name(new_name):
@@ -71,3 +72,25 @@ async def delete_collection():
     collection_name=os.getenv("COLLECTION_NAME")
     await controllers.remove_collections()
     return {"collection_name deleted": collection_name}
+
+
+
+
+class User(BaseModel):
+    username: str
+    password: str
+@router.get("/log-in")
+async def log_in(data_user: User):
+    print("Data user:",data_user)
+
+    result =await controllers.check_user(user_name=data_user.username,password=data_user.password)
+
+    return {"collection_name deleted": result}
+
+@router.post("/sing_in")
+async def delete_collection(data_user: User):
+    print("Data user:",data_user)
+
+    result =await controllers.registrer(user_name=data_user.username,password=data_user.password)
+
+    return {"collection_name deleted": result}
