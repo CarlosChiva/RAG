@@ -126,12 +126,6 @@ def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
     
 
 @router.get("/log-in")
-<<<<<<< Updated upstream
-async def log_in(username:str,password:str):
-
-
-    result =await controllers.check_user(user_name=username,password=password)
-=======
 async def log_in(username: str, password: str):
     print("Username:", username)
     print("Password (hashed):", generar_hash(password))
@@ -151,7 +145,6 @@ async def log_in(username: str, password: str):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
     return {"access_token": token}
->>>>>>> Stashed changes
 
 
 @router.post("/sing_in")
