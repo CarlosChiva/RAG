@@ -100,6 +100,7 @@ pydantic==2.8.2
 pydantic_core==2.20.1
 pydot==3.0.1
 Pygments==2.18.0
+PyJWT==2.10.1
 PyMuPDF==1.24.9
 PyMuPDFb==1.24.9
 pyparsing==3.1.4

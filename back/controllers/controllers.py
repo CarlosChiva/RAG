@@ -1,7 +1,7 @@
 from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection,remove_collection_db
 from db.chroma import get_chain
 from db.model_conf import get_model
-from db.mysql import checker_users, registrer_users
+from db.mysql_manager import checker_users, registrer_users
 import os
 
 
@@ -32,11 +32,11 @@ async def querier(question:str):
 async def check_user(user_name:str,password:str):
     print("User:",user_name)
     print("Password:",password)
-    return checker_users(user_name=user_name,password=password)
+    return await checker_users(user_name=user_name,password=password)
 
 async def registrer(user_name:str,password:str):
     print("User:",user_name)
     print("Password:",password)
-    return registrer_users(user_name=user_name,password=password)
+    return await registrer_users(user_name=user_name,password=password)
     
 

@@ -5,6 +5,14 @@ import tempfile
 import os
 from pydantic import BaseModel
 
+import jwt
+from datetime import datetime, timedelta
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+SECRET_KEY = "tu_secreto_super_seguro"
+ALGORITHM = "HS256"
+security = HTTPBearer()
+
 router = APIRouter()
 async def set_collection_name(new_name):
     os.environ['COLLECTION_NAME'] = new_name    
@@ -79,18 +87,77 @@ async def delete_collection():
 class User(BaseModel):
     username: str
     password: str
+
+import hashlib
+
+def generar_hash(password):
+    """
+    Genera un hash para un password usando el algoritmo SHA-256.
+
+    Args:
+        password (str): El password a ser hashing.
+
+    Returns:
+        str: El hash generado.
+    """
+    # Convertir la contraseña a bytes
+    password_bytes = password.encode('utf-8')
+
+    # Crear un objeto SHA-256
+    sha256 = hashlib.sha256()
+
+    # Agregar los datos de la contraseña al flujo de hashing
+    sha256.update(password_bytes)
+
+    # Obtener el hash generado
+    password_hash = sha256.hexdigest()
+
+    return password_hash
+
+def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+
 @router.get("/log-in")
+<<<<<<< Updated upstream
 async def log_in(username:str,password:str):
 
 
     result =await controllers.check_user(user_name=username,password=password)
+=======
+async def log_in(username: str, password: str):
+    print("Username:", username)
+    print("Password (hashed):", generar_hash(password))
 
-    return {"collection_name deleted": result}
+    # Llama a la función de verificación
+    result = await controllers.check_user(user_name=username, password=generar_hash(password))
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    # Crear payload
+    payload = {
+        "sub": username,
+        "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
+        "iat": datetime.utcnow(),  # Fecha de emisión
+    }
+
+    # Firmar el token
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {"access_token": token}
+>>>>>>> Stashed changes
+
 
 @router.post("/sing_in")
 async def delete_collection(data_user: User):
     print("Data user:",data_user)
 
-    result =await controllers.registrer(user_name=data_user.username,password=data_user.password)
+    result =await controllers.registrer(user_name=data_user.username,password=generar_hash(data_user.password))
 
     return {"collection_name deleted": result}

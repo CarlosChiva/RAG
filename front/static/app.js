@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
 });
+console.log(localStorage.getItem('access_token'));
+
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
       fetch('http://localhost:8000/collections')
