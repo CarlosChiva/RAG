@@ -80,10 +80,10 @@ class User(BaseModel):
     username: str
     password: str
 @router.get("/log-in")
-async def log_in(data_user: User):
-    print("Data user:",data_user)
+async def log_in(username:str,password:str):
 
-    result =await controllers.check_user(user_name=data_user.username,password=data_user.password)
+
+    result =await controllers.check_user(user_name=username,password=password)
 
     return {"collection_name deleted": result}
 

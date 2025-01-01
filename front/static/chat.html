@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <h2 align="right" id="collectionsTitle">Collections</h2>
+            <ul id="collections-list">
+                <!-- Las colecciones se cargarán aquí -->
+            </ul>
+        </div>
+        <button id="toggleSidebar" class="collapse-btn">☰</button>
+
+        <div class="main-content">
+
+            <div class="chat-area" id="chat-area">
+                <div id="chat-output">
+                    <!-- Aquí se mostrarán las respuestas del chat -->
+                </div>
+                <div class="input-area">
+                    <input type="text" id="inputText" placeholder="Type your message here...">
+                    <button id="sendButton">Send</button>
+                </div>
+                <a href="upload.html" id="uploadButton" class="button">Add PDF</a>
+
+            </div>
+        </div>    
+    </div>
+    <!-- Asegúrate de que el script se carga al final del body -->
+    <script src="app.js"></script>
+    
+</body>
+</html>
