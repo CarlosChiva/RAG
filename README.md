@@ -70,6 +70,14 @@ http://localhost:5000
 
 <a href="http://localhost:5000" target="_blank">Project launched</a>
 
+---
+
+## Next Relases
+
+ - [ ] Implement llama3.2 Vision to OCR system.
+ - [ ] Add user's manager to allow multiuse.
+
+---
 
 ![Image to Docker compose and llama](images/compose.png)
 
