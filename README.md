@@ -12,7 +12,7 @@ The architecture of this project consists of a simple program with separate back
 
 ---
 
-> :memo: **Aviso**: There are some programs you need to have installed on your computer before launching the project.
+> :memo: **Advice**: There are some programs you need to have installed on your computer before launching the project.
 
 ---
 
