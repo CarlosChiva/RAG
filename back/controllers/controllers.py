@@ -39,4 +39,3 @@ async def registrer(user_name:str,password:str):
     print("Password:",password)
     return await registrer_users(user_name=user_name,password=password)
     
-

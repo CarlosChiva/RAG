@@ -1,17 +1,11 @@
 #from tempfile import NamedTemporaryFile
 from fastapi import *
 from controllers import controllers
+from controllers import credentials_controllers
 import tempfile
 import os
 from pydantic import BaseModel
 
-import jwt
-from datetime import datetime, timedelta
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
-SECRET_KEY = "tu_secreto_super_seguro"
-ALGORITHM = "HS256"
-security = HTTPBearer()
 
 router = APIRouter()
 async def set_collection_name(new_name):
@@ -56,8 +50,12 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
         return {'error': 'An error occurred while processing the PDF'}, 500
 
 #-------------------------Collection routes-----------------------
+
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 @router.get("/collections")
-async def get_collections_name():
+async def get_collections_name(credentials = Depends(credentials_controllers.get_current_user)):
+    print("-----------Credentials:",credentials)
     collections= await controllers.show_name_collections()
     return {"collections_name": collections}
 
@@ -83,83 +81,35 @@ async def delete_collection():
 
 
 # -------------------------------JWT routes-----------------------------
-
 class User(BaseModel):
     username: str
     password: str
 
-import hashlib
 
-def generar_hash(password):
-    """
-    Genera un hash para un password usando el algoritmo SHA-256.
+# Función para validar el JWT y extraer información del usuario
 
-    Args:
-        password (str): El password a ser hashing.
-
-    Returns:
-        str: El hash generado.
-    """
-    # Convertir la contraseña a bytes
-    password_bytes = password.encode('utf-8')
-
-    # Crear un objeto SHA-256
-    sha256 = hashlib.sha256()
-
-    # Agregar los datos de la contraseña al flujo de hashing
-    sha256.update(password_bytes)
-
-    # Obtener el hash generado
-    password_hash = sha256.hexdigest()
-
-    return password_hash
-
-def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
 
 @router.get("/log-in")
 async def log_in(username: str, password: str):
     print("Username:", username)
-    print("Password (hashed):", generar_hash(password))
-
+    password_hashed = await credentials_controllers.generar_hash(password)
+    print("Password (hashed):", password_hashed)
     # Llama a la función de verificación
-    result = await controllers.check_user(user_name=username, password=generar_hash(password))
+    result = await controllers.check_user(user_name=username, password=password_hashed)
     if not result:
+        print("--------",result,"-------------")
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    # Crear payload
-    payload = {
-        "sub": username,
-        "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
-        "iat": datetime.utcnow(),  # Fecha de emisión
-    }
-
-    # Firmar el token
-    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
+    token=await credentials_controllers.generate_token(password_hashed)
+    
     return {"access_token": token}
 
 
-@router.post("/sing_in")
+@router.post("/sing_up")
 async def delete_collection(data_user: User):
-    print("Data user:",data_user)
-
-    result =await controllers.registrer(user_name=data_user.username,password=generar_hash(data_user.password))
-
-    payload = {
-        "sub": data_user.username,
-        "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
-        "iat": datetime.utcnow(),  # Fecha de emisión
-    }
-
-    # Firmar el token
-    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
+    
+    password_hashed = await credentials_controllers.generar_hash(data_user.password)
+    result =await controllers.registrer(user_name=data_user.username,password=password_hashed)
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token=await credentials_controllers.generate_token(password_hashed)
     return {"access_token": token}

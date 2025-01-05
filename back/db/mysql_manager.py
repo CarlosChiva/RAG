@@ -1,5 +1,5 @@
 import mysql.connector
-def db_connect():
+async def db_connect():
     db = mysql.connector.connect(
     
         host='localhost',  # Host is the service name from Docker Compose
@@ -13,9 +13,9 @@ def db_connect():
 async def checker_users(user_name:str,password:str):
     print("User:",user_name)
     print("Password:",password)
-    db= db_connect()
+    db= await db_connect()
     mysql_cursor = db.cursor()
-    mysql_cursor.execute("SELECT * FROM users WHERE username = %s AND password_hash = %s", (user_name, password))
+    mysql_cursor.execute("SELECT username,password_hash FROM users WHERE username = %s AND password_hash = %s", (user_name, password))
     mysql_cursor.fetchall()
     if mysql_cursor.rowcount == 0:
         mysql_cursor.close()
@@ -24,7 +24,7 @@ async def checker_users(user_name:str,password:str):
     db.close()
     return True
 async def registrer_users(user_name:str,password:str):
-    db= db_connect()
+    db= await db_connect()
     print("User:",user_name)
     print("Password:",password)
     mysql_cursor = db.cursor()
