@@ -5,9 +5,9 @@ from db.mysql_manager import checker_users, registrer_users
 import os
 
 
-async def show_name_collections():
-
-    names= await get_collections()
+async def show_name_collections(credentials):
+    print("User show_name_collections:",credentials)
+    names= await get_collections(credentials)
     return names
 
 async def add_new_document_collections(document):

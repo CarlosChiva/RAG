@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 import uuid
 
-async def get_collections():
+async def get_collections(credentials):
     """Method to get the name of collections. Returns a list of collection names."""
-    
-    chroma_client= await get_chroma_client()
+    print("Credentials:",credentials)
+    chroma_client= await get_chroma_client(credentials)
     collections = chroma_client.list_collections()
     collection_names = [collection.name for collection in collections]
 
@@ -63,12 +63,13 @@ async def add_pdf_to_collection(filename):
     #print(f"Added {len(splits)} documents to collection '{collection_name}'")
     return {"message": f"Added {len(splits)} documents to collection '{current_collection_name}'"}
 
-async def get_chroma_client():
+async def get_chroma_client(credentials=None):
     """Simple method to get the chroma client."""
 
-    PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
-
-    return chromadb.PersistentClient(path=PERSIT_DIRECTORY)
+    #PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
+    print("Credentials:",credentials)
+    PERSIST_DIRECTORY=credentials
+    return chromadb.PersistentClient(path=PERSIST_DIRECTORY)
 async def get_vectorstore():
     
     """ Simple method to get the vectorstore. Return vectorstore with the collection_name passed as argument."""

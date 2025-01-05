@@ -32,26 +32,24 @@ async def generar_hash(password):
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
+    print("Token recibido:", token)  # Para verificar si el token llega
+    if token.startswith("Bearer "):  # Eliminar el prefijo si existe
+        token = token.split("Bearer ")[1]
     try:
-        # Decodificar el token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-
-        # Verificar si el token está expirado
+        print("Payload decodificado:", payload)
         if datetime.utcnow().timestamp() > payload["exp"]:
             raise HTTPException(status_code=401, detail="Token expired")
-
-        # Retornar el nombre de usuario extraído del token
         return payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
-
-def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        return payload['sub']
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
