@@ -74,11 +74,12 @@ http://localhost:5000
 
 ## Next Relases
 
+
+ - [ ] Add user's login and allow multiuser.
  - [ ] Implement llama3.2 Vision to OCR system.
- - [ ] Add user's manager to allow multiuse.
+ - [ ] Add re-ranking models for extense documents in colleciton
 
 ---
 
 ![Image to Docker compose and llama](images/compose.png)
 
-![descripción de la imagen](images/image.png)
