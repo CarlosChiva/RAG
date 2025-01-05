@@ -58,7 +58,7 @@ def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def generate_token(password_hashed):
-    
+    print("--------Password hashed----------:",password_hashed)
     # Crear payload
     payload = {
         "sub": password_hashed,

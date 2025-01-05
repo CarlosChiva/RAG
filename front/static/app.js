@@ -16,7 +16,14 @@ console.log(localStorage.getItem('access_token'));
 
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
-      fetch('http://localhost:8000/collections')
+      const token = localStorage.getItem("access_token"); // Obtener el token desde localStorage
+
+      fetch('http://localhost:8000/collections', {
+        method: "GET",
+        headers: {
+            "Authorization": token // Incluye el token en el encabezado
+        }
+    })
         .then(response => response.json())
         .then(data => {
           console.log("Collections data:", data); // Verifica los datos recibidos

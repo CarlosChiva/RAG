@@ -52,10 +52,10 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
 #-------------------------Collection routes-----------------------
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+import logging
 @router.get("/collections")
-async def get_collections_name(credentials = Depends(credentials_controllers.get_current_user)):
-    print("-----------Credentials:",credentials)
+async def get_collections_name(credentials :str = Depends(credentials_controllers.get_current_user)):
+    print("User:",credentials)
     collections= await controllers.show_name_collections()
     return {"collections_name": collections}
 
@@ -98,7 +98,7 @@ async def log_in(username: str, password: str):
     result = await controllers.check_user(user_name=username, password=password_hashed)
     if not result:
         print("--------",result,"-------------")
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=401, detail="User not found")
     token=await credentials_controllers.generate_token(password_hashed)
     
     return {"access_token": token}

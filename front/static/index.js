@@ -24,6 +24,7 @@ signUpLink.addEventListener('click', (e) => {
         formTitle.textContent = 'Sign Up';
         submitButton.textContent = 'Sign Up';
         submitButton.setAttribute('data-action', 'sign_up');
+        signUpLink.textContent = 'Log In';
 
         loginForm.removeEventListener('submit', handleLoginSubmit);
         loginForm.addEventListener('submit', handleSignUpSubmit);
@@ -32,7 +33,7 @@ signUpLink.addEventListener('click', (e) => {
         formTitle.textContent = 'Login';
         submitButton.textContent = 'Log In';
         submitButton.setAttribute('data-action', 'log_in');
-
+        signUpLink.textContent = 'Sign Up';
         loginForm.removeEventListener('submit', handleSignUpSubmit);
         loginForm.addEventListener('submit', handleLoginSubmit);
     }
@@ -54,7 +55,7 @@ async function handleLoginSubmit(e) {
         }
 
         const result = await response.json();
-        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('access_token',"Bearer "+ result.access_token);
         alert('Logged in successfully!');
         window.location.href = 'chat.html';
     } catch (error) {
