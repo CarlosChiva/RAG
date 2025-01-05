@@ -1,28 +1,52 @@
-const loginForm = document.getElementById('loginForm');
-const errorDiv = document.getElementById('error');
+const signUpForm = document.getElementById('loginForm');
+//const errorDiv = document.getElementById('error');
 const formTitle = document.getElementById('formTitle');
 
-// Handle login form submission
-loginForm.addEventListener('submit', async (e) => {
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar si hay un token JWT en localStorage
+    const token = localStorage.getItem('access_token');
+
+    if (token) {
+        // Redirigir al chat si existe un token
+        window.location.href = 'chat.html';
+    } else {
+        console.log('No JWT found, staying on index.html.');
+    }
+});
+// Manejar el envío del formulario de registro
+signUpForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    errorDiv.textContent = '';
+//    errorDiv.textContent = '';
 
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
     try {
-        const response = await fetch(`http://localhost:8000/log-in?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        // Hacer la petición al backend
+        const response = await fetch('http://localhost:8000/sing_in', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
 
         if (!response.ok) {
-            throw new Error('Login failed. Check your credentials.');
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Registration failed.');
         }
 
+        // Parsear la respuesta
         const result = await response.json();
 
-        // Redirigir si el login es exitoso
-        window.location.href = 'chat.html';
+        // Almacenar el token en localStorage
+        localStorage.setItem('access_token', result.access_token);
+
+        // Notificar éxito y redirigir
+        alert('User registered successfully!');
+        window.location.href = 'chat.html'; // Redirigir a la ventana principal
     } catch (error) {
-        errorDiv.textContent = error.message;
+       console.error(error);
+        // errorDiv.textContent = error.message;
     }
 });
-

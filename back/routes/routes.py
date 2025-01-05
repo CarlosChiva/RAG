@@ -82,7 +82,7 @@ async def delete_collection():
     return {"collection_name deleted": collection_name}
 
 
-
+# -------------------------------JWT routes-----------------------------
 
 class User(BaseModel):
     username: str
@@ -153,4 +153,13 @@ async def delete_collection(data_user: User):
 
     result =await controllers.registrer(user_name=data_user.username,password=generar_hash(data_user.password))
 
-    return {"collection_name deleted": result}
+    payload = {
+        "sub": data_user.username,
+        "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
+        "iat": datetime.utcnow(),  # Fecha de emisión
+    }
+
+    # Firmar el token
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    return {"access_token": token}
