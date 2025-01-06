@@ -19,9 +19,9 @@ async def add_new_document_collections(document,name_collection,credentials):
     #print("Controllers:",names)
     return names
 
-async def remove_collections():
-
-    names= await remove_collection_db()
+async def remove_collections(collection_name,credentials):
+    cli=await get_chroma_client(credentials)
+    names= await remove_collection_db(collection_name,cli)
     #print("Controllers:",names)
     return names
 

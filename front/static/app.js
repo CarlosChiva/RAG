@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function() {
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
 });
-console.log(localStorage.getItem('access_token'));
 
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
@@ -70,9 +69,11 @@ console.log(localStorage.getItem('access_token'));
       fetch('http://localhost:8000/delete-collection', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+
         },
-        body: new URLSearchParams({ collection_name: selectedCollection })
+        body: JSON.stringify({ collection_name: name }) // Enviar el nombre de la colección como JSON
       })
         .then(response => response.json())
         .then(data => console.log("Collection deleted:", data))

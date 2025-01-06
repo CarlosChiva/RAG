@@ -8,8 +8,11 @@ from pydantic import BaseModel
 
 
 router = APIRouter()
-async def set_collection_name(new_name):
-    os.environ['COLLECTION_NAME'] = new_name    
+class User(BaseModel):
+    username: str
+    password: str
+class CollectionRequest(BaseModel):
+    collection_name: str
 
 #-------------------------Principal routes-----------------------
 @router.get("/llm-response")
@@ -27,11 +30,6 @@ async def add_document(file: UploadFile = File(...),
                         name_collection: str = Form(...),
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
-    # current_collection=os.getenv("COLLECTION_NAME")
-    # if  current_collection!= name_collection:
-        
-    #     await set_collection_name(name_collection)
-    #     print("Change collection name:", os.getenv("COLLECTION_NAME"))
     if not file.filename:
         return {'error': 'Invalid file'}, 400
     if not name_collection:
@@ -77,20 +75,15 @@ async def collection_name(collection_name: str = Form(...)):
     return {"collection_name": collection_name}
 
 @router.post("/delete-collection")
-async def delete_collection():
-    collection_name=os.getenv("COLLECTION_NAME")
-    await controllers.remove_collections()
+async def delete_collection(collection: CollectionRequest,
+                            credentials  = Depends(credentials_controllers.verify_jws)):
+    print(collection.collection_name)
+    collection_name=collection.collection_name
+    await controllers.remove_collections(collection_name,credentials)
     return {"collection_name deleted": collection_name}
 
 
 # -------------------------------JWT routes-----------------------------
-class User(BaseModel):
-    username: str
-    password: str
-
-
-# Función para validar el JWT y extraer información del usuario
-
 
 @router.get("/log-in")
 async def log_in(username: str, password: str):
