@@ -3,8 +3,12 @@ from fastapi import Depends, HTTPException
 import jwt
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-SECRET_KEY = "tu_secreto_super_seguro"
-ALGORITHM = "HS256"
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY") 
+ALGORITHM = os.getenv("ALGORITHM")
 security = HTTPBearer()
 
 async def generar_hash(password):
