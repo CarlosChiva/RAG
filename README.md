@@ -74,8 +74,6 @@ http://localhost:5000
 
 ## Next Relases
 
-
- - [ ] Add user's login and allow multiuser.
  - [ ] Implement llama3.2 Vision to OCR system.
  - [ ] Add re-ranking models for extense documents in colleciton
 
