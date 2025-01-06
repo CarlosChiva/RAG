@@ -33,12 +33,9 @@ async def querier(question:str):
 
     return response['answer']
 async def check_user(user_name:str,password:str):
-    print("User:",user_name)
-    print("Password:",password)
     return await checker_users(user_name=user_name,password=password)
 
 async def registrer(user_name:str,password:str):
-    print("User:",user_name)
-    print("Password:",password)
+
     return await registrer_users(user_name=user_name,password=password)
     

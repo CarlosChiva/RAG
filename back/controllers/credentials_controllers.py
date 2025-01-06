@@ -6,8 +6,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 SECRET_KEY = "tu_secreto_super_seguro"
 ALGORITHM = "HS256"
 security = HTTPBearer()
-import logging
-logging.basicConfig(level=logging.DEBUG)
 
 async def generar_hash(password):
     """
@@ -35,12 +33,10 @@ async def generar_hash(password):
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
-    print("Token recibido:", token)  # Para verificar si el token llega
     if token.startswith("Bearer "):  # Eliminar el prefijo si existe
         token = token.split("Bearer ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print("Payload decodificado:", payload)
         if datetime.utcnow().timestamp() > payload["exp"]:
             raise HTTPException(status_code=401, detail="Token expired")
         return payload["sub"]
@@ -51,12 +47,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     
 async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
-    logging.debug("Token recibido: %s", token)
     if token.startswith("Bearer "):
         token = token.split("Bearer ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-        print("Playload----",payload)
         return payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
@@ -64,15 +58,12 @@ async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def generate_token(password_hashed):
-    print("--------Password hashed----------:",password_hashed)
     # Crear payload
     payload = {
         "sub": password_hashed,
         "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
         "iat": datetime.utcnow(),  # Fecha de emisión
     }
-
     # Firmar el token
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    logging.debug("Token generado: %s", token)
     return token    

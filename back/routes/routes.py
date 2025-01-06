@@ -23,7 +23,10 @@ async def llm_response(input: str):
     return result
 
 @router.post("/add_document")
-async def add_document(file: UploadFile = File(...), name_collection: str = Form(...)):
+async def add_document(file: UploadFile = File(...),
+                        name_collection: str = Form(...),
+                        credentials  = Depends(credentials_controllers.verify_jws)
+                        ):
     current_collection=os.getenv("COLLECTION_NAME")
     if  current_collection!= name_collection:
         

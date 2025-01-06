@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const sendButton = document.getElementById("sendButton");
   const inputText = document.getElementById("inputText");
   const chatOutput = document.getElementById("chat-output");
+  const token = localStorage.getItem("access_token");
 
   let selectedCollection = null;
   toggleButton.addEventListener('click', function() {
@@ -16,7 +17,6 @@ console.log(localStorage.getItem('access_token'));
 
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
-    const token = localStorage.getItem("access_token");
     if (!token) {
       console.error("No token found in localStorage.");
       return;
