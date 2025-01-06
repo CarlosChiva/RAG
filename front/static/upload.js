@@ -100,6 +100,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Configurar la solicitud POST
         xhr.open('POST', 'http://localhost:8000/add_document');
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
         xhr.send(formData);
     });
 

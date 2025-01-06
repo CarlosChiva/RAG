@@ -27,11 +27,11 @@ async def add_document(file: UploadFile = File(...),
                         name_collection: str = Form(...),
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
-    current_collection=os.getenv("COLLECTION_NAME")
-    if  current_collection!= name_collection:
+    # current_collection=os.getenv("COLLECTION_NAME")
+    # if  current_collection!= name_collection:
         
-        await set_collection_name(name_collection)
-        print("Change collection name:", os.getenv("COLLECTION_NAME"))
+    #     await set_collection_name(name_collection)
+    #     print("Change collection name:", os.getenv("COLLECTION_NAME"))
     if not file.filename:
         return {'error': 'Invalid file'}, 400
     if not name_collection:
@@ -43,7 +43,7 @@ async def add_document(file: UploadFile = File(...),
             temp_file.write(await file.read())
             temp_path = temp_file.name
         try:
-            data = await controllers.add_new_document_collections(temp_path)
+            data = await controllers.add_new_document_collections(temp_path,name_collection,credentials)
             return {'data': data}
         finally:
             os.unlink(temp_path)  # Asegura que el archivo temporal se elimine

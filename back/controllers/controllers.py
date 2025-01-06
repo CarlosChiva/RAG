@@ -12,10 +12,10 @@ async def show_name_collections(credentials):
     names= await get_collections(cli)
     return names
 
-async def add_new_document_collections(document,cli):
-    cli=await get_chroma_client(cli)
+async def add_new_document_collections(document,name_collection,credentials):
+    cli=await get_chroma_client(credentials)
 
-    names= await add_pdf_to_collection(document,cli)
+    names= await add_pdf_to_collection(document,name_collection,cli)
     #print("Controllers:",names)
     return names
 
