@@ -1,4 +1,4 @@
-from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection,remove_collection_db
+from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection, get_vectorstore,remove_collection_db
 from db.chroma import get_chain
 from db.model_conf import get_model
 from db.mysql_manager import checker_users, registrer_users
@@ -25,10 +25,13 @@ async def remove_collections(collection_name,credentials):
     #print("Controllers:",names)
     return names
 
-async def querier(question:str):
+async def querier(question:str,collection_name:str,credentials:str):
 
     model=get_model()
-    chain= await get_chain(model=model)
+    cli=await get_chroma_client(credentials)
+    vectorstore=await get_vectorstore(cli,collection_name)
+    
+    chain= await get_chain(model=model,vector_store=vectorstore)
     response=chain.invoke({"input":question})
 
     return response['answer']

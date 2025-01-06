@@ -59,12 +59,10 @@ async def add_pdf_to_collection(filename,name_collection,cli):
     return {"message": f"Added {len(splits)} documents to collection '{name_collection}'"}
 
 
-async def get_vectorstore(cli):
+async def get_vectorstore(cli,collection_name):
     
     """ Simple method to get the vectorstore. Return vectorstore with the collection_name passed as argument."""
-    collection_name=os.getenv("COLLECTION_NAME")
-    # cli=await get_chroma_client()
-            # Inicializar el almacén de vectores para la colección específica
+
     embedding_func =  init_embedding_model()
     vectorstore = Chroma(
         client= cli,

@@ -16,9 +16,12 @@ class CollectionRequest(BaseModel):
 
 #-------------------------Principal routes-----------------------
 @router.get("/llm-response")
-async def llm_response(input: str):
+async def llm_response(input: str,
+                        collection_name:str,
+                        credentials  = Depends(credentials_controllers.verify_jws)
+                        ):
     print("Back Pregunta:  ",input)
-    result = await controllers.querier(question=input)
+    result = await controllers.querier(question=input,collection_name=collection_name,credentials=credentials)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
