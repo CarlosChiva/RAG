@@ -2,17 +2,20 @@ from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_c
 from db.chroma import get_chain
 from db.model_conf import get_model
 from db.mysql_manager import checker_users, registrer_users
+from db.chroma_cli import get_chroma_client
 import os
 
 
 async def show_name_collections(credentials):
+    cli=await get_chroma_client(credentials)
     print("User show_name_collections:",credentials)
-    names= await get_collections(credentials)
+    names= await get_collections(cli)
     return names
 
-async def add_new_document_collections(document):
+async def add_new_document_collections(document,cli):
+    cli=await get_chroma_client(cli)
 
-    names= await add_pdf_to_collection(document)
+    names= await add_pdf_to_collection(document,cli)
     #print("Controllers:",names)
     return names
 

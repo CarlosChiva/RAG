@@ -83,17 +83,17 @@ button:hover {
     text-align: center;
 }
 
-.forgot-password {
+.singin {
     font-size: 14px;
     margin-top: 15px;
 }
 
-.forgot-password a {
+.singin a {
     color: #4b6cb7;
     text-decoration: none;
     font-weight: bold;
 }
 
-.forgot-password a:hover {
+.singin a:hover {
     text-decoration: underline;
 }

@@ -6,6 +6,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 SECRET_KEY = "tu_secreto_super_seguro"
 ALGORITHM = "HS256"
 security = HTTPBearer()
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 async def generar_hash(password):
     """
     Genera un hash para un password usando el algoritmo SHA-256.
@@ -43,13 +46,18 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         return payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.InvalidTokenError as e :
+        raise HTTPException(status_code=401, detail=f"Invalid token {e} {payload}")
+    
 async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
+    logging.debug("Token recibido: %s", token)
+    if token.startswith("Bearer "):
+        token = token.split("Bearer ")[1]
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload['sub']
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        print("Playload----",payload)
+        return payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
@@ -66,5 +74,5 @@ async def generate_token(password_hashed):
 
     # Firmar el token
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-
+    logging.debug("Token generado: %s", token)
     return token    

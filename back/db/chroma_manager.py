@@ -8,31 +8,29 @@ from dotenv import load_dotenv
 load_dotenv()
 import uuid
 
-async def get_collections(credentials):
+async def get_collections(cli):
     """Method to get the name of collections. Returns a list of collection names."""
-    print("Credentials:",credentials)
-    chroma_client= await get_chroma_client(credentials)
-    collections = chroma_client.list_collections()
+
+    collections = cli.list_collections()
     collection_names = [collection.name for collection in collections]
 
     return collection_names
 
 # Función principal para añadir el PDF a una colección específica
-async def add_pdf_to_collection(filename):
+async def add_pdf_to_collection(filename,cli):
 
     """Method to add a PDF to a collection."""
     """ Collection_name and filename to pdf are required to add a pdf to a collection."""
     """Returns a message indicating the success of the operation."""
 
-    chroma_client= await get_chroma_client()
         # Crear o obtener la colección
-    collections= await get_collections() 
+    collections= await get_collections(cli) 
     current_collection_name= os.getenv("COLLECTION_NAME")
       # Crear o obtener la colección
     
     if current_collection_name not in collections:
-        collection = chroma_client.create_collection(name=current_collection_name)
-    collection= chroma_client.get_collection(name=current_collection_name)
+        collection = cli.create_collection(name=current_collection_name)
+    collection= cli.get_collection(name=current_collection_name)
         
     documents = await load_pdf(filename)
     splits = await text_split(documents)
@@ -63,13 +61,7 @@ async def add_pdf_to_collection(filename):
     #print(f"Added {len(splits)} documents to collection '{collection_name}'")
     return {"message": f"Added {len(splits)} documents to collection '{current_collection_name}'"}
 
-async def get_chroma_client(credentials=None):
-    """Simple method to get the chroma client."""
 
-    #PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
-    print("Credentials:",credentials)
-    PERSIST_DIRECTORY=credentials
-    return chromadb.PersistentClient(path=PERSIST_DIRECTORY)
 async def get_vectorstore():
     
     """ Simple method to get the vectorstore. Return vectorstore with the collection_name passed as argument."""

@@ -52,11 +52,9 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
 #-------------------------Collection routes-----------------------
 
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import logging
 @router.get("/collections")
-async def get_collections_name(credentials :str = Depends(credentials_controllers.verify_jws)):
-    print("User:",credentials)
-    user=credentials_controllers.verify_jws(credentials)
+async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)):
+
     collections= await controllers.show_name_collections(credentials)
     print("response:",collections)
     return {"collections_name": collections}
