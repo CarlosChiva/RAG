@@ -1,13 +1,6 @@
-from langchain_community.llms import Ollama
-from langchain import hub
-#import os
-from db.chroma_manager import get_vectorstore, get_vectorstore_mock
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
-from langchain_core.prompts import ChatPromptTemplate
 from langchain.prompts import PromptTemplate
-# TEMPLATE=os.getenv("TEMPLATE")
-# QA_CHAIN_PROMPT = hub.pull("rlm/rag-prompt-llama")
 async def get_chain(model,vector_store):
     """ Function to get the chain. Based on the model and collection passed we get the chain."""
     """Return chain to use it :chain.invoke({"input":question})"""

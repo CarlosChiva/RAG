@@ -1,18 +1,20 @@
 import mysql.connector
+from dotenv import load_dotenv
+load_dotenv()
+import os
 async def db_connect():
     db = mysql.connector.connect(
     
-        host='localhost',  # Host is the service name from Docker Compose
-        user='app_user',
-        password='app_password',
+        host=os.getenv("DB_HOST"),  # Host is the service name from Docker Compose
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
         port=3306,
-        database='app_db'
+        database=os.getenv("DB_DATABASE")
 
     )
     return db
 async def checker_users(user_name:str,password:str):
-    print("User:",user_name)
-    print("Password:",password)
+
     db= await db_connect()
     mysql_cursor = db.cursor()
     mysql_cursor.execute("SELECT username,password_hash FROM users WHERE username = %s AND password_hash = %s", (user_name, password))
@@ -25,8 +27,7 @@ async def checker_users(user_name:str,password:str):
     return True
 async def registrer_users(user_name:str,password:str):
     db= await db_connect()
-    print("User:",user_name)
-    print("Password:",password)
+
     mysql_cursor = db.cursor()
     mysql_cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", (user_name, password))
     mysql_cursor.close()
