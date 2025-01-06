@@ -1,18 +1,27 @@
 #from tempfile import NamedTemporaryFile
 from fastapi import *
 from controllers import controllers
+from controllers import credentials_controllers
 import tempfile
 import os
+from pydantic import BaseModel
+
 
 router = APIRouter()
-async def set_collection_name(new_name):
-    os.environ['COLLECTION_NAME'] = new_name    
+class User(BaseModel):
+    username: str
+    password: str
+class CollectionRequest(BaseModel):
+    collection_name: str
 
 #-------------------------Principal routes-----------------------
 @router.get("/llm-response")
-async def llm_response(input: str):
+async def llm_response(input: str,
+                        collection_name:str,
+                        credentials  = Depends(credentials_controllers.verify_jws)
+                        ):
     print("Back Pregunta:  ",input)
-    result = await controllers.querier(question=input)
+    result = await controllers.querier(question=input,collection_name=collection_name,credentials=credentials)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
@@ -20,12 +29,10 @@ async def llm_response(input: str):
     return result
 
 @router.post("/add_document")
-async def add_document(file: UploadFile = File(...), name_collection: str = Form(...)):
-    current_collection=os.getenv("COLLECTION_NAME")
-    if  current_collection!= name_collection:
-        
-        await set_collection_name(name_collection)
-        print("Change collection name:", os.getenv("COLLECTION_NAME"))
+async def add_document(file: UploadFile = File(...),
+                        name_collection: str = Form(...),
+                        credentials  = Depends(credentials_controllers.verify_jws)
+                        ):
     if not file.filename:
         return {'error': 'Invalid file'}, 400
     if not name_collection:
@@ -37,7 +44,7 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
             temp_file.write(await file.read())
             temp_path = temp_file.name
         try:
-            data = await controllers.add_new_document_collections(temp_path)
+            data = await controllers.add_new_document_collections(temp_path,name_collection,credentials)
             return {'data': data}
         finally:
             os.unlink(temp_path)  # Asegura que el archivo temporal se elimine
@@ -47,11 +54,15 @@ async def add_document(file: UploadFile = File(...), name_collection: str = Form
         return {'error': 'An error occurred while processing the PDF'}, 500
 
 #-------------------------Collection routes-----------------------
-@router.get("/collections")
-async def get_collections_name():
-    collections= await controllers.show_name_collections()
-    return {"collections_name": collections}
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+@router.get("/collections")
+async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)):
+
+    collections= await controllers.show_name_collections(credentials)
+    print("response:",collections)
+    return {"collections_name": collections}
+    
 
 @router.get("/self-collection-name")
 async def collection_name():
@@ -67,7 +78,37 @@ async def collection_name(collection_name: str = Form(...)):
     return {"collection_name": collection_name}
 
 @router.post("/delete-collection")
-async def delete_collection():
-    collection_name=os.getenv("COLLECTION_NAME")
-    await controllers.remove_collections()
+async def delete_collection(collection: CollectionRequest,
+                            credentials  = Depends(credentials_controllers.verify_jws)):
+    print(collection.collection_name)
+    collection_name=collection.collection_name
+    await controllers.remove_collections(collection_name,credentials)
     return {"collection_name deleted": collection_name}
+
+
+# -------------------------------JWT routes-----------------------------
+
+@router.get("/log-in")
+async def log_in(username: str, password: str):
+    print("Username:", username)
+    password_hashed = await credentials_controllers.generar_hash(password)
+    print("Password (hashed):", password_hashed)
+    # Llama a la función de verificación
+    result = await controllers.check_user(user_name=username, password=password_hashed)
+    if not result:
+        print("--------",result,"-------------")
+        raise HTTPException(status_code=401, detail="User not found")
+    token=await credentials_controllers.generate_token(password_hashed)
+    
+    return {"access_token": token}
+
+
+@router.post("/sing_up")
+async def delete_collection(data_user: User):
+    
+    password_hashed = await credentials_controllers.generar_hash(data_user.password)
+    result =await controllers.registrer(user_name=data_user.username,password=password_hashed)
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token=await credentials_controllers.generate_token(password_hashed)
+    return {"access_token": token}

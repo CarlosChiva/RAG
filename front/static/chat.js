@@ -6,15 +6,27 @@ document.addEventListener("DOMContentLoaded", function() {
   const sendButton = document.getElementById("sendButton");
   const inputText = document.getElementById("inputText");
   const chatOutput = document.getElementById("chat-output");
+  const token = localStorage.getItem("access_token");
 
   let selectedCollection = null;
   toggleButton.addEventListener('click', function() {
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
 });
+
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
-      fetch('http://localhost:8000/collections')
+    if (!token) {
+      console.error("No token found in localStorage.");
+      return;
+    }
+  
+    fetch('http://127.0.0.1:8000/collections', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
         .then(response => response.json())
         .then(data => {
           console.log("Collections data:", data); // Verifica los datos recibidos
@@ -57,9 +69,11 @@ document.addEventListener("DOMContentLoaded", function() {
       fetch('http://localhost:8000/delete-collection', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+
         },
-        body: new URLSearchParams({ collection_name: selectedCollection })
+        body: JSON.stringify({ collection_name: name }) // Enviar el nombre de la colección como JSON
       })
         .then(response => response.json())
         .then(data => console.log("Collection deleted:", data))
@@ -78,21 +92,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   selectedCollection = element.dataset.collectionName;  // Usar el nombre de la colección seleccionada
   console.log("Selected collection:", selectedCollection);
-
-  // Enviar la solicitud POST para cambiar el nombre de la colección
-  fetch('http://localhost:8000/change-collection-name', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({ collection_name: selectedCollection })
-  })
-  .then(response => response.json())
-  .then(data => {
-      console.log("Collection change response:", data);
-      // Puedes manejar la respuesta aquí si es necesario
-  })
-  .catch(error => console.error('Error changing collection name:', error));
   }
 
   // Función para enviar el mensaje
@@ -125,10 +124,16 @@ document.addEventListener("DOMContentLoaded", function() {
           // Crear los parámetros para la solicitud GET
           const params = new URLSearchParams({
               input: message,
+              collection_name: selectedCollection
           });
 
           // Realizar la solicitud GET con fetch
-          fetch(`http://localhost:8000/llm-response?${params.toString()}`)
+          fetch(`http://localhost:8000/llm-response?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}` // Agregar el JWT al encabezado
+            }
+        })
               .then(response => response.json())
               .then(data => {
                   console.log("Received data:", data);

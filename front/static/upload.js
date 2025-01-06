@@ -7,10 +7,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const progressBar = document.getElementById('progressBar');
     const progressPercent = document.getElementById('progressPercent');
     const progressBarContainer = document.querySelector('.progress-bar-container');
+    const token = localStorage.getItem("access_token");
 
     // Cargar colecciones en el selector
     function loadCollections() {
-        fetch('http://localhost:8000/collections')
+        if (!token) {
+          console.error("No token found in localStorage.");
+          return;
+        }
+      
+        fetch('http://127.0.0.1:8000/collections', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
             .then(response => response.json())
             .then(data => {
                 collectionSelect.innerHTML = '<option value="">-- Select Collection --</option>'; // Limpiar opciones
@@ -89,6 +100,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Configurar la solicitud POST
         xhr.open('POST', 'http://localhost:8000/add_document');
+        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
         xhr.send(formData);
     });
 
