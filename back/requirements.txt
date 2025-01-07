@@ -18,7 +18,7 @@ chromadb==0.5.23
 ci-info==0.3.0
 click==8.1.7
 coloredlogs==15.0.1
-configobj==5.0.8
+configobj==5.0.9
 configparser==7.1.0
 cryptography==44.0.0
 dataclasses-json==0.6.7
