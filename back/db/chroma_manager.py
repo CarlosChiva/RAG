@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../app/db/')
 from tools import load_pdf, text_split, init_embedding_model
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 import uuid
 
 async def get_collections(cli):

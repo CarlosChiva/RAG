@@ -14,7 +14,7 @@ certifi==2024.7.4
 cffi==1.17.1
 charset-normalizer==3.3.2
 chroma-hnswlib==0.7.6
-chromadb==0.5.5
+chromadb==0.5.23
 ci-info==0.3.0
 click==8.1.7
 coloredlogs==15.0.1
@@ -25,7 +25,7 @@ dataclasses-json==0.6.7
 Deprecated==1.2.14
 etelemetry==0.3.1
 exceptiongroup==1.2.2
-fastapi==0.112.1
+fastapi==0.115.6
 filelock==3.15.4
 fitz==0.0.1.dev2
 flatbuffers==24.3.25
@@ -50,6 +50,7 @@ jsonpatch==1.33
 jsonpointer==3.0.0
 kubernetes==30.1.0
 langchain==0.2.14
+langchain-chroma==0.1.4
 langchain-community==0.2.12
 langchain-core==0.2.33
 langchain-text-splitters==0.2.2
