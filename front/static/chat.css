@@ -253,3 +253,23 @@ body {
 .main-content.expanded {
     margin-left: 5px; /* Reducir el margen cuando la barra lateral esté colapsada */
 }
+/* Botón de logout */
+.logout-btn {
+    position: absolute;
+    bottom: 20px; /* Posición desde la parte inferior */
+    left: 50%; /* Centrar horizontalmente en el sidebar */
+    transform: translateX(-50%); /* Ajuste de centrado */
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Efecto hover para el botón */
+.logout-btn:hover {
+    background-color: #ff4a4a;
+}

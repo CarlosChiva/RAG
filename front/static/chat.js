@@ -7,13 +7,22 @@ document.addEventListener("DOMContentLoaded", function() {
   const inputText = document.getElementById("inputText");
   const chatOutput = document.getElementById("chat-output");
   const token = localStorage.getItem("access_token");
+  const logoutButton = document.getElementById("logoutButton");
+
 
   let selectedCollection = null;
   toggleButton.addEventListener('click', function() {
     sidebar.classList.toggle('collapsed');
     mainContent.classList.toggle('expanded');
 });
-
+logoutButton.addEventListener("click", function() {
+  if (confirm("Are you sure you want to logout?")) {
+      // Limpia el token del localStorage
+      localStorage.removeItem("access_token");
+      // Redirige a la página de inicio de sesión
+      window.location.href = "index.html";
+  }
+});
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
     if (!token) {
