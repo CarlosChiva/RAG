@@ -1,124 +1,86 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
-    const collectionSelect = document.getElementById('collectionSelect');
-    const newCollectionInput = document.getElementById('newCollection');
-    const uploadForm = document.getElementById('uploadForm');
-    const progressBar = document.getElementById('progressBar');
-    const progressPercent = document.getElementById('progressPercent');
-    const progressBarContainer = document.querySelector('.progress-bar-container');
+document.addEventListener("DOMContentLoaded", function () {
+    const dropzone = document.getElementById("dropzone");
+    const fileInput = document.getElementById("fileInput");
+    const collectionSelect = document.getElementById("collectionSelect");
+    const newCollectionInput = document.getElementById("newCollection");
+    const uploadForm = document.getElementById("uploadForm");
+    const loaderContainer = document.querySelector(".loader-container");
     const token = localStorage.getItem("access_token");
 
-    // Cargar colecciones en el selector
-    function loadCollections() {
-        if (!token) {
-          console.error("No token found in localStorage.");
-          return;
+        // Función para habilitar/deshabilitar el botón
+    function toggleButtonState(isDisabled) {
+            uploadButton.disabled = isDisabled;
+            uploadButton.style.backgroundColor = isDisabled ? "#666" : "#007bff";
+            uploadButton.style.cursor = isDisabled ? "not-allowed" : "pointer";
         }
-      
-        fetch('http://127.0.0.1:8000/collections', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          })
-            .then(response => response.json())
-            .then(data => {
-                collectionSelect.innerHTML = '<option value="">-- Select Collection --</option>'; // Limpiar opciones
-                data.collections_name.forEach(collectionName => {
-                    const option = document.createElement('option');
-                    option.value = collectionName;
-                    option.textContent = collectionName;
-                    collectionSelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching collections:', error));
+    // Cargar colecciones al inicio
+    async function loadCollections() {
+        if (!token) {
+            console.error("No token found in localStorage.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/collections", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            collectionSelect.innerHTML = '<option value="">-- Select Collection --</option>';
+            data.collections_name.forEach((name) => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                collectionSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Error fetching collections:", error);
+        }
     }
 
-    // Configurar área de arrastre
-    dropzone.addEventListener('click', () => fileInput.click());
-    dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('dragging');
-    });
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('dragging');
-    });
-    dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('dragging');
-        if (e.dataTransfer.files.length > 0) {
-            fileInput.files = e.dataTransfer.files;
-        }
-    });
+    dropzone.addEventListener("click", () => fileInput.click());
 
-    // Manejar envío del formulario
-    uploadForm.addEventListener('submit', (e) => {
+    uploadForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+
+        if (!fileInput.files.length) {
+            alert("Please select a file.");
+            return;
+        }
 
         const formData = new FormData();
         for (const file of fileInput.files) {
-            formData.append('file', file);
+            formData.append("file", file);
         }
+        formData.append(
+            "name_collection",
+            collectionSelect.value || newCollectionInput.value
+        );
 
-        const collectionName = collectionSelect.value || newCollectionInput.value;
-        formData.append('name_collection', collectionName);
-        // Usar XMLHttpRequest para monitorear el progreso
-        const xhr = new XMLHttpRequest();
+        try {
+            toggleButtonState(true); // Deshabilitar botón
 
-        // Mostrar la barra de progreso
-        progressBarContainer.style.display = 'block';
-        progressPercent.style.display = 'block';
-        xhr.upload.addEventListener('progress', function(event) {
-            if (event.lengthComputable) {
-                const percentComplete = (event.loaded / event.total) * 100;
-                progressBar.style.width = percentComplete + "%";
-                progressPercent.textContent = Math.round(percentComplete) + "%";
-            }
-        });
+            loaderContainer.style.display = "block"; // Mostrar círculo de carga
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                alert('Files uploaded successfully!');
-                // Resetear la barra de progreso
-                progressBar.style.width = "0%";
-                progressPercent.textContent = "0%";
-                progressBarContainer.style.display = 'none';
-                progressPercent.style.display = 'none';
+            const response = await fetch("http://localhost:8000/add_document", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData,
+            });
 
-                // Limpiar el input de archivo y el campo de colección
-                fileInput.value = '';
-                newCollectionInput.value = '';
+            const data = await response.json();
+            if (response.ok) {
+                alert("Files uploaded successfully!");
             } else {
-                alert('Error uploading files.');
+                alert(data.error || "Error uploading files.");
             }
-        };
+        } catch (error) {
+            alert("An error occurred during the upload.");
+        } finally {
+            loaderContainer.style.display = "none"; // Ocultar círculo de carga
+            toggleButtonState(false); // Habilitar botón
 
-        xhr.onerror = function() {
-            alert('An error occurred during the upload.');
-        };
-
-        // Configurar la solicitud POST
-        xhr.open('POST', 'http://localhost:8000/add_document');
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
-        xhr.send(formData);
+        }
     });
 
-    //     fetch('http://localhost:8000/add_document', {
-    //         method: 'POST',
-    //         body: formData
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log('Upload response:', data);
-    //         alert('Files uploaded successfully!');
-    //         fileInput.value = ''; // Limpiar el input
-    //         newCollectionInput.value = ''; // Limpiar el campo de colección nueva
-    //     })
-    //     .catch(error => console.error('Error uploading files:', error));
-    // });
-
-    // Cargar colecciones al inicio
     loadCollections();
 });

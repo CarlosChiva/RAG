@@ -1,92 +1,127 @@
-/* upload.css */
-
+/* Estilo general */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    position: relative; /* Necesario para posicionar el botón "Back to Chat" */
-    background-color: #504f4f;
-
+    position: relative;
+    background-color: #3a3a3a;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .upload-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 600px;
+    width: 100%;
+    background-color: #4b4b4b;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
-    position: relative; /* Necesario para centrar el contenido en el contenedor */
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #f2f2f2;
 }
 
 #dropzone {
     border: 2px dashed #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     padding: 20px;
     margin: 20px 0;
-    background-color: #f9f9f9;
+    background-color: #555;
+    color: #ddd;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-#fileInput {
-    display: none;
-}
-
-input[type="file"] {
-    display: none;
+#dropzone:hover, #dropzone.dragging {
+    background-color: #666;
+    color: #fff;
 }
 
 select, input[type="text"] {
-    margin: 10px;
+    width: calc(100% - 22px);
+    margin: 10px 0;
     padding: 10px;
     font-size: 16px;
-}
-/* Estilo para el botón de carga */
-#uploadButton {
-    margin-top: 20px;
-    padding: 15px 30px;
-    background-color: #007bff;
-    color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    background-color: #666;
+    color: #fff;
 }
 
-/* Estilo para el botón "Back to Chat" */
+input::placeholder {
+    color: #aaa;
+}
+
+#uploadButton {
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#uploadButton:hover {
+    background-color: #0056b3;
+}
+
 #backButton {
-    position: fixed;
-    bottom: 20px; /* Ajusta la distancia desde la parte inferior */
-    left: 20px; /* Ajusta la distancia desde el borde izquierdo */
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    text-decoration: none; /* Quita el subrayado del enlace */
+    text-decoration: none;
     font-size: 16px;
 }
-.progress-bar-container {
-    width: 100%;
-    background-color: #f3f3f3;
-    border-radius: 5px;
-    margin-top: 10px;
-    height: 20px;
-    display: none; /* Oculta la barra hasta que comience la carga */
+
+#backButton:hover {
+    background-color: #0056b3;
 }
 
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: #4caf50;
-    transition: width 0.4s ease;
-}
-
-#progressPercent {
-    margin-top: 5px;
-    font-size: 14px;
+/* Círculo de carga */
+.loader-container {
+    display: none;
+    margin-top: 20px;
+    position: relative;
     text-align: center;
-    display: none; /* Oculta el porcentaje hasta que comience la carga */
+}
+
+.circle-loader {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.circle {
+    width: 100%;
+    height: 100%;
+    border: 5px solid transparent;
+    border-top-color: #4caf50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
