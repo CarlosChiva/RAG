@@ -15,28 +15,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Manejar el evento del enlace "Sign Up"
+// Manejar el evento del enlace "Sign Up"
 signUpLink.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode; // Cambiar el estado entre Sign Up y Login
 
-    if (isSignUpMode) {
-        // Cambiar a modo Sign Up
-        formTitle.textContent = 'Sign Up';
-        submitButton.textContent = 'Sign Up';
-        submitButton.setAttribute('data-action', 'sign_up');
-        signUpLink.textContent = 'Log In';
+    // Aplicar animación de transición
+    loginForm.classList.add('fade-transition');
+    setTimeout(() => {
+        if (isSignUpMode) {
+            // Cambiar a modo Sign Up
+            formTitle.textContent = 'Sign Up';
+            submitButton.textContent = 'Sign Up';
+            submitButton.setAttribute('data-action', 'sign_up');
+            signUpLink.textContent = 'Log In';
 
-        loginForm.removeEventListener('submit', handleLoginSubmit);
-        loginForm.addEventListener('submit', handleSignUpSubmit);
-    } else {
-        // Volver a modo Login
-        formTitle.textContent = 'Login';
-        submitButton.textContent = 'Log In';
-        submitButton.setAttribute('data-action', 'log_in');
-        signUpLink.textContent = 'Sign Up';
-        loginForm.removeEventListener('submit', handleSignUpSubmit);
-        loginForm.addEventListener('submit', handleLoginSubmit);
-    }
+            loginForm.removeEventListener('submit', handleLoginSubmit);
+            loginForm.addEventListener('submit', handleSignUpSubmit);
+        } else {
+            // Volver a modo Login
+            formTitle.textContent = 'Login';
+            submitButton.textContent = 'Log In';
+            submitButton.setAttribute('data-action', 'log_in');
+            signUpLink.textContent = 'Sign Up';
+
+            loginForm.removeEventListener('submit', handleSignUpSubmit);
+            loginForm.addEventListener('submit', handleLoginSubmit);
+        }
+
+        // Eliminar clase de transición después de aplicar cambios
+        loginForm.classList.remove('fade-transition');
+    }, 500); // Duración de la animación
 });
 
 // Función para manejar el formulario de inicio de sesión
