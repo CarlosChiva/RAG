@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,12 +16,13 @@ body {
 
 .container {
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: 16px;
     padding: 40px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 #formTitle {
@@ -29,6 +30,7 @@ body {
     margin-bottom: 20px;
     color: #4b6cb7;
     font-weight: bold;
+    letter-spacing: 1px;
 }
 
 label {
@@ -44,15 +46,16 @@ input[type="text"], input[type="password"] {
     padding: 12px;
     margin-bottom: 20px;
     border: 2px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     background-color: #f9f9f9;
-    transition: border 0.3s ease-in-out;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 input[type="text"]:focus, input[type="password"]:focus {
     outline: none;
     border: 2px solid #4b6cb7;
+    box-shadow: 0 0 8px rgba(75, 108, 183, 0.3);
     background-color: #ffffff;
 }
 
@@ -62,15 +65,20 @@ button {
     background-color: #4b6cb7;
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
 }
 
 button:hover {
     background-color: #3a57a4;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .error-message {
@@ -96,4 +104,15 @@ button:hover {
 
 .singin a:hover {
     text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
