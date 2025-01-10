@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const chatOutput = document.getElementById("chat-output");
   const token = localStorage.getItem("access_token");
   const logoutButton = document.getElementById("logoutButton");
+  const container = document.getElementById("container");
 
 
   let selectedCollection = null;
@@ -176,5 +177,13 @@ logoutButton.addEventListener("click", function() {
                 sendButton.innerHTML = 'Send';
                 sendButton.disabled = false;
             });
-      });
+            inputText.addEventListener("keypress", function(event) {
+              console.log(`Key pressed: ${event.key}`);
+
+              if (event.key === "Enter") {
+                sendMessage();
+              }
+            });
+        });
+
 });

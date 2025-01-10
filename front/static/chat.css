@@ -89,7 +89,7 @@ body {
 }
 
 .chat-area.collapsed {
-    width: calc(100% - 50px); /* Ajustar el área de chat cuando el sidebar está colapsado */
+    width: calc(100% - 50px); 
 }
 /* ----------------------------- */
 
@@ -190,7 +190,7 @@ body {
 
 /* Mensajes del usuario alineados a la derecha */
 .user-message {
-    background-color: #d1e7dd;
+    background-color: #2ae459;
     float: right;
     text-align: right;
     margin-left: auto;
@@ -198,7 +198,7 @@ body {
 
 /* Mensajes del bot alineados a la izquierda */
 .bot-message {
-    background-color: #e2e3e5;
+    background-color: #4e82e9;
     float: left;
     text-align: left;
     margin-right: auto;
@@ -220,7 +220,7 @@ body {
     justify-content: center; /* Centrar horizontalmente */
     align-items: center; /* Centrar verticalmente */
     padding: 5px 10px; /* Ajustar el tamaño del botón */
-    background-color: #ff6b6b; /* Color de fondo */
+    background-color: #d15151; /* Color de fondo */
     color: white; /* Color del texto */
     border: none; /* Sin borde */
     border-radius: 10px; /* Bordes redondeados */
@@ -259,7 +259,7 @@ body {
     bottom: 20px; /* Posición desde la parte inferior */
     left: 50%; /* Centrar horizontalmente en el sidebar */
     transform: translateX(-50%); /* Ajuste de centrado */
-    background-color: #ff6b6b;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 20px;
@@ -271,5 +271,5 @@ body {
 
 /* Efecto hover para el botón */
 .logout-btn:hover {
-    background-color: #ff4a4a;
+    background-color: #377cc7;
 }
