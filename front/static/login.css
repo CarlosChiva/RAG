@@ -6,12 +6,12 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #4b6cb7, #182848);
+    background: linear-gradient(135deg, #504f4f, #333);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #333;
+    color: #e0e0e0; 
 }
 
 .container {
@@ -20,10 +20,12 @@ body {
     padding: 40px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 
+                0 6px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
     animation: fadeIn 0.5s ease-in-out;
 }
+
 
 #formTitle {
     font-size: 32px;

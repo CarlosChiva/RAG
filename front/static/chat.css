@@ -161,7 +161,9 @@ body {
     text-decoration: none;
 
 }
-
+#uploadButton:hover {
+    background-color: #377cc7;
+}
 /* Estilos para el área de chat */
 
 #chat-output {
@@ -269,7 +271,6 @@ body {
     text-align: center;
 }
 
-/* Efecto hover para el botón */
 .logout-btn:hover {
     background-color: #377cc7;
 }
