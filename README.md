@@ -74,9 +74,10 @@ http://localhost:5000
 
 ## Next Relases
 
- - [ ] Implement llama3.2 Vision to OCR system.
+ - [ ] Check out and Implement llama3.2 Vision to OCR system.
  - [ ] Add re-ranking models for extense documents in colleciton
-
+ - [ ] Add window to multimodal RAG functionality
+ 
 ---
 
 ![Image to Docker compose and llama](images/compose.png)
