@@ -32,7 +32,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 Then, download the models required for this project by running the following commands:
 
 ```bash
-ollama pull llama3.2
+ollama pull mistral-nemo
 ollama pull mxbai-embed-large
 ```
 Once Ollama and the necessary models are installed, you can download the project:
