@@ -190,7 +190,7 @@ body {
 
 /* Mensajes del usuario alineados a la derecha */
 .user-message {
-    background-color: #2ae459;
+    background-color: #79e795;
     float: right;
     text-align: right;
     margin-left: auto;
@@ -198,7 +198,7 @@ body {
 
 /* Mensajes del bot alineados a la izquierda */
 .bot-message {
-    background-color: #4e82e9;
+    background-color: #6c90d6;
     float: left;
     text-align: left;
     margin-right: auto;
