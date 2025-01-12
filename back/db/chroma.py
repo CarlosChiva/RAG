@@ -8,9 +8,11 @@ async def get_chain(model,vector_store):
     
     # Prompt 
     template = """Usa la información proporcionada como contexto para responder la pregunta (input) del usuario.
-    Analiza la informacion proporcionada en el contexto (Información) para saber si esa informacion contesta la pregunta del usuario,si es util para la respuesta, utilizala para contestar al usuario de lo contrario di 'no tengo informacion suficiente para responder a esta pregunta'.
+    Utiliza solo la informacion proporcionada en el contexto para saber si esa informacion contesta la pregunta del usuario,
+    si la informacion proporcionada por el contexto es util para la respuesta,
+     utilizala para contestar al usuario de lo contrario di 'no tengo informacion suficiente para responder a esta pregunta'.
 
-    Información: {context}
+    Contexto: {context}
     
     Pregunta: {input}
 
