@@ -1,10 +1,9 @@
 from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection, get_vectorstore,remove_collection_db
 from db.chroma import get_chain
-from db.model_conf import get_model
+from db.model_conf import RagModel
 from db.mysql_manager import checker_users, registrer_users
 from db.chroma_cli import get_chroma_client
 import os
-
 
 async def show_name_collections(credentials):
     cli=await get_chroma_client(credentials)
@@ -27,7 +26,8 @@ async def remove_collections(collection_name,credentials):
 
 async def querier(question:str,collection_name:str,credentials:str):
 
-    model=get_model()
+    model=RagModel().get_model()
+
     cli=await get_chroma_client(credentials)
     vectorstore=await get_vectorstore(cli,collection_name)
     
