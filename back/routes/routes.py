@@ -34,9 +34,11 @@ async def add_document(file: UploadFile = File(...),
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
     if not file.filename:
-        return {'error': 'Invalid file'}, 400
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file")
+
     if not name_collection:
-        return {'error': 'Collection name is required'}, 400
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Collection name is required")
+
  
     try:
         print("File received:", file.filename)
@@ -51,7 +53,7 @@ async def add_document(file: UploadFile = File(...),
 
     except Exception as e:
         print(f"Error in process_pdf: {e}")
-        return {'error': 'An error occurred while processing the PDF'}, 500
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
 
 #-------------------------Collection routes-----------------------
 
@@ -60,22 +62,21 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)):
 
     collections= await controllers.show_name_collections(credentials)
-    print("response:",collections)
     return {"collections_name": collections}
     
 
-@router.get("/self-collection-name")
-async def collection_name():
+# @router.get("/self-collection-name")
+# async def collection_name():
 
-    return {"collection_name": os.getenv("COLLECTION_NAME")}
+#     return {"collection_name": os.getenv("COLLECTION_NAME")}
 
 
 
-@router.post("/change-collection-name")
-async def collection_name(collection_name: str = Form(...)):
-    os.environ['COLLECTION_NAME'] = collection_name
-    collection_name=os.getenv("COLLECTION_NAME")
-    return {"collection_name": collection_name}
+# @router.post("/change-collection-name")
+# async def collection_name(collection_name: str = Form(...)):
+#     os.environ['COLLECTION_NAME'] = collection_name
+#     collection_name=os.getenv("COLLECTION_NAME")
+#     return {"collection_name": collection_name}
 
 @router.post("/delete-collection")
 async def delete_collection(collection: CollectionRequest,
