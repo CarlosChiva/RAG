@@ -65,6 +65,7 @@ async function handleLoginSubmit(e) {
 
         const result = await response.json();
         localStorage.setItem('access_token',"Bearer "+ result.access_token);
+        localStorage.setItem('user_name',username);
         alert('Logged in successfully!');
         window.location.href = 'menu.html';
     } catch (error) {
