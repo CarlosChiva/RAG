@@ -15,6 +15,7 @@ app.add_middleware(
 )
 # Servir archivos estáticos
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/images", StaticFiles(directory="static/images"), name="images")
 
 
 if __name__ == "__main__":
