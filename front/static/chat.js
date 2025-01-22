@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const token = localStorage.getItem("access_token");
   const logoutButton = document.getElementById("logoutButton");
   const container = document.getElementById("container");
+  const menuButton = document.getElementById("menuButton");
 
 
   let selectedCollection = null;
@@ -23,6 +24,9 @@ logoutButton.addEventListener("click", function() {
       // Redirige a la página de inicio de sesión
       window.location.href = "index.html";
   }
+});
+menuButton.addEventListener("click", function() {
+      window.location.href = "menu.html";
 });
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
