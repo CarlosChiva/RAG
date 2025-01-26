@@ -8,7 +8,7 @@ let isSignUpMode = false; // Estado para determinar si estamos en modo Sign Up o
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('access_token');
     if (token) {
-        window.location.href = 'chat.html';
+        window.location.href = 'menu.html';
     } else {
         console.log('No JWT found, staying on index.html.');
     }
@@ -66,8 +66,9 @@ async function handleLoginSubmit(e) {
         const result = await response.json();
         console.log(result);
         localStorage.setItem('access_token',"Bearer "+ result.access_token);
+        localStorage.setItem('user_name',username);
         alert('Logged in successfully!');
-        window.location.href = 'chat.html';
+        window.location.href = 'menu.html';
     } catch (error) {
         console.error(error);
         alert(error.message);
