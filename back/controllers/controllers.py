@@ -1,7 +1,6 @@
 from db.chroma_manager import add_pdf_to_collection,get_collections,add_pdf_to_collection, get_vectorstore,remove_collection_db
 from db.chroma import get_chain
 from db.model_conf import RagModel
-from db.mysql_manager import checker_users, registrer_users
 from db.chroma_cli import get_chroma_client
 import os
 
@@ -35,10 +34,4 @@ async def querier(question:str,collection_name:str,credentials:str):
     response=chain.invoke({"input":question})
 
     return response['answer']
-async def check_user(user_name:str,password:str):
-    return await checker_users(user_name=user_name,password=password)
 
-async def registrer(user_name:str,password:str):
-
-    return await registrer_users(user_name=user_name,password=password)
-    

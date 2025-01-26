@@ -74,31 +74,3 @@ async def delete_collection(collection: CollectionRequest,
     await controllers.remove_collections(collection_name,credentials)
     return {"collection_name deleted": collection_name}
 
-
-# # -------------------------------JWT routes-----------------------------
-
-# @router.get("/log-in")
-# async def log_in(username: str, password: str):
-
-#     password_hashed = await credentials_controllers.generar_hash(password)
-
-#     result = await controllers.check_user(user_name=username, password=password_hashed)
-#     if not result:
-#         raise HTTPException(status_code=401, detail="User not found")
-    
-#     token=await credentials_controllers.generate_token(password_hashed)
-    
-#     return {"access_token": token}
-
-
-# @router.post("/sing_up")
-# async def delete_collection(data_user: User):
-    
-#     password_hashed = await credentials_controllers.generar_hash(data_user.password)
-#     result =await controllers.registrer(user_name=data_user.username,password=password_hashed)
-    
-#     if not result:
-#         raise HTTPException(status_code=401, detail="Invalid credentials")
-    
-#     token=await credentials_controllers.generate_token(password_hashed)
-#     return {"access_token": token}
