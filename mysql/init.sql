@@ -9,3 +9,11 @@ CREATE TABLE IF NOT EXISTS users (
 
 );
 
+CREATE TABLE IF NOT EXISTS services (
+    id_service INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    pdf_enabled BOOLEAN DEFAULT FALSE,
+    multimedia_enabled BOOLEAN DEFAULT FALSE,
+    excel_enabled BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE
+);

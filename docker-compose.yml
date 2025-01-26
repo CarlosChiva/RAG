@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   db:
+    container_name: mysql
     image: mysql:8.0
     restart: always
     environment:
@@ -15,6 +16,17 @@ services:
       - db_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     network_mode: host  
+
+  db_service:
+    container_name: mysql_connector
+    build: ./ddbb
+    restart: always
+    env_file: 
+      - "./ddbb/.env"
+    ports:
+      - "8001:8001"
+    network_mode: host    
+
   api:
     build: ./back
     ports:

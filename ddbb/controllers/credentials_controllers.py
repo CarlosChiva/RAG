@@ -11,29 +11,29 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 security = HTTPBearer()
 
-# async def generar_hash(password):
-#     """
-#     Genera un hash para un password usando el algoritmo SHA-256.
+async def generar_hash(password):
+    """
+    Genera un hash para un password usando el algoritmo SHA-256.
 
-#     Args:
-#         password (str): El password a ser hashing.
+    Args:
+        password (str): El password a ser hashing.
 
-#     Returns:
-#         str: El hash generado.
-#     """
-#     # Convertir la contraseña a bytes
-#     password_bytes = password.encode('utf-8')
+    Returns:
+        str: El hash generado.
+    """
+    # Convertir la contraseña a bytes
+    password_bytes = password.encode('utf-8')
 
-#     # Crear un objeto SHA-256
-#     sha256 = hashlib.sha256()
+    # Crear un objeto SHA-256
+    sha256 = hashlib.sha256()
 
-#     # Agregar los datos de la contraseña al flujo de hashing
-#     sha256.update(password_bytes)
+    # Agregar los datos de la contraseña al flujo de hashing
+    sha256.update(password_bytes)
 
-#     # Obtener el hash generado
-#     password_hash = sha256.hexdigest()
+    # Obtener el hash generado
+    password_hash = sha256.hexdigest()
 
-#     return password_hash
+    return password_hash
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
@@ -61,13 +61,13 @@ async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(securit
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-# async def generate_token(password_hashed):
-#     # Crear payload
-#     payload = {
-#         "sub": password_hashed,
-#         "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
-#         "iat": datetime.utcnow(),  # Fecha de emisión
-#     }
-#     # Firmar el token
-#     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-#     return token    
+async def generate_token(password_hashed):
+    # Crear payload
+    payload = {
+        "sub": password_hashed,
+        "exp": datetime.utcnow() + timedelta(hours=1),  # Expiración
+        "iat": datetime.utcnow(),  # Fecha de emisión
+    }
+    # Firmar el token
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return token    

@@ -56,7 +56,7 @@ async function handleLoginSubmit(e) {
     const password = document.getElementById('password').value;
 
     try {
-        const response = await fetch(`http://localhost:8000/log-in?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
+        const response = await fetch(`http://localhost:8001/log-in?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -64,6 +64,7 @@ async function handleLoginSubmit(e) {
         }
 
         const result = await response.json();
+        console.log(result);
         localStorage.setItem('access_token',"Bearer "+ result.access_token);
         alert('Logged in successfully!');
         window.location.href = 'chat.html';
@@ -81,7 +82,7 @@ async function handleSignUpSubmit(e) {
     const password = document.getElementById('password').value;
 
     try {
-        const response = await fetch('http://localhost:8000/sing_up', {
+        const response = await fetch('http://localhost:8001/sing_up', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
