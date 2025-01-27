@@ -25,7 +25,7 @@ async def log_in(username: str, password: str):
 
 
 @router.post("/sing_up")
-async def delete_collection(data_user: User):
+async def sing_up(data_user: User):
     
     password_hashed = await credentials_controllers.generar_hash(data_user.password)
     result =await controllers.registrer(user_name=data_user.username,password=password_hashed)
@@ -36,3 +36,43 @@ async def delete_collection(data_user: User):
     token=await credentials_controllers.generate_token(password_hashed)
     logging.info(f"Token generated: {token}")
     return {"access_token": token}
+
+# ------------------------- services routes -----------------------
+
+@router.get("/get-services")
+async def get_services_from_user(credentials  = Depends(credentials_controllers.verify_jws)
+):
+    
+    result =await controllers.get_services(credentials)
+    
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    logging.info(f"services: {result}")
+    return {"services": result}
+
+@router.get("/add-services")
+async def add_services_from_user(credentials  = Depends(credentials_controllers.verify_jws),
+                                                         service:str=Query(None)
+):
+    
+    result =await controllers.add_services(credentials,service=service)
+    
+    if not result:
+        raise HTTPException(status_code=401, detail="Not possible to add service")
+    
+    logging.info(f"services: {result}")
+    return {"services": result}
+
+@router.get("/remove-services")
+async def remove_services_from_user(credentials  = Depends(credentials_controllers.verify_jws),
+                                    service:str=Query(None)
+):
+    
+    result =await controllers.remove_services(credentials,service=service)
+    
+    if not result:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    logging.info(f"services: {result}")
+    return {"services": result}

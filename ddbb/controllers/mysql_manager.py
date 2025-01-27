@@ -35,3 +35,53 @@ async def registrer_users(user_name:str,password:str):
     db.close()
 
     return True
+
+async def check_user_by_credential(credential:str):
+
+    db= await db_connect()
+    mysql_cursor = db.cursor()
+    mysql_cursor.execute("SELECT id_user FROM users WHERE password_hash = %s", ( credential))
+    mysql_cursor.fetchall()
+    if mysql_cursor.rowcount == 0:
+        mysql_cursor.close()
+        db.close()
+        return ""
+    else:
+        user_id = mysql_cursor.fetchone()[0]
+        mysql_cursor.close()
+        db.close()
+        return user_id
+
+async def get_user_services(id_user:str):
+
+    db= await db_connect()
+    mysql_cursor = db.cursor()
+    mysql_cursor.execute("SELECT * FROM services WHERE user_id = %s", (id_user))
+    mysql_cursor.fetchall()
+    if mysql_cursor.rowcount == 0:
+        mysql_cursor.close()
+        db.close()
+        return ""
+    else:
+        user_id = mysql_cursor.fetchone()[0]
+        mysql_cursor.close()
+        db.close()
+        return user_id
+async def add_user_services(service:str,id_user:str):
+    db= await db_connect()
+    mysql_cursor = db.cursor()
+    mysql_cursor.execute(" UPDATE services SET %s = TRUE WHERE user_id = %s", (service, id_user))
+    mysql_cursor.close()
+    db.commit()
+    db.close()
+
+    return f"{service} Updated successfully"
+async def remove_user_services(service:str,id_user:str):
+    db= await db_connect()
+    mysql_cursor = db.cursor()
+    mysql_cursor.execute(" UPDATE services SET %s = FALSE WHERE user_id = %s", (service, id_user))
+    mysql_cursor.close()
+    db.commit()
+    db.close()
+
+    return f"{service} Updated successfully"
