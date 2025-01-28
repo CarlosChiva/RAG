@@ -55,9 +55,7 @@ async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(securit
         token = token.split("Bearer ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-        print(f"""
-token: {token}
-              playload:{payload}""")
+        
         return token#payload["sub"]
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

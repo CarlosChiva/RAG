@@ -8,9 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],  # Cambia este valor al origen de tu frontend
+    allow_origins=["http://localhost:5000"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos HTTP (GET, POST, etc.)
+    allow_methods=["*"],  
     allow_headers=["*"],  
 )
 app.include_router(router)

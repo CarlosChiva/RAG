@@ -1,4 +1,3 @@
-#from tempfile import NamedTemporaryFile
 from fastapi import *
 from controllers import controllers
 from controllers import credentials_controllers
@@ -21,7 +20,6 @@ async def log_in(username: str, password: str):
     
     token=await credentials_controllers.generate_token(password_hashed)
     await controllers.add_token(username,token)
-    logging.info(f"Token generated: {token}")
     return {"access_token": token}
 
 
@@ -36,7 +34,6 @@ async def sing_up(data_user: User):
     
     token=await credentials_controllers.generate_token(password_hashed)
 
-    logging.info(f"Token generated: {token}")
     return {"access_token": token}
 
 # ------------------------- services routes -----------------------
@@ -76,5 +73,4 @@ async def remove_services_from_user(credentials  = Depends(credentials_controlle
     if not result:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    logging.info(f"services: {result}")
     return {"services": result}
