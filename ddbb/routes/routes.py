@@ -35,7 +35,6 @@ async def sing_up(data_user: User):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token=await credentials_controllers.generate_token(password_hashed)
-    await controllers.add_token(data_user.username,token)
 
     logging.info(f"Token generated: {token}")
     return {"access_token": token}
@@ -48,13 +47,11 @@ async def get_services_from_user(credentials  = Depends(credentials_controllers.
     
     result =await controllers.get_services(credentials)
     
-    if isinstance(result, list):
-        logging.info(f"services: {result}")
-        return {"services": result}
-
-    if not result:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    if not result :
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"services": result}
+
 
 @router.get("/add-services")
 async def add_services_from_user(credentials  = Depends(credentials_controllers.verify_jws),

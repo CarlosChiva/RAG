@@ -29,12 +29,14 @@ async def registrer_users(user_name:str,password:str):
     db= await db_connect()
 
     mysql_cursor = db.cursor()
-    mysql_cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s) ;", (user_name, password))
+    mysql_cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)  ;", (user_name, password))
+    id_user = mysql_cursor.lastrowid
+    mysql_cursor.execute("INSERT INTO services (user_id) VALUES (%s);", (id_user,))
     mysql_cursor.close()
     db.commit()
     db.close()
 
-    return True
+    return id_user
 async def registrer_token(user_name:str,token:str): 
     db= await db_connect()
 
@@ -48,7 +50,6 @@ async def registrer_token(user_name:str,token:str):
 async def check_user_by_credential(credential:str):
     print(credential)
     # credential = credential.sub
-    print(type(credential))
     db= await db_connect()
     mysql_cursor = db.cursor()
     mysql_cursor.execute("SELECT id_user FROM users WHERE jwt_token = %s ;", (credential,))
@@ -70,7 +71,7 @@ async def get_user_services(id_user:str):
         mysql_cursor = db.cursor()
         
         # Execute the query
-        mysql_cursor.execute("SELECT * FROM services WHERE user_id = %s", (id_user,))
+        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel FROM services WHERE user_id = %s", (id_user,))
         
         # Fetch all results
         services = mysql_cursor.fetchall()
@@ -81,27 +82,22 @@ async def get_user_services(id_user:str):
             db.close()
             return []
         else:
-            # Extract the first service's data
-            service_data = services[0]
-            user_id = service_data[0] if len(service_data) > 0 else None
-            
-            if user_id is not None:
-                return str(user_id)
-            else:
-                mysql_cursor.close()
-                db.close()
-                return ""
-                
+            chat, pdf, multimedia, excel = services[0]
+            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel)] 
+            mysql_cursor.close()
+            db.close()
+            result=[]
+            for service,enable in services_result:
+                if enable:
+                    result.append(service)
+            if len(result)==0:
+                return None        
+            return result                
     except Exception as e:
         # Log the error (you might want to add logging here)
         print(f"Error fetching services: {e}")
-        return ""
-    finally:
-        # Ensure resources are closed
-        if mysql_cursor:
-            mysql_cursor.close()
-        if db:
-            db.close()
+        return None
+
 async def add_user_services(service:str,id_user:str):
     db= await db_connect()
     mysql_cursor = db.cursor()
@@ -123,7 +119,9 @@ async def add_user_services(service:str,id_user:str):
 async def remove_user_services(service:str,id_user:str):
     db= await db_connect()
     mysql_cursor = db.cursor()
-    mysql_cursor.execute(" UPDATE services SET %s = FALSE WHERE user_id = %s ;", (service, id_user))
+    query = " UPDATE services SET {} = FALSE WHERE user_id = {} ;".format(service, id_user)
+
+    mysql_cursor.execute(query)
     mysql_cursor.close()
     db.commit()
     db.close()

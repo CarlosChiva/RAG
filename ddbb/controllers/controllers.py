@@ -11,6 +11,7 @@ async def add_token(user_name:str,token:str):
 async def get_services(credential:str):
     id_user= await check_user_by_credential(credential=credential)
     services= await get_user_services(id_user=id_user)
+    print(services)
     return services
 
 async def add_services(credential:str,service:str):
