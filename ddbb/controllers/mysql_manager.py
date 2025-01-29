@@ -97,6 +97,39 @@ async def get_user_services(id_user:str):
         print(f"Error fetching services: {e}")
         return None
 
+async def get_user_services_available(id_user:str):
+    try:
+        # Connect to database
+        db = await db_connect()
+        mysql_cursor = db.cursor()
+        
+        # Execute the query
+        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel FROM services WHERE user_id = %s", (id_user,))
+        
+        # Fetch all results
+        services = mysql_cursor.fetchall()
+        print("services....",services)
+        if not services:
+            # No services found, return empty string
+            mysql_cursor.close()
+            db.close()
+            return []
+        else:
+            chat, pdf, multimedia, excel = services[0]
+            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel)] 
+            mysql_cursor.close()
+            db.close()
+            result=[]
+            for service,enable in services_result:
+                if not enable:
+                    result.append(service)
+            if len(result)==0:
+                return None        
+            return result                
+    except Exception as e:
+        # Log the error (you might want to add logging here)
+        print(f"Error fetching services: {e}")
+        return None
 async def add_user_services(service:str,id_user:str):
     db= await db_connect()
     mysql_cursor = db.cursor()

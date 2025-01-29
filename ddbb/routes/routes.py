@@ -49,6 +49,17 @@ async def get_services_from_user(credentials  = Depends(credentials_controllers.
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return {"services": result}
 
+@router.get("/get-services-available")
+async def get_services_from_user(credentials  = Depends(credentials_controllers.verify_jws)
+):
+    
+    result =await controllers.get_services_available(credentials)
+    
+    
+    if not result :
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"services": result}
+
 
 @router.get("/add-services")
 async def add_services_from_user(credentials  = Depends(credentials_controllers.verify_jws),

@@ -18,12 +18,22 @@
             </a>
         </div>
     </div>
+    <!-- Botón "+" para abrir el sidebar -->
+    <button id="openSidebar" class="add-button">+</button>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <button id="closeSidebar" class="close-button">&times;</button>
+        <h2>Servicios Disponibles</h2>
+        <div id="sidebarIcons" class="sidebar-icons"></div>
+    </div>
+
     <button class="logout-button">Log Out</button>
 
 </body>
 
 <script>
-    document.addEventListener("DOMContentLoaded", async function() {
+        document.addEventListener("DOMContentLoaded", async function() {
         const token = localStorage.getItem('access_token');
         const username = localStorage.getItem('user_name');
 
@@ -33,7 +43,18 @@
             document.getElementById('Tittle').textContent = "Welcome " + username;
         }
 
-        // Función para obtener servicios de la base de datos
+        const iconContainer = document.getElementById("iconContainer");
+        const sidebarIcons = document.getElementById("sidebarIcons");
+
+        // Definir los íconos y rutas de imagen
+        const icons = {
+            "pdf": "/images/pdf.png",
+            "excel": "/images/excel.png",
+            "multimedia": "/images/multimedia.png",
+            "audio": "/images/chatbot.png"
+        };
+
+        // Obtener servicios activos (los que deben mostrarse en pantalla)
         async function fetchServices() {
             try {
                 const response = await fetch("http://localhost:8001/get-services", {
@@ -51,35 +72,44 @@
                 const services = await response.json();
                 updateIcons(services.services);
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error al obtener servicios activos:", error);
             }
         }
 
-        // Función para actualizar los iconos dinámicamente
+        // Obtener servicios disponibles (los que aparecen en el sidebar)
+        async function fetchAvailableServices() {
+            try {
+                const response = await fetch("http://localhost:8001/get-services-available", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error al obtener servicios disponibles");
+                }
+
+                const services = await response.json();
+               await updateSidebar(services.services);
+            } catch (error) {
+                console.error("Error al obtener servicios disponibles:", error);
+            }
+        }
+
+        // Actualizar los iconos principales
         function updateIcons(services) {
-            const iconContainer = document.getElementById("iconContainer");
-
-            // Definir los íconos y rutas de imagen
-            const icons = {
-                "pdf": "/images/pdf.png",
-                "excel": "/images/excel.png",
-                "video": "/images/multimedia.png",
-                "audio": "/images/chatbot.png"
-            };
-
-            // Limpiar los iconos excepto el de Chat
             iconContainer.innerHTML = `
                 <a href="chat.html" class="icon-button">
                     <img src="/images/chatbot.png" alt="Chat">
                 </a>
             `;
 
-            // Agregar nuevos iconos según la respuesta del backend
-            console.log(services);
             services.forEach(service => {
                 if (icons[service]) {
                     const newButton = document.createElement("a");
-                    newButton.href = "/"+service+".html";
+                    newButton.href = `/${service}.html`;
                     newButton.classList.add("icon-button");
 
                     const newImg = document.createElement("img");
@@ -92,8 +122,64 @@
             });
         }
 
-        // Llamar a la función para obtener los servicios
+        // Actualizar el sidebar con los servicios disponibles
+        async function updateSidebar(services) {
+            sidebarIcons.innerHTML = ""; // Limpiar contenido previo
+
+            services.forEach(service => {
+                if (icons[service]) {
+                    const serviceButton = document.createElement("a");
+                    serviceButton.href = "#";
+                    serviceButton.classList.add("icon-button");
+
+                    const serviceImg = document.createElement("img");
+                    serviceImg.src = icons[service];
+                    serviceImg.alt = service;
+
+                    serviceButton.appendChild(serviceImg);
+                    sidebarIcons.appendChild(serviceButton);
+
+                    // Evento para agregar el icono al contenedor principal
+                    serviceButton.addEventListener("click", async function() {
+                        await select_service(service);
+                    });
+                }
+            });
+        }
+
+        // Agregar icono seleccionado al contenedor principal
+        async function select_service(service) {
+            try {
+                const response = await fetch(`http://localhost:8001/add-services?service=${encodeURIComponent(service)}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error al obtener servicios disponibles");
+                }
+                window.location.href = `/${service}.html`;
+
+            } catch (error) {
+                console.error("Error al obtener servicios disponibles:", error);
+            }
+
+        };
+        // Sidebar toggle
+        document.getElementById("openSidebar").addEventListener("click", function() {
+            document.getElementById("sidebar").classList.add("active");
+        });
+
+        document.getElementById("closeSidebar").addEventListener("click", function() {
+            document.getElementById("sidebar").classList.remove("active");
+        });
+
+        // Llamar a las funciones para obtener los servicios
         fetchServices();
+        fetchAvailableServices();
     });
 </script>
 </html>

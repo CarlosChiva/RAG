@@ -4,7 +4,8 @@ from .mysql_manager import (checker_users,
                                  get_user_services,
                                  add_user_services,
                                  remove_user_services,
-                                 registrer_token)
+                                 registrer_token,
+                                 get_user_services_available)
 import os
 async def check_user(user_name:str,password:str):
     return await checker_users(user_name=user_name,password=password)
@@ -17,6 +18,11 @@ async def add_token(user_name:str,token:str):
 async def get_services(credential:str):
     id_user= await check_user_by_credential(credential=credential)
     services= await get_user_services(id_user=id_user)
+    print(services)
+    return services
+async def get_services_available(credential:str):
+    id_user= await check_user_by_credential(credential=credential)
+    services= await get_user_services_available(id_user=id_user)
     print(services)
     return services
 
