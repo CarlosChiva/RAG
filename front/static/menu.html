@@ -69,7 +69,7 @@
 
             // Limpiar los iconos excepto el de Chat
             iconContainer.innerHTML = `
-                <a href="./chat.html" class="icon-button">
+                <a href="chat.html" class="icon-button">
                     <img src="/images/chatbot.png" alt="Chat">
                 </a>
             `;
@@ -79,7 +79,7 @@
             services.forEach(service => {
                 if (icons[service]) {
                     const newButton = document.createElement("a");
-                    newButton.href = "#";
+                    newButton.href = "/"+service+".html";
                     newButton.classList.add("icon-button");
 
                     const newImg = document.createElement("img");
