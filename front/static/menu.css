@@ -24,14 +24,22 @@ h1 {
     text-align: center;
 }
 .icon-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: clamp(10%, 5vw, 30%);
-    justify-items: center;
-    align-content: center;
     width: 100%;
-
+    flex-wrap: wrap;
 }
+
+/* Si hay solo un elemento, lo centramos */
+.icon-container:has(:only-child) {
+    justify-content: center;
+}
+
+/* Si hay más de un elemento, se distribuyen uniformemente */
+.icon-container:not(:has(:only-child)) {
+    justify-content: space-between;
+}
+
 .icon-button {
     text-decoration: none;
     width: 100px;

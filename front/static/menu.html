@@ -11,35 +11,89 @@
     <h1 id="Tittle"></h1>
 
     <div class="container">
-        <div class="icon-container">
+        <div class="icon-container" id="iconContainer">
+            <!-- Solo el botón de Chat al inicio -->
             <a href="./chat.html" class="icon-button">
-                <img src="/images/pdf.png" alt="PDF">
-            </a>
-            <a href="#" class="icon-button">
-                <img src="/images/xls.png" alt="Excel">
-            </a>
-            <a href="#" class="icon-button">
-                <img src="/images/multimedia.png" alt="Video">
-            </a>
-            <a href="#" class="icon-button">
-                <img src="/images/chatbot.png" alt="Audio">
+                <img src="/images/chatbot.png" alt="Chat">
             </a>
         </div>
     </div>
     <button class="logout-button">Log Out</button>
 
 </body>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", async function() {
         const token = localStorage.getItem('access_token');
         const username = localStorage.getItem('user_name');
-    if (!token) {
-        window.location.href = 'index.html';
-    }
-    else{
-    const title  = document.getElementById('Tittle');
-    title.textContent = "Welcome " + username;
-    }
+
+        if (!token) {
+            window.location.href = 'index.html';
+        } else {
+            document.getElementById('Tittle').textContent = "Welcome " + username;
+        }
+
+        // Función para obtener servicios de la base de datos
+        async function fetchServices() {
+            try {
+                const response = await fetch("http://localhost:8001/get-services", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Error al obtener servicios");
+                }
+
+                const services = await response.json();
+                updateIcons(services.services);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Función para actualizar los iconos dinámicamente
+        function updateIcons(services) {
+            const iconContainer = document.getElementById("iconContainer");
+
+            // Definir los íconos y rutas de imagen
+            const icons = {
+                "pdf": "/images/pdf.png",
+                "excel": "/images/excel.png",
+                "video": "/images/multimedia.png",
+                "audio": "/images/chatbot.png"
+            };
+
+            // Limpiar los iconos excepto el de Chat
+            iconContainer.innerHTML = `
+                <a href="./chat.html" class="icon-button">
+                    <img src="/images/chatbot.png" alt="Chat">
+                </a>
+            `;
+
+            // Agregar nuevos iconos según la respuesta del backend
+            console.log(services);
+            services.forEach(service => {
+                if (icons[service]) {
+                    const newButton = document.createElement("a");
+                    newButton.href = "#";
+                    newButton.classList.add("icon-button");
+
+                    const newImg = document.createElement("img");
+                    newImg.src = icons[service];
+                    newImg.alt = service;
+
+                    newButton.appendChild(newImg);
+                    iconContainer.appendChild(newButton);
+                }
+            });
+        }
+
+        // Llamar a la función para obtener los servicios
+        fetchServices();
     });
 </script>
 </html>
