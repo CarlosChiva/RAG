@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", function() {
   const logoutButton = document.getElementById("logoutButton");
   const container = document.getElementById("container");
   const menuButton = document.getElementById("menuButton");
+  if (!token) {
+    alert("Token expired. Please, sing up again");
+    window.location.href = "index.html";
+  }
 
 
   let selectedCollection = null;
@@ -30,10 +34,6 @@ menuButton.addEventListener("click", function() {
 });
   // Función para cargar las colecciones desde el backend
   function loadCollections() {
-    if (!token) {
-      console.error("No token found in localStorage.");
-      return;
-    }
   
     fetch('http://127.0.0.1:8000/collections', {
       method: 'GET',

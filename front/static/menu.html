@@ -28,7 +28,7 @@
         <div id="sidebarIcons" class="sidebar-icons"></div>
     </div>
 
-    <button class="logout-button">Log Out</button>
+    <button class="logout-button" id="logoutButton">Log Out</button>
 
 </body>
 
@@ -36,6 +36,12 @@
         document.addEventListener("DOMContentLoaded", async function() {
         const token = localStorage.getItem('access_token');
         const username = localStorage.getItem('user_name');
+        const logoutButton = document.getElementById('logoutButton');
+        logoutButton.addEventListener('click', function() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_name');
+            window.location.href = 'index.html';
+        });
 
         if (!token) {
             window.location.href = 'index.html';
