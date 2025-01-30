@@ -6,7 +6,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const uploadForm = document.getElementById("uploadForm");
     const loaderContainer = document.querySelector(".loader-container");
     const token = localStorage.getItem("access_token");
-
+    const backBtn = document.getElementById("backButton");
+    if (!token) {
+        alert("Token expired. Please, sing up again");
+        window.location.href = "index.html";
+    }
+    async function areThereCollections() {
+        
+        try {
+            const response = await fetch("http://127.0.0.1:8000/collections", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await response.json();
+            if (data.collections_name.length == 0) {
+                alert("No collections found",data.collections_name.length);
+                window.location.href = "menu.html";            
+            } else{
+                window.location.href = "pdf.html";
+            }
+        } catch (error) {
+                console.error("Error fetching collections:", error);
+        }
+    };
+        backBtn.addEventListener("click",  () =>  areThereCollections());
         // Función para habilitar/deshabilitar el botón
     function toggleButtonState(isDisabled) {
             uploadButton.disabled = isDisabled;
@@ -15,10 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     // Cargar colecciones al inicio
     async function loadCollections() {
-        if (!token) {
-            console.error("No token found in localStorage.");
-            return;
-        }
 
         try {
             const response = await fetch("http://127.0.0.1:8000/collections", {
