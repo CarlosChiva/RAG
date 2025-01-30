@@ -97,7 +97,7 @@ async function handleSignUpSubmit(e) {
         const result = await response.json();
         localStorage.setItem('access_token', result.access_token);
         alert('User signed up successfully!');
-        window.location.href = 'chat.html';
+        window.location.href = 'menu.html';
     } catch (error) {
         console.error(error);
         alert(error.message);

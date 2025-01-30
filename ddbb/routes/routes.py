@@ -33,6 +33,7 @@ async def sing_up(data_user: User):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     token=await credentials_controllers.generate_token(password_hashed)
+    await controllers.add_token(data_user.username,token)
 
     return {"access_token": token}
 
