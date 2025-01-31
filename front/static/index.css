@@ -13,7 +13,7 @@ body {
     height: 100vh;
     color: #e0e0e0; 
 }
-
+/* Contenedor principal */
 .container {
     background-color: #ffffff;
     border-radius: 16px;
@@ -23,28 +23,24 @@ body {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 
                 0 6px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Asegura que todo el contenido esté centrado */
     animation: fadeIn 0.5s ease-in-out;
 }
 
-
-#formTitle {
-    font-size: 32px;
-    margin-bottom: 20px;
-    color: #4b6cb7;
-    font-weight: bold;
-    letter-spacing: 1px;
+/* Formulario */
+form {
+    width: 100%; /* Que ocupe todo el ancho del contenedor */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar elementos dentro */
 }
 
-label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
-    text-align: left;
-}
-
+/* Estilos para los inputs */
 input[type="text"], input[type="password"] {
-    width: 100%;
+    width: calc(100% - 24px); /* Ajusta el ancho para compensar el padding */
+    max-width: 300px; /* Para evitar que crezca demasiado en pantallas grandes */
     padding: 12px;
     margin-bottom: 20px;
     border: 2px solid #ddd;
@@ -54,12 +50,17 @@ input[type="text"], input[type="password"] {
     transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-input[type="text"]:focus, input[type="password"]:focus {
-    outline: none;
-    border: 2px solid #4b6cb7;
-    box-shadow: 0 0 8px rgba(75, 108, 183, 0.3);
-    background-color: #ffffff;
+/* Ajustar los labels */
+label {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+    text-align: left; /* Se ve más profesional alineado a la izquierda */
 }
+
 
 button {
     width: 100%;
@@ -82,17 +83,6 @@ button:hover {
 button:active {
     transform: translateY(0);
 }
-
-.error-message {
-    color: #ff4d4d;
-    font-size: 14px;
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: rgba(255, 77, 77, 0.1);
-    text-align: center;
-}
-
 .singin {
     font-size: 14px;
     margin-top: 15px;
@@ -107,6 +97,17 @@ button:active {
 .singin a:hover {
     text-decoration: underline;
 }
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 77, 77, 0.1);
+    text-align: center;
+}
+
 
 @keyframes fadeIn {
     from {

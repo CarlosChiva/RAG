@@ -1,21 +1,18 @@
-const loginForm = document.getElementById('loginForm');
-const formTitle = document.getElementById('formTitle');
-const submitButton = document.getElementById('submitButton');
-const signUpLink = document.getElementById('signUpLink');
 
-let isSignUpMode = false; // Estado para determinar si estamos en modo Sign Up o Login
-
+let isSignUpMode = false; 
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('access_token');
+    const loginForm = document.getElementById('loginForm');
+    const formTitle = document.getElementById('formTitle');
+    const submitButton = document.getElementById('submitButton');
+    const signUpLink = document.getElementById('signUpLink');
+    
     if (token) {
         window.location.href = 'menu.html';
     } else {
         console.log('No JWT found, staying on index.html.');
     }
-});
 
-// Manejar el evento del enlace "Sign Up"
-// Manejar el evento del enlace "Sign Up"
 signUpLink.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode; // Cambiar el estado entre Sign Up y Login
@@ -33,7 +30,7 @@ signUpLink.addEventListener('click', (e) => {
             loginForm.removeEventListener('submit', handleLoginSubmit);
             loginForm.addEventListener('submit', handleSignUpSubmit);
         } else {
-            // Volver a modo Login
+
             formTitle.textContent = 'Login';
             submitButton.textContent = 'Log In';
             submitButton.setAttribute('data-action', 'log_in');
@@ -43,12 +40,11 @@ signUpLink.addEventListener('click', (e) => {
             loginForm.addEventListener('submit', handleLoginSubmit);
         }
 
-        // Eliminar clase de transición después de aplicar cambios
         loginForm.classList.remove('fade-transition');
-    }, 500); // Duración de la animación
+    }, 500); 
 });
 
-// Función para manejar el formulario de inicio de sesión
+
 async function handleLoginSubmit(e) {
     e.preventDefault();
 
@@ -106,3 +102,4 @@ async function handleSignUpSubmit(e) {
 
 // Asociar la función de inicio de sesión al evento submit inicialmente
 loginForm.addEventListener('submit', handleLoginSubmit);
+});
