@@ -77,10 +77,10 @@ h1 {
 .sidebar {
     position: fixed;
     top: 0;
-    right: -300px;
-    width: 250px;
-    height: 100%;
-    background: #f8f9fa;
+    right: -30vw; /* Se oculta inicialmente fuera de la pantalla */
+    width: 10vw; /* Ocupa siempre el 10% del ancho de la pantalla */
+    height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+    background: rgba(0, 0, 0, 0.1); /* Color negro con 50% de transparencia */
     box-shadow: -4px 0 8px rgba(0, 0, 0, 0.2);
     padding: 20px;
     transition: right 0.3s ease-in-out;
@@ -125,9 +125,9 @@ h1 {
 .sidebar-icons {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 2vh; /* Espaciado relativo a la altura de la ventana */
     align-items: center;
-    margin-top: 20px;
+    margin-top: 5vh; /* Espacio superior relativo */
 }
 
 /* Iconos */
@@ -149,4 +149,10 @@ h1 {
 .icon-button img:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.sidebar h2 {
+    color: white;
+    font-size: 2vw; /* Tamaño relativo al ancho de la ventana */
+    text-align: center;
+    margin-top: 2vh;
 }
