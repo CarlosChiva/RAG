@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../app/db/')
-from tools import load_pdf, text_split, init_embedding_model
+from tools import load_document, text_split, init_embedding_model
 from langchain_chroma import Chroma
 import uuid
 
@@ -26,7 +26,7 @@ async def add_pdf_to_collection(filename,name_collection,cli):
         collection = cli.create_collection(name=name_collection)
     collection= cli.get_collection(name=name_collection)
         
-    documents = await load_pdf(filename)
+    documents = await load_document(filename)
     splits = await text_split(documents)
     embedding_func = init_embedding_model()
     

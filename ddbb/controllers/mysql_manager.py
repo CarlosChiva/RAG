@@ -82,8 +82,8 @@ async def get_user_services(id_user:str):
             db.close()
             return []
         else:
-            chat, pdf, multimedia, excel = services[0]
-            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel)] 
+            chat, pdf, multimedia, excel,ddbb = services[0]
+            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel),("ddbb",ddbb)] 
             mysql_cursor.close()
             db.close()
             result=[]

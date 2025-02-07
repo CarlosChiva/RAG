@@ -33,30 +33,34 @@ async def add_document(file: UploadFile = File(...),
                         name_collection: str = Form(...),
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
-    
+
     if not file.filename:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file")
 
     if not name_collection:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Collection name is required")
 
- 
     try:
-    
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-            temp_file.write(await file.read())
-            temp_path = temp_file.name
-    
-        try:
-            data = await controllers.add_new_document_collections(temp_path,name_collection,credentials)
+            data = await controllers.add_new_document_collections(file,name_collection,credentials)
             return {'data': data}
-    
-        finally:
-            os.unlink(temp_path)  # Asegura que el archivo temporal se elimine
-
+        
     except Exception as e:
-        print(f"Error in process_pdf: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
+            print(f"Error in process_pdf: {e}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
+    
+    # try:
+    
+    #     with tempfile.NamedTemporaryFile(delete=False)as temp_file:
+    #         temp_file.write(await file.read())
+    #         temp_path = temp_file.name+file.filename
+    
+    
+    #     finally:
+    #         os.unlink(temp_path)  # Asegura que el archivo temporal se elimine
+
+    # except Exception as e:
+    #     print(f"Error in process_pdf: {e}")
+    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
 
 #-------------------------Collection routes-----------------------
 

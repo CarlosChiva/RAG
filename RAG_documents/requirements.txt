@@ -23,6 +23,7 @@ configparser==7.1.0
 cryptography==44.0.0
 dataclasses-json==0.6.7
 Deprecated==1.2.14
+docx==0.2.4
 etelemetry==0.3.1
 exceptiongroup==1.2.2
 fastapi==0.115.6
@@ -92,6 +93,7 @@ pdfminer.six==20221105
 pdfplumber==0.10.2
 pillow==10.4.0
 posthog==3.5.0
+propcache==0.2.1
 protobuf==4.25.4
 prov==2.0.1
 pyasn1==0.6.0
@@ -112,6 +114,7 @@ PyPika==0.48.9
 pyproject_hooks==1.1.0
 pytesseract==0.3.10
 python-dateutil==2.9.0.post0
+python-docx==1.1.2
 python-dotenv==1.0.1
 python-multipart==0.0.18
 pytz==2024.1

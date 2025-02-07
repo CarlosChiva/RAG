@@ -27,27 +27,27 @@ services:
     links:
       - db  
 
-  api:
-    build: ./back
+  rag_documents:
+    build: ./RAG_documents
     ports:
       - "8000:8000"
     env_file: 
-      - "./back/.env"
+      - "./RAG_documents/.env"
     network_mode: host
 
     volumes:
-      - api:/app/PersistDirectory 
+      - RAG_documents:/app/PersistDirectory 
   front:
     build: ./front
     ports:
       - "5000:5000"
     depends_on:
-      - api
+      - rag_documents
       - db_service
     # links:
     #   - api
     #   - db_service    
 #    network_mode: host 
 volumes:
-  api:
+  RAG_documents:
   db_data:

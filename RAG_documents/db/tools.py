@@ -1,3 +1,7 @@
+from http.client import HTTPException
+from tempfile import TemporaryDirectory
+import tempfile
+from fastapi import UploadFile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OllamaEmbeddings
@@ -129,7 +133,7 @@ def image_to_text(image_path):
 
 def new_mode_extraction(pdf_path):
     # Create a pdf file object
-    pdfFileObj = open(pdf_path, 'rb')
+    pdfFileObj = open(file=pdf_path, mode='rb')
     # Create a pdf reader object
     pdfReaded = PyPDF2.PdfReader(pdfFileObj)
 
@@ -285,9 +289,48 @@ def is_text_extractable(pdf_path):
         print(f"Error: {e}")
         return False
 # Función para cargar un documento PDF
+import os
 
-async def load_pdf(filename):
-    documents = new_mode_extraction(filename)
+def obtener_extension(file) -> str:
+    fileext = file.filename.split(".")[-1]
+    return fileext
+async def load_document(file: UploadFile):
+    extension = obtener_extension(file)
+
+
+    print("Extension: ",extension)
+    match extension:
+        case "txt":
+            contenido = await file.read()
+            documents= contenido.decode("utf-8")  # Leer como texto
+
+        case "pdf":
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+                temp_file.write(await file.read())
+                temp_path = temp_file.name
+                documents = new_mode_extraction(temp_path)
+        # import fitz
+        # try:
+        #     contenido_pdf = file.file.read()  # Evita consumir el stream más de una vez
+        #     doc = fitz.open(stream=contenido_pdf, filetype="pdf")
+        #     return " ".join([page.get_text() for page in doc])
+        # except Exception as e:
+        #     raise HTTPException(status_code=500, detail=f"Error al procesar PDF: {str(e)}")
+
+
+        case "docx":
+            from docx import Document as Doc
+
+            try:
+                print("Leyendo archivo DOCX...")  # Depuración
+                contenido_docx = await file.read()  # Leer contenido
+                file_stream = io.BytesIO(contenido_docx)  # Convertir a stream de bytes
+                doc = Doc(file_stream)  # Cargar documento en python-docx
+                print("Documento cargado correctamente.")  # Depuración
+                return " ".join([p.text for p in doc.paragraphs])
+            except Exception as e:
+                print(f"Error al procesar DOCX: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"Error al procesar DOCX: {str(e)}")
 
     # print("filename; ",filename)
     # if not is_text_extractable(filename):
@@ -304,10 +347,11 @@ async def load_pdf(filename):
 # Función para dividir el texto de los documentos
 async def text_split(documents, chunk_size=1000, chunk_overlap=20):
 # Supongamos que 'result' es el string que obtuviste previamente
+    foc=documents
     # Crear una lista con un solo documento, ya que split_documents espera un iterable
     document = Document(page_content=documents, metadata={'source': 'pdf'})
     print("document: ",document)
-    print("Document to split text",type(documents))
+    print("Document to split text",type(foc))
 
     text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     all_splits = text_splitter.split_documents([document])
