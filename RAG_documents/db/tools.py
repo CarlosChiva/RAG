@@ -305,7 +305,7 @@ async def load_document(file: UploadFile):
             documents= contenido.decode("utf-8")  # Leer como texto
 
         case "pdf":
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            with tempfile.NamedTemporaryFile(delete=True, suffix=".pdf") as temp_file:
                 temp_file.write(await file.read())
                 temp_path = temp_file.name
                 documents = new_mode_extraction(temp_path)
