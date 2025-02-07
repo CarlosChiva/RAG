@@ -71,7 +71,7 @@ async def get_user_services(id_user:str):
         mysql_cursor = db.cursor()
         
         # Execute the query
-        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel FROM services WHERE user_id = %s", (id_user,))
+        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel,ddbb FROM services WHERE user_id = %s", (id_user,))
         
         # Fetch all results
         services = mysql_cursor.fetchall()
@@ -105,7 +105,7 @@ async def get_user_services_available(id_user:str):
         mysql_cursor = db.cursor()
         
         # Execute the query
-        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel FROM services WHERE user_id = %s", (id_user,))
+        mysql_cursor.execute("SELECT chat, pdf, multimedia, excel, ddbb FROM services WHERE user_id = %s", (id_user,))
         
         # Fetch all results
         services = mysql_cursor.fetchall()
@@ -116,8 +116,8 @@ async def get_user_services_available(id_user:str):
             db.close()
             return []
         else:
-            chat, pdf, multimedia, excel = services[0]
-            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel)] 
+            chat, pdf, multimedia, excel,ddbb = services[0]
+            services_result=[("chat",chat),("pdf",pdf),("multimedia",multimedia),("excel",excel),("ddbb",ddbb)] 
             mysql_cursor.close()
             db.close()
             result=[]

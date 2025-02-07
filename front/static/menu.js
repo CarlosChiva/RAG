@@ -10,7 +10,8 @@ document.addEventListener("DOMContentLoaded", async function() {
         "pdf": "/images/pdf.png",
         "excel": "/images/excel.png",
         "multimedia": "/images/multimedia.png",
-        "audio": "/images/chatbot.png"
+        "audio": "/images/chatbot.png",
+        "ddbb": "/images/ddbb.png",
     };
     
     if (!token) {
