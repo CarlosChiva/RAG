@@ -43,8 +43,7 @@ async def text_split(documents, chunk_size=1000, chunk_overlap=20):
     foc=documents
     # Crear una lista con un solo documento, ya que split_documents espera un iterable
     document = Document(page_content=documents, metadata={'source': 'pdf'})
-    print("document: ",document)
-    print("Document to split text",type(foc))
+
 
     text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     all_splits = text_splitter.split_documents([document])
