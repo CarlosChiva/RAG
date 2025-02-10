@@ -36,7 +36,16 @@ services:
     network_mode: host
 
     volumes:
-      - RAG_documents:/app/PersistDirectory 
+      - RAG_documents:/app/PersistDirectory
+  rag_ddbb:
+    build: ./RAG_ddbb
+    ports:
+      - "8002:8002"
+    env_file: 
+      - "./RAG_ddbb/.env"
+    network_mode: host
+    volumes:
+      - rag_ddbb:/app/configs_folder   
   front:
     build: ./front
     ports:
@@ -51,3 +60,4 @@ services:
 volumes:
   RAG_documents:
   db_data:
+  rag_ddbb:
