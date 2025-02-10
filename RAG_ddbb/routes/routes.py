@@ -30,17 +30,12 @@ async def llm_response(input: str,
 
 @router.get("/get-list-configurations")
 async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)):
-
-    # collections= await controllers.show_name_collections(credentials)
-    # return {"collections_name": collections}
-    pass
+    result = await controllers.get_configurations(credentials)
+    return result
 
 @router.post("/add_configuration")
 async def delete_collection(conf: Config,
                             credentials  = Depends(credentials_controllers.verify_jws)):
-
-    # collection_name=collection.collection_name
-    # await controllers.remove_collections(collection_name,credentials)
-    # return {"collection_name deleted": collection_name}
-    pass
+    result = await controllers.add_configurations(credentials,conf)
+    return result
 
