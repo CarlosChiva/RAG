@@ -39,3 +39,7 @@ async def delete_collection(conf: Config,
     result = await controllers.add_configurations(credentials,conf)
     return result
 
+@router.get("/try-connection")  
+async def try_connection(conf:Config,credentials  = Depends(credentials_controllers.verify_jws)):
+    result = await controllers.try_connection(conf)
+    return result

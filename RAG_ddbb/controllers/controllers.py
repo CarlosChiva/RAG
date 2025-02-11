@@ -44,3 +44,7 @@ async def add_configurations(user,conf:Config):
     except Exception as e:
         # En caso de error, devolver un mensaje de error
         return {"error": str(e)}
+async def try_connection(config):
+    
+    database=DataBase(config)
+    return database.try_connect()

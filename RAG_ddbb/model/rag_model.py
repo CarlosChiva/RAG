@@ -8,6 +8,7 @@ import os
 from enums_type import Enumms as ennum
 from config import Config
 load_dotenv()
+from sqlalchemy import create_engine
 
 class DataBase:
     def __init__(self,conf:Config):
@@ -17,7 +18,6 @@ class DataBase:
         self.host=conf.host
         self.port=conf.port
         self.database_name=conf.database_name
-        self.connect_db()
 
     def extract_driver(self,type_db):
         match type_db:
@@ -31,6 +31,22 @@ class DataBase:
                 raise ValueError(f"Invalid database type: {type_db}")
     def get_database(self):
         return self.database
+    def try_connect(self):
+        # Construcción de la URL de conexión
+        database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
+
+        # Crear un motor de SQLAlchemy
+        engine = create_engine(database_url)
+
+        # Probar la conexión
+        try:
+            with engine.connect() as connection:
+                pass
+            return {"response":"Conexión exitosa a la base de datos."}
+             
+        except Exception as e:
+            print(f"Error al conectar con la base de datos: {e}")
+            return {"response":"Can't connect to the database."}
     def connect_db(self):
         self.database = SQLDatabase.from_uri(f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}")
 
