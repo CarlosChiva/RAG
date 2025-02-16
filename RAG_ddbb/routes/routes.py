@@ -36,11 +36,13 @@ async def get_collections_name(credentials  = Depends(credentials_controllers.ve
 @router.post("/add_configuration")
 async def delete_collection(conf: Config,
                             credentials  = Depends(credentials_controllers.verify_jws)):
+    
     result = await controllers.add_configurations(credentials,conf)
     return result
 
 @router.get("/try-connection")  
 async def try_connection(conf:Config,credentials  = Depends(credentials_controllers.verify_jws)):
-    print("All ok...",conf) 
-    result = await controllers.try_connection(conf)
-    return result
+    if await controllers.try_connection(conf):
+        return {"Response ":"Connect to database successfully."}
+    else:
+        return {"Response ":"Can't connect to database."}

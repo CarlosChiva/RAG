@@ -46,11 +46,11 @@ class DataBase:
         try:
             with engine.connect() as connection:
                 pass
-            return {"response":"Conexión exitosa a la base de datos."}
+            return True
              
         except Exception as e:
             print(f"Error al conectar con la base de datos: {e}")
-            return {"response":"Can't connect to the database."}
+            return False
     def connect_db(self):
         self.database = SQLDatabase.from_uri(f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}")
 
