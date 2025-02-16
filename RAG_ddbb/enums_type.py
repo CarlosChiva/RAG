@@ -1,6 +1,6 @@
 from enum import Enum
 class Enumms(Enum):
-    SQLite="sqlite"
-    MySQL="mysql"
-    PostgreSQL="postgresql"
+    SQLITE="sqlite"
+    MYSQL="mysql"
+    POSTGRESQL="postgresql"
     

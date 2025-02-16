@@ -20,12 +20,14 @@ class DataBase:
         self.database_name=conf.database_name
 
     def extract_driver(self,type_db):
+        print(type_db)
+        print(type(type_db))
         match type_db:
-            case ennum.SQLITE:
+            case ennum.SQLITE.value:
                 return "sqlite"
-            case ennum.MYSQL:
-                return "mysql+pyodbc"
-            case ennum.POSTGRESQL:
+            case ennum.MYSQL.value:
+                return "mysql+pymysql"
+            case ennum.POSTGRESQL.value:
                 return "postgresql+psycopg2"
             case _:
                 raise ValueError(f"Invalid database type: {type_db}")
@@ -34,10 +36,12 @@ class DataBase:
     def try_connect(self):
         # Construcción de la URL de conexión
         database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
-
-        # Crear un motor de SQLAlchemy
-        engine = create_engine(database_url)
-
+        try:
+            # Crear un motor de SQLAlchemy
+            engine = create_engine(database_url)
+        except Exception as e:
+            print(f"Error al crear el motor de SQLAlchemy: {e}")
+            return {"response":"Can't create the SQLAlchemy engine."}
         # Probar la conexión
         try:
             with engine.connect() as connection:

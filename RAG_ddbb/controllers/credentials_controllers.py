@@ -13,7 +13,7 @@ security = HTTPBearer()
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
-    if token.startswith("Bearer "):  # Eliminar el prefijo si existe
+    if token.startswith("Bearer "):  
         token = token.split("Bearer ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
