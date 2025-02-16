@@ -46,3 +46,9 @@ async def try_connection(conf:Config,credentials  = Depends(credentials_controll
         return {"Response ":"Connect to database successfully."}
     else:
         return {"Response ":"Can't connect to database."}
+
+@router.delete("/remove-configuration")
+async def remove_conf(conf_rm:Config,
+                                credentials  = Depends(credentials_controllers.verify_jws)):    
+    result =await controllers.remove_configuration(conf_rm,credentials)    
+    return {"Response":result}

@@ -56,3 +56,33 @@ async def try_connection(config):
     
     database=DataBase(config)
     return database.try_connect()
+async def remove_configuration(conf_rm:Config,user):
+    try:
+        config_file = os.getenv("CONFIG_FOLDER") + user + ".json"
+
+        # Verificar si el archivo existe y no está vacío
+        if not os.path.exists(config_file) or os.stat(config_file).st_size == 0:
+            return {"error": "Configuration file not found or empty"}
+
+        # Leer el contenido actual del JSON
+        with open(config_file, "r") as f:
+            try:
+                data = json.load(f)  # Cargar lista de configuraciones
+            except json.JSONDecodeError:
+                return {"error": "Invalid JSON format"}
+
+        # Filtrar las configuraciones, eliminando la que coincida con `conf_to_delete`
+        updated_data = [conf for conf in data if conf != conf_rm.dict()]
+
+        # Si no se eliminó ninguna configuración, devolver mensaje de error
+        if len(updated_data) == len(data):
+            return {"error": "Configuration not found"}
+
+        # Sobrescribir el archivo con la lista actualizada
+        with open(config_file, "w") as f:
+            json.dump(updated_data, f, indent=2)
+
+        return {"message": "Configuration removed successfully"}
+
+    except Exception as e:
+        return {"error": str(e)}
