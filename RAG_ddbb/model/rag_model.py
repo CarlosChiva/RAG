@@ -18,6 +18,7 @@ class DataBase:
         self.host=conf.host
         self.port=conf.port
         self.database_name=conf.database_name
+        self.connect_db()
 
     def extract_driver(self,type_db):
         print(type_db)
@@ -61,8 +62,8 @@ class RagModel:
         
     
     def get_sql_agent(self,database):
-       return SQLDatabaseChain(self.model, db=database, agent_type="openai-tools",prompt=self.prompt)
+       return SQLDatabaseChain(llm_chain=self.model, db=database, agent_type="openai-tools",prompt=self.prompt)
     
     def query(self,query,database):
-        result=self.get_sql_agent(database).run(query)
+        result=self.get_sql_agent(database).invoke(query)
         return result

@@ -20,7 +20,7 @@ async def llm_response(input: str,
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
     
-    result = await controllers.querier(question=input,conf=database_conf,credentials=credentials)
+    result = await controllers.querier(question=input,conf=database_conf)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
