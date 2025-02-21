@@ -101,7 +101,7 @@ class RagModel:
                 Question: {question}
                 SQL Query: {query}
                 SQL Response: {response}
-                Return a response with natural language.
+                Return a response with natural language. only return the information that is relevant to the user's question. without add any explaination 
                 """
         return ChatPromptTemplate.from_template(template)
     def run_query(self,query):
@@ -119,4 +119,6 @@ class RagModel:
         )
     def query(self,query):
         result=self.model_full_response.invoke({"question":query})
+        otro=self.get_chain_extract_query().invoke({"question":query})
+        print(self.db.run(otro))
         return result
