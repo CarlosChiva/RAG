@@ -6,7 +6,7 @@ import json
 async def querier(question:str,conf:Config):
 
     database=DataBase(conf).get_database()
-    result=RagModel().query(question,database)
+    result=RagModel(database).query(question)
 
     return result
 
