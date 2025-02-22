@@ -85,6 +85,7 @@ class RagModel:
         Do NOT include explanations or additional text. Only return the SQL query.
         {schema}
         Question: {question}
+        If the question is not in the table schema, return "Esa informacion no existe"
         SQL Query:
         """
         return ChatPromptTemplate.from_template(template)
@@ -122,10 +123,14 @@ class RagModel:
         | StrOutputParser()
         )
     def query(self,query):
-        result=self.model_full_response.invoke({"question":query})
-        otro=self.get_chain_extract_query().invoke({"question":query})
-        with self.engine.connect() as connection:
+        try:
+
+            result=self.model_full_response.invoke({"question":query})
+            otro=self.get_chain_extract_query().invoke({"question":query})
+            with self.engine.connect() as connection:
                 
-            print(pd.read_sql(otro,connection).to_json())
+                print(pd.read_sql(otro,connection).to_json())
         #pd.read_sql(otro,conn).to_json()
+        except:
+            result={"response":"Esa informacion no existe"}
         return result
