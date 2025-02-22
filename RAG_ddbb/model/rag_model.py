@@ -22,6 +22,8 @@ class DataBase:
         self.host=conf.host
         self.port=conf.port
         self.database_name=conf.database_name
+        self.database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
+
         self.connect_db()
 
     def extract_driver(self,type_db):
@@ -38,12 +40,13 @@ class DataBase:
                 raise ValueError(f"Invalid database type: {type_db}")
     def get_database(self):
         return self.database
+    def get_engine(self):
+        return create_engine(self.database_url)
     def try_connect(self):
         # Construcción de la URL de conexión
-        database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
         try:
             # Crear un motor de SQLAlchemy
-            engine = create_engine(database_url)
+            engine = create_engine(self.database_url)
         except Exception as e:
             print(f"Error al crear el motor de SQLAlchemy: {e}")
             return {"response":"Can't create the SQLAlchemy engine."}
@@ -66,14 +69,15 @@ class SQLQueryParser(StrOutputParser):
         match = re.search(r"```sql\n(.*?)\n```", text, re.DOTALL)
         return match.group(1) if match else text.strip()
 
-
+import pandas as pd
 class RagModel:
-    def __init__(self,db):
+    def __init__(self,db,engine):
         self.model = ChatOllama(model=os.getenv("SQL_MODEL"), temperature=0)
         #self.prompt = hub.pull("rlm/text-to-sql")
         self.db=db
         self.model_chain_query=self.get_chain_extract_query()
         self.model_full_response=self.get_chain_full_response()
+        self.engine=engine
         
     def get_sql_query_extractor_prompt(self):
         template="""
@@ -120,5 +124,8 @@ class RagModel:
     def query(self,query):
         result=self.model_full_response.invoke({"question":query})
         otro=self.get_chain_extract_query().invoke({"question":query})
-        print(self.db.run(otro))
+        with self.engine.connect() as connection:
+                
+            print(pd.read_sql(otro,connection).to_json())
+        #pd.read_sql(otro,conn).to_json()
         return result
