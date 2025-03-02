@@ -1,0 +1,16 @@
+/* You can add global styles to this file, and also import other style files */
+/* styles.scss (en la raíz del proyecto) */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #504f4f, #333);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0e0e0;
+    overflow: hidden; /* Esto evita barras de desplazamiento innecesarias */
+  }
+  
+  /* Si estás usando Angular Material, quizás necesites esto también */
+  .mat-app-background {
+    background: transparent;
+  }

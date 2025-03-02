@@ -41,7 +41,7 @@ services:
   front:
     build: ./front
     ports:
-      - "5000:5000"
+      - "4200:4200"
     network_mode: host 
 volumes:
   api:

@@ -1,0 +1,31 @@
+<!-- menu.component.html -->
+<h1 id="Tittle">Welcome {{username}}</h1>
+
+<div class="container">
+  <div class="icon-container" id="iconContainer">
+    <!-- Botón Chat siempre visible -->
+    
+    <!-- Servicios del usuario -->
+    <a *ngFor="let service of services" [routerLink]="['/' + service]" class="icon-button">
+      <img [src]="icons[service]" [alt]="service">
+    </a>
+  </div>
+</div>
+
+<button id="openSidebar" class="add-button" (click)="openSidebar()">+</button>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar" [class.active]="sidebarActive">
+  <button id="closeSidebar" class="close-button" (click)="closeSidebar()">&times;</button>
+  <h2>Servicios Disponibles</h2>
+  <div id="sidebarIcons" class="sidebar-icons">
+    <a *ngFor="let service of availableServices" 
+       href="javascript:void(0)" 
+       class="icon-sidebar-button" 
+       (click)="selectService(service)">
+      <img [src]="icons[service]" [alt]="service">
+    </a>
+  </div>
+</div>
+
+<button class="logout-button" id="logoutButton" (click)="logout()">Log Out</button>

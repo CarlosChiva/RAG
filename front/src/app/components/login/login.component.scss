@@ -1,0 +1,144 @@
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #504f4f, #333);
+
+  }
+ body {
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     background: linear-gradient(135deg, #504f4f, #333);
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     color: #e0e0e0; 
+ }
+/* Contenedor principal */
+.container {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 
+                0 6px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Asegura que todo el contenido esté centrado */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Formulario */
+form {
+    width: 100%; /* Que ocupe todo el ancho del contenedor */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar elementos dentro */
+}
+
+/* Estilos para los inputs */
+input[type="text"], input[type="password"] {
+    width: calc(100% - 24px); /* Ajusta el ancho para compensar el padding */
+    max-width: 300px; /* Para evitar que crezca demasiado en pantallas grandes */
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Ajustar los labels */
+label {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+    text-align: left; /* Se ve más profesional alineado a la izquierda */
+}
+
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4b6cb7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #3a57a4;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+.singin {
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.singin a {
+    color: #4b6cb7;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.singin a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgba(255, 77, 77, 0.1);
+    text-align: center;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Animación para la transición entre Login y Sign Up */
+@keyframes fadeOutIn {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-transition {
+    animation: fadeOutIn 0.5s ease-in-out;
+}

@@ -1,0 +1,61 @@
+<!-- upload.component.html -->
+<div class="upload-container">
+  <h1>Send PDF</h1>
+  <form (submit)="uploadFiles(); $event.preventDefault()">
+    <input 
+      type="file" 
+      #fileInput 
+      accept=".pdf" 
+      multiple 
+      (change)="handleFileInput($event)" 
+      style="display: none;">
+    
+    <div 
+      id="dropzone" 
+      (click)="openFileDialog()" 
+      (dragover)="onDragOver($event)" 
+      (dragleave)="onDragLeave($event)" 
+      (drop)="onDrop($event)">
+      {{ files && files.length ? files.length + ' file(s) selected' : 'Drag & Drop PDFs Here' }}
+    </div>
+    
+    <div>
+      <label for="collectionSelect">Select Existing Collection:</label>
+      <select 
+        id="collectionSelect" 
+        [(ngModel)]="selectedCollection" 
+        name="collectionSelect">
+        <option value="">-- Select Collection --</option>
+        <option *ngFor="let collection of collections" [value]="collection">
+          {{ collection }}
+        </option>
+      </select>
+      
+      <label for="newCollection">Or</label>
+      <input 
+        type="text" 
+        id="newCollection" 
+        placeholder="Enter a new collection name" 
+        [(ngModel)]="newCollection" 
+        name="newCollection">
+    </div>
+    
+    <button 
+      type="submit" 
+      id="uploadButton" 
+      [disabled]="isLoading" 
+      [style.backgroundColor]="isLoading ? '#666' : '#007bff'"
+      [style.cursor]="isLoading ? 'not-allowed' : 'pointer'">
+      Upload
+    </button>
+
+    <!-- Círculo de carga -->
+    <div class="loader-container" [style.display]="isLoading ? 'block' : 'none'">
+      <div class="circle-loader">
+        <div class="circle"></div>
+      </div>
+    </div>
+  </form>
+
+  <a (click)="navigateBack()" id="backButton" style="cursor: pointer;">Back to Chat</a>
+</div>

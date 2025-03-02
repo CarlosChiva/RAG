@@ -1,16 +1,20 @@
-# Usa la imagen correcta de Python 3.10
-FROM python:3.10-slim
+# Imagen base
+FROM node:18-alpine
 
-WORKDIR /app-front
+# Directorio de trabajo
+WORKDIR /app
 
-COPY requirements.txt .
+# Copiar package.json y package-lock.json
+COPY package*.json ./
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Instalar dependencias
+RUN npm install
 
+# Copiar el resto del código fuente
 COPY . .
 
-# Expone el puerto en el que se ejecutará la aplicación (ajusta según sea necesario)
-EXPOSE 5000
+# Exponer el puerto que usa Angular (por defecto 4200)
+EXPOSE 4200
 
-# Comando para ejecutar la aplicación
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
+# Comando para iniciar la aplicación
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--disable-host-check"]
