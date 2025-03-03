@@ -37,6 +37,7 @@ services:
 
     volumes:
       - RAG_documents:/app/PersistDirectory
+      - conversations:/app/conversations
   rag_ddbb:
     build: ./RAG_ddbb
     ports:
@@ -55,3 +56,4 @@ volumes:
   RAG_documents:
   db_data:
   rag_ddbb:
+  conversations:

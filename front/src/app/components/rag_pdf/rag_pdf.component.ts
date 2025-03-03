@@ -4,6 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+interface UserMessage {
+  user: string;
+}
+
+interface BotMessage {
+  bot: string;
+}
+type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
   selector: 'app-pdf',
@@ -12,12 +20,19 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
+// Define interfaces para tus tipos de mensajes
+
+// Tipo unión para cualquier tipo de mensaje
+
 export class PdfComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
 
+  
   sidebarCollapsed = false;
   collections: string[] = [];
+  conversation: any[] = [];
+
   selectedCollection: string | null = null;
   message: string = '';
   isSending = false;
@@ -81,7 +96,43 @@ export class PdfComponent implements OnInit {
   }
 
   selectCollection(collectionName: string): void {
+    const token = localStorage.getItem('access_token');
     this.selectedCollection = collectionName;
+    
+  this.http.get<any>(`http://localhost:8000/get-conversation?collection_name=${collectionName}`, {
+    headers: new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    })
+  }).subscribe({
+    next: (conversation) => {
+      this.messages = [];
+      console.log(conversation);
+      
+      conversation.forEach((message: ConversationMessage) => {
+        if ('user' in message) {
+          this.messages.push({
+            text: message.user,
+            isUser: true
+          });
+        }
+        else if ('bot' in message) {
+          this.messages.push({
+            text: message.bot,
+            isUser: false
+          });
+        }
+      });
+      
+      setTimeout(() => {
+        if (this.chatOutput) {
+          this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
+        }
+      });
+    },
+    error: (error) => {
+      console.error('Error loading conversation:', error);
+    }
+  });
   }
 
   deleteCollection(collectionName: string, event: Event): void {

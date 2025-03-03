@@ -21,6 +21,8 @@ COPY . .
 
 # Crea el directorio PersistDirectory si no existe
 RUN mkdir -p PersistDirectory
+RUN mkdir -p conversations
+
 
 # Expone el puerto en el que se ejecutará la aplicación (ajusta según sea necesario)
 EXPOSE 8000

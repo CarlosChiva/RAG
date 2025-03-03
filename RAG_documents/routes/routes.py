@@ -47,20 +47,6 @@ async def add_document(file: UploadFile = File(...),
     except Exception as e:
             print(f"Error in process_pdf: {e}")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
-    
-    # try:
-    
-    #     with tempfile.NamedTemporaryFile(delete=False)as temp_file:
-    #         temp_file.write(await file.read())
-    #         temp_path = temp_file.name+file.filename
-    
-    
-    #     finally:
-    #         os.unlink(temp_path)  # Asegura que el archivo temporal se elimine
-
-    # except Exception as e:
-    #     print(f"Error in process_pdf: {e}")
-    #     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while processing the PDF")
 
 #-------------------------Collection routes-----------------------
 
@@ -69,6 +55,14 @@ async def get_collections_name(credentials  = Depends(credentials_controllers.ve
 
     collections= await controllers.show_name_collections(credentials)
     return {"collections_name": collections}
+
+@router.get("/get-conversation")
+async def get_conversation(collection_name,
+                            credentials  = Depends(credentials_controllers.verify_jws)):
+
+    collection_name=collection_name
+    conversation=await controllers.get_conversation(collection_name,credentials)
+    return conversation 
 
 @router.post("/delete-collection")
 async def delete_collection(collection: CollectionRequest,
