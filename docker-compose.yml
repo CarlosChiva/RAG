@@ -49,19 +49,8 @@ services:
   front:
     build: ./front
     ports:
-<<<<<<< HEAD
-      - "5000:5000"
-    depends_on:
-      - rag_documents
-      - db_service
-    # links:
-    #   - api
-    #   - db_service    
-#    network_mode: host 
-=======
       - "4200:4200"
     network_mode: host 
->>>>>>> frontend
 volumes:
   RAG_documents:
   db_data:

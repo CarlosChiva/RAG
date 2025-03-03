@@ -58,7 +58,7 @@ async def get_services_from_user(credentials  = Depends(credentials_controllers.
     
     
     if not result :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        return {"services": []}
     return {"services": result}
 
 

@@ -19,21 +19,23 @@ export class AuthService {
     let params = new HttpParams()
       .set('username', username)
       .set('password', password);
-
+  
     return this.http.get<AuthResponse>(`${this.apiUrl}/log-in`, { params })
       .pipe(
         tap(response => {
-          localStorage.setItem('access_token', 'Bearer ' + response.access_token);
+          // Guarda SOLO el token sin el "Bearer "
+          localStorage.setItem('access_token', response.access_token);
           localStorage.setItem('user_name', username);
         })
       );
   }
-
+  
   signup(username: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/sing_up`, { username, password })
       .pipe(
         tap(response => {
-          localStorage.setItem('access_token', 'Bearer ' + response.access_token);
+          // Guarda SOLO el token sin el "Bearer "
+          localStorage.setItem('access_token', response.access_token);
           localStorage.setItem('user_name', username);
         })
       );
