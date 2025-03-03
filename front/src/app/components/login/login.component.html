@@ -1,0 +1,20 @@
+<!-- login.component.html -->
+<div class="container">
+    <h1 id="formTitle">{{ formTitle }}</h1>
+  
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" [ngClass]="{'fade-transition': isToggling}">
+      <label for="username">Username</label>
+      <input type="text" id="username" formControlName="username" required>
+  
+      <label for="password">Password</label>
+      <input type="password" id="password" formControlName="password" required>
+  
+      <button type="submit" id="submitButton">{{ submitButtonText }}</button>
+    </form>
+  
+    <div class="sign-up">
+      <a href="#" id="signUpLink" (click)="toggleMode($event)">
+        {{ isSignUpMode ? 'Log In' : 'Sign Up' }}
+      </a>
+    </div>
+  </div>
