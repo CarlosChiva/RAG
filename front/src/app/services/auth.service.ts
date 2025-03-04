@@ -11,7 +11,7 @@ interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8001';
+  private apiUrl_user_ddbb = 'http://localhost:8001';
 
   constructor(private http: HttpClient) { }
 
@@ -20,7 +20,7 @@ export class AuthService {
       .set('username', username)
       .set('password', password);
   
-    return this.http.get<AuthResponse>(`${this.apiUrl}/log-in`, { params })
+    return this.http.get<AuthResponse>(`${this.apiUrl_user_ddbb}/log-in`, { params })
       .pipe(
         tap(response => {
           // Guarda SOLO el token sin el "Bearer "
@@ -31,7 +31,7 @@ export class AuthService {
   }
   
   signup(username: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/sing_up`, { username, password })
+    return this.http.post<AuthResponse>(`${this.apiUrl_user_ddbb}/sing_up`, { username, password })
       .pipe(
         tap(response => {
           // Guarda SOLO el token sin el "Bearer "

@@ -4,6 +4,8 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { CollectionsService } from '../../services/collections.service';
+
 interface UserMessage {
   user: string;
 }
@@ -35,7 +37,10 @@ export class PdfComponent implements OnInit {
 
   selectedCollection: string | null = null;
   message: string = '';
-  isSending = false;
+  
+  //messages: Message[] = [];
+  isSending: boolean = false;
+
   // Añade esta interfaz y la propiedad messages
   messages: {
     text: string;
@@ -45,22 +50,13 @@ export class PdfComponent implements OnInit {
 
 
   constructor(
-    private router: Router,
-    private http: HttpClient
-  ) {}
+    private collectionsService: CollectionsService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    const token = localStorage.getItem('access_token');
-    
-    if (!token) {
-      alert('Token expired. Please, sign up again');
-      this.router.navigate(['/login']);
-      return;
-    }
-    
     this.loadCollections();
   }
-
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
@@ -77,90 +73,62 @@ export class PdfComponent implements OnInit {
   }
 
   loadCollections(): void {
-    const token = localStorage.getItem('access_token');
-    
-    this.http.get<{collections_name: string[]}>('http://127.0.0.1:8000/collections', {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    }).subscribe({
-      next: (data) => {
+    this.collectionsService.getCollections().subscribe({
+      next: (data: {collections_name: string[]}) => {
         this.collections = data.collections_name;
         
         if (this.collections.length === 0) {
           this.router.navigate(['/upload']);
         }
       },
-      error: (error) => console.error('Error fetching collections:', error)
+      error: (error: any) => console.error('Error fetching collections:', error)
     });
   }
 
   selectCollection(collectionName: string): void {
-    const token = localStorage.getItem('access_token');
     this.selectedCollection = collectionName;
     
-  this.http.get<any>(`http://localhost:8000/get-conversation?collection_name=${collectionName}`, {
-    headers: new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    })
-  }).subscribe({
-    next: (conversation) => {
-      this.messages = [];
-      console.log(conversation);
-      
-      conversation.forEach((message: ConversationMessage) => {
-        if ('user' in message) {
-          this.messages.push({
-            text: message.user,
-            isUser: true
-          });
-        }
-        else if ('bot' in message) {
-          this.messages.push({
-            text: message.bot,
-            isUser: false
-          });
-        }
-      });
-      
-      setTimeout(() => {
-        if (this.chatOutput) {
-          this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
-        }
-      });
-    },
-    error: (error) => {
-      console.error('Error loading conversation:', error);
-    }
-  });
+    this.collectionsService.getConversation(collectionName).subscribe({
+      next: (conversation: any) => {
+        this.messages = [];
+        console.log(conversation);
+        
+        conversation.forEach((message: any) => {
+          if ('user' in message) {
+            this.messages.push({
+              text: message.user || '',
+              isUser: true
+            });
+          }
+          else if ('bot' in message) {
+            this.messages.push({
+              text: message.bot || '',
+              isUser: false
+            });
+          }
+        });
+        
+        this.scrollChatToBottom();
+      },
+      error: (error: any) => {
+        console.error('Error loading conversation:', error);
+      }
+    });
   }
 
   deleteCollection(collectionName: string, event: Event): void {
     event.stopPropagation(); // Prevent triggering selectCollection
-    const token = localStorage.getItem('access_token');
-    
-    if (this.selectedCollection === collectionName) {
-      this.selectedCollection = null;
-    }
-    
-    this.http.post('http://localhost:8000/delete-collection', 
-      { collection_name: collectionName },
-      {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        })
-      }
-    ).subscribe({
+    this.collectionsService.deleteCollection(collectionName).subscribe({
       next: () => {
         this.collections = this.collections.filter(name => name !== collectionName);
       },
-      error: (error) => console.error('Error deleting collection:', error)
+      error: (error: any) => console.error('Error deleting collection:', error)
     });
   }
 
+
   sendMessage(): void {
-    const messageText = this.message.trim(); // Declara la variable messageText
+    const messageText = this.message.trim();
     
     if (!messageText || !this.selectedCollection) {
       alert('Please enter a message and select a collection.');
@@ -171,25 +139,14 @@ export class PdfComponent implements OnInit {
     
     // Añadir mensaje del usuario
     this.messages.push({
-      text: messageText, // Usa messageText aquí
+      text: messageText,
       isUser: true
     });
     
     // Limpiar el input
     this.message = '';
     
-    // Hacer scroll hacia abajo
-    setTimeout(() => {
-      if (this.chatOutput) {
-        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
-      }
-    });
-    
-    const token = localStorage.getItem('access_token');
-    const params = new URLSearchParams({
-      input: messageText, // Usa messageText aquí
-      collection_name: this.selectedCollection
-    });
+    this.scrollChatToBottom();
     
     // Añadir mensaje del bot con estado "typing"
     const botMessageIndex = this.messages.length;
@@ -199,17 +156,12 @@ export class PdfComponent implements OnInit {
       isTyping: true
     });
     
-    this.http.get<string>(`http://localhost:8000/llm-response?${params.toString()}`, {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      }),
-      responseType: 'json' as any
-    }).subscribe({
-      next: (data) => {
+    this.collectionsService.sendMessage(messageText, this.selectedCollection).subscribe({
+      next: (data: string) => {
         // Iniciar animación de escritura
         this.typeTextInMessage(botMessageIndex, data);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error sending message:', error);
         // Actualizar mensaje con error
         this.messages[botMessageIndex] = {
@@ -260,5 +212,12 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
     if (event.key === 'Enter') {
       this.sendMessage();
     }
+  }
+  private scrollChatToBottom(): void {
+    setTimeout(() => {
+      if (this.chatOutput) {
+        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
+      }
+    });
   }
 };
