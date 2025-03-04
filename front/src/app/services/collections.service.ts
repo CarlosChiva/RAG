@@ -55,4 +55,19 @@ export class CollectionsService {
       responseType: 'json' as any
     });
   }
+  uploadFiles(files: FileList, collectionName: string): Observable<any> {
+    const formData = new FormData();
+    
+    for (let i = 0; i < files.length; i++) {
+      formData.append('file', files[i]);
+    }
+    
+    formData.append('name_collection', collectionName);
+    
+    return this.http.post(`${this.apiUrl}/add_document`, formData, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+      })
+    });
+  }
 }

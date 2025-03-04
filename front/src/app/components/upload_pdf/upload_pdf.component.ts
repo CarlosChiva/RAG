@@ -4,6 +4,7 @@ import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { CollectionsService } from '../../services/collections.service';
 
 @Component({
   selector: 'app-upload',
@@ -23,7 +24,8 @@ export class UploadComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private http: HttpClient
+    private collectionsService: CollectionsService
+
   ) {}
 
   ngOnInit(): void {
@@ -39,13 +41,7 @@ export class UploadComponent implements OnInit {
   }
 
   loadCollections(): void {
-    const token = localStorage.getItem('access_token');
-    
-    this.http.get<{collections_name: string[]}>('http://127.0.0.1:8000/collections', {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    }).subscribe({
+    this.collectionsService.getCollections().subscribe({
       next: (data) => {
         this.collections = data.collections_name;
       },
@@ -65,13 +61,7 @@ export class UploadComponent implements OnInit {
   }
 
   navigateBack(): void {
-    const token = localStorage.getItem('access_token');
-    
-    this.http.get<{collections_name: string[]}>('http://127.0.0.1:8000/collections', {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    }).subscribe({
+    this.collectionsService.getCollections().subscribe({
       next: (data) => {
         if (data.collections_name.length === 0) {
           alert('No collections found');
@@ -123,22 +113,12 @@ export class UploadComponent implements OnInit {
       return;
     }
 
-    const token = localStorage.getItem('access_token');
-    const formData = new FormData();
-    
-    for (let i = 0; i < this.files.length; i++) {
-      formData.append('file', this.files[i]);
-    }
-    
-    formData.append('name_collection', this.selectedCollection || this.newCollection);
-    
+    // Definir correctamente la variable collectionName
+    const collectionToUse = this.selectedCollection || this.newCollection;
+       
     this.isLoading = true;
     
-    this.http.post('http://localhost:8000/add_document', formData, {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
-    }).subscribe({
+    this.collectionsService.uploadFiles(this.files, collectionToUse).subscribe({
       next: (response: any) => {
         alert('Files uploaded successfully!');
         this.files = null;
