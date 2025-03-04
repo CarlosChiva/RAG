@@ -32,7 +32,9 @@ async def querier(question:str,collection_name:str,credentials:str):
     vectorstore=await get_vectorstore(cli,collection_name)
     
     chain= await get_chain(model=model,vector_store=vectorstore)
-    response=chain.invoke({"input":question})
+    chat= await get_conversation(collection_name,credentials)
+    
+    response=chain.invoke({"input":question,"chat_history":chat})
     await add_conversation(collection_name,credentials,question,response['answer'])
     return response['answer']
 

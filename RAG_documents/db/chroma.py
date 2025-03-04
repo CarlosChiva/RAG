@@ -7,8 +7,10 @@ async def get_chain(model,vector_store):
     
     
     # Prompt 
-    template = """Eres un asistente que responde a preguntas del usuario solo en base a la informacion guardada.
+    template = """Eres un asistente que responde a las preguntas del usuario solo en base a la informacion guardada en el contexto.
     La informacion proporcionada en el contexto esta enviada desde la propia base de datos.
+    Tambien puedes utilizar el historial de chat para responder a las preguntas del usuario.
+    Historial de chat: {chat_history}
     Contexto: {context}
     Pregunta: {input}
 
@@ -21,7 +23,7 @@ async def get_chain(model,vector_store):
 
      Respuesta:"""
     
-    prompt = PromptTemplate(template=template, input_variables=["context", "input"])
+    prompt = PromptTemplate(template=template, input_variables=["context", "input", "chat_history"])
     
     # build chain
     retriever = vector_store.as_retriever(search_type="mmr",search_kwargs={"k": 3})
