@@ -1,6 +1,6 @@
 // auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 interface AuthResponse {
@@ -14,7 +14,15 @@ export class AuthService {
   private apiUrl_user_ddbb = 'http://localhost:8001';
 
   constructor(private http: HttpClient) { }
-
+  private getAuthHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Authorization': this.getToken() || '',
+      'Content-Type': 'application/json'
+    });
+  }
+  getUsername(): string {
+    return localStorage.getItem('user_name') || '';
+  }
   login(username: string, password: string): Observable<AuthResponse> {
     let params = new HttpParams()
       .set('username', username)
@@ -44,6 +52,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user_name');
+    
   }
 
   isAuthenticated(): boolean {
@@ -53,5 +62,22 @@ export class AuthService {
   getToken(): string | null {
     const token = localStorage.getItem('access_token');
     return token ? `Bearer ${token}` : null;
+  }
+  getServices(): Observable<{services: string[]}> {
+    return this.http.get<{services: string[]}>(`${this.apiUrl_user_ddbb}/get-services`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
+  getAvailableServices(): Observable<{services: string[]}> {
+    return this.http.get<{services: string[]}>(`${this.apiUrl_user_ddbb}/get-services-available`, { 
+      headers: this.getAuthHeaders() 
+    });
+  }
+
+  selectService(service: string): Observable<any> {
+    return this.http.get(`${this.apiUrl_user_ddbb}/add-services?service=${encodeURIComponent(service)}`, { 
+      headers: this.getAuthHeaders() 
+    });
   }
 }
