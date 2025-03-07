@@ -20,7 +20,7 @@ async def get_configurations(user):
             conf_list = json.load(f)  
             print("Load json  ",conf_list)
             #conf_list=ast.literal_eval(conf_list)
-            configs=[Config.deserialize(conf) for conf in conf_list]#[conf.deserialize() for conf in conf_list]
+            configs=[Config.deserialize(conf) for conf in conf_list]
         return configs
     except FileNotFoundError as e:
         print("File not found", e)
