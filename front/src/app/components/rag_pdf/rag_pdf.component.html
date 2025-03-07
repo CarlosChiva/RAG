@@ -50,7 +50,15 @@
           <span *ngIf="!isSending">Send</span>
         </button>
       </div>
-      <a [routerLink]="['/upload']" id="uploadButton" class="button">Add PDF</a>
+
+     <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
+
+     <!-- Ventana Emergente -->
+     <div class="overlay" *ngIf="mostrarModal">
+       <div class="modal">
+         <app-upload (cerrarModal)="cerrarModal()"></app-upload>
+       </div>
+     </div>
     </div>
   </div>
 </div>

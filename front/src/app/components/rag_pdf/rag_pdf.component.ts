@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
+import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
 
 interface UserMessage {
   user: string;
@@ -18,7 +19,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RouterLink, FormsModule],
+  imports: [CommonModule, HttpClientModule, RouterLink, FormsModule,UploadComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -40,7 +41,7 @@ export class PdfComponent implements OnInit {
   
   //messages: Message[] = [];
   isSending: boolean = false;
-
+  mostrarModal: boolean = false;
   // Añade esta interfaz y la propiedad messages
   messages: {
     text: string;
@@ -53,7 +54,17 @@ export class PdfComponent implements OnInit {
     private collectionsService: CollectionsService,
     private router: Router
   ) { }
+  abrirModal() {
+    this.mostrarModal = true;
+    document.body.classList.add('modal-open'); // Bloquea el fondo
+  }
 
+  cerrarModal() {
+    this.mostrarModal = false;
+    document.body.classList.remove('modal-open');
+    // Recargar los datos llamando a ngOnInit()
+    this.ngOnInit();
+}
   ngOnInit(): void {
     this.loadCollections();
   }

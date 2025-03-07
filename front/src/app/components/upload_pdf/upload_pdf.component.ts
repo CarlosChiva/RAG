@@ -1,5 +1,5 @@
 // upload.component.ts
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
@@ -15,7 +15,8 @@ import { CollectionsService } from '../../services/collections.service';
 })
 export class UploadComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  
+  @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
+
   collections: string[] = [];
   selectedCollection: string = '';
   newCollection: string = '';
@@ -135,5 +136,8 @@ export class UploadComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  cerrar() {
+    this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
 }
