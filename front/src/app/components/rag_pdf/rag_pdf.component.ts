@@ -89,7 +89,7 @@ export class PdfComponent implements OnInit {
         this.collections = data.collections_name;
         
         if (this.collections.length === 0) {
-          this.router.navigate(['/upload']);
+          this.abrirModal();
         }
       },
       error: (error: any) => console.error('Error fetching collections:', error)
