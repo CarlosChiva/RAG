@@ -1,6 +1,9 @@
 <!-- upload.component.html -->
 <div class="upload-container">
+  <button class="backButton" id="backButton" (click)="cerrar()">X</button>
+
   <h1>Send PDF</h1>
+
   <form (submit)="uploadFiles(); $event.preventDefault()">
     <input 
       type="file" 
@@ -55,7 +58,7 @@
         <div class="circle"></div>
       </div>
     </div>
+
   </form>
-  <button class="close-button" (click)="cerrar()">X</button>
 
 </div>
