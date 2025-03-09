@@ -62,7 +62,6 @@ export class PdfComponent implements OnInit {
   cerrarModal() {
     this.mostrarModal = false;
     document.body.classList.remove('modal-open');
-    // Recargar los datos llamando a ngOnInit()
     this.ngOnInit();
 }
   ngOnInit(): void {
