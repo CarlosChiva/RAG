@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RagDdbbComponent } from './rag-ddbb.component';
+import { RagDdbbComponent } from './rag_ddbb.component';
 
 describe('RagDdbbComponent', () => {
   let component: RagDdbbComponent;

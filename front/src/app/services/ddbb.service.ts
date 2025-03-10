@@ -19,9 +19,15 @@ import { Observable } from 'rxjs';
           headers: this.getHeaders()
         });
       }
-    question(): Observable<{configs: string[]}> {
-        return this.http.get<{configs: string[]}>(`${this.apiUrl}/question`, {
-          headers: this.getHeaders()
+    question(message: string, collectionName: string): Observable<string> {
+      const params = new URLSearchParams({
+        input: message,
+        collection_name: collectionName
+      });
+      
+        return this.http.get<string>(`${this.apiUrl}/question${params.toString()}`, {
+          headers: this.getHeaders(),
+          responseType: 'json' as any
         });
       }
     addConfig(config: string): Observable<{configs: string[]}> {

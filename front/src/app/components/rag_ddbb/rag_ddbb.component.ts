@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
+import { DdbbServices } from '../../services/ddbb.service';
 
 interface UserMessage {
   user: string;
@@ -17,26 +18,26 @@ interface BotMessage {
 type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
-  selector: 'app-pdf',
+  selector: 'app-rag-ddbb',
   standalone: true,
   imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent],
-  templateUrl: './rag_pdf.component.html',
-  styleUrls: ['./rag_pdf.component.scss']
+  templateUrl: './rag_ddbb.component.html',
+  styleUrls: ['./rag_ddbb.component.scss']
 })
 // Define interfaces para tus tipos de mensajes
 
 // Tipo unión para cualquier tipo de mensaje
 
-export class PdfComponent implements OnInit {
+export class RagDdbbComponent {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
 
   
   sidebarCollapsed = false;
-  collections: string[] = [];
+  configs: string[] = [];
   conversation: any[] = [];
 
-  selectedCollection: string | null = null;
+  selectedConfig: string | null = null;
   message: string = '';
   
   //messages: Message[] = [];
@@ -51,7 +52,7 @@ export class PdfComponent implements OnInit {
 
 
   constructor(
-    private collectionsService: CollectionsService,
+    private configsService: DdbbServices,
     private router: Router
   ) { }
   abrirModal() {
@@ -65,7 +66,7 @@ export class PdfComponent implements OnInit {
     this.ngOnInit();
 }
   ngOnInit(): void {
-    this.loadCollections();
+    this.loadConfigs();
   }
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
@@ -82,55 +83,55 @@ export class PdfComponent implements OnInit {
     this.router.navigate(['/menu']);
   }
 
-  loadCollections(): void {
-    this.collectionsService.getCollections().subscribe({
-      next: (data: {collections_name: string[]}) => {
-        this.collections = data.collections_name;
+  loadConfigs(): void {
+    this.configsService.getConfigs().subscribe({
+    //   next: (data: {collections_name: string[]}) => {
+    //     this.collections = data.collections_name;
         
-        if (this.collections.length === 0) {
-          this.abrirModal();
-        }
-      },
-      error: (error: any) => console.error('Error fetching collections:', error)
-    });
+    //     if (this.collections.length === 0) {
+    //       this.abrirModal();
+    //     }
+    //   },
+    //   error: (error: any) => console.error('Error fetching collections:', error)
+     });
   }
 
-  selectCollection(collectionName: string): void {
-    this.selectedCollection = collectionName;
+  selectConfig(collectionName: string): void {
+    this.selectedConfig = collectionName;
     
-    this.collectionsService.getConversation(collectionName).subscribe({
-      next: (conversation: any) => {
-        this.messages = [];
-        console.log(conversation);
+    // this.configsService.getConversation(collectionName).subscribe({
+    //   next: (conversation: any) => {
+    //     this.messages = [];
+    //     console.log(conversation);
         
-        conversation.forEach((message: any) => {
-          if ('user' in message) {
-            this.messages.push({
-              text: message.user || '',
-              isUser: true
-            });
-          }
-          else if ('bot' in message) {
-            this.messages.push({
-              text: message.bot || '',
-              isUser: false
-            });
-          }
-        });
+    //     conversation.forEach((message: any) => {
+    //       if ('user' in message) {
+    //         this.messages.push({
+    //           text: message.user || '',
+    //           isUser: true
+    //         });
+    //       }
+    //       else if ('bot' in message) {
+    //         this.messages.push({
+    //           text: message.bot || '',
+    //           isUser: false
+    //         });
+    //       }
+    //     });
         
-        this.scrollChatToBottom();
-      },
-      error: (error: any) => {
-        console.error('Error loading conversation:', error);
-      }
-    });
+    //     this.scrollChatToBottom();
+    //   },
+    //   error: (error: any) => {
+    //     console.error('Error loading conversation:', error);
+    //   }
+    // });
   }
 
   deleteCollection(collectionName: string, event: Event): void {
     event.stopPropagation(); // Prevent triggering selectCollection
-    this.collectionsService.deleteCollection(collectionName).subscribe({
+    this.configsService.removeConfig(collectionName).subscribe({
       next: () => {
-        this.collections = this.collections.filter(name => name !== collectionName);
+        //this.selectedConfig = this.configs.filter(name => name !== collectionName);
       },
       error: (error: any) => console.error('Error deleting collection:', error)
     });
@@ -140,7 +141,7 @@ export class PdfComponent implements OnInit {
   sendMessage(): void {
     const messageText = this.message.trim();
     
-    if (!messageText || !this.selectedCollection) {
+    if (!messageText || !this.selectedConfig) {
       alert('Please enter a message and select a collection.');
       return;
     }
@@ -166,7 +167,7 @@ export class PdfComponent implements OnInit {
       isTyping: true
     });
     
-    this.collectionsService.sendMessage(messageText, this.selectedCollection).subscribe({
+    this.configsService.question(messageText, this.selectedConfig).subscribe({
       next: (data: string) => {
         // Iniciar animación de escritura
         this.typeTextInMessage(botMessageIndex, data);

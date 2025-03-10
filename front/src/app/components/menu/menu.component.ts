@@ -83,6 +83,7 @@ export class MenuComponent implements OnInit {
   selectService(service: string): void {
     this.authService.selectService(service).subscribe({
       next: () => {
+        console.log('Servicio seleccionado:', service);
         this.router.navigate([`/${service}`]);
       },
       error: (error) => {

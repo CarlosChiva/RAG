@@ -1,0 +1,64 @@
+<!-- rag-ddbb.component.html -->
+<div class="container">
+  <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar">
+    <h2 align="right" id="collectionsTitle">Configs</h2>
+    <ul id="collections-list">
+      <li *ngFor="let collection of configs" 
+          [class.selected]="selectedConfig === collection"
+          class="collection-item"
+          (click)="selectConfig(collection)">
+        {{ collection }}
+        <button class="delete-button" (click)="deleteCollection(collection, $event)">-</button>
+      </li>
+    </ul>
+    <div class="button-container">
+      <button id="logoutButton" class="logout-btn" (click)="logout()">Logout</button>
+      <button id="menuButton" class="main-btn" (click)="navigateToMenu()">Menu</button>
+    </div>
+  </div>
+  
+  <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button>
+
+  <div class="main-content" [class.expanded]="sidebarCollapsed">
+    <div class="chat-area" id="chat-area">
+      <div id="chat-output" #chatOutput>
+        <div *ngFor="let msg of messages" 
+             [class.message]="true"
+             [class.user-message]="msg.isUser"
+             [class.bot-message]="!msg.isUser"
+             [class.typing]="msg.isTyping">
+          {{ msg.text }}
+          <div *ngIf="msg.isTyping" class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+      <div class="input-area">
+        <input type="text" 
+        id="inputText" 
+        placeholder="Type your message here..." 
+        [value]="message"
+        (input)="message = $any($event.target).value" 
+        (keydown.enter)="sendMessage(); $event.preventDefault()"
+        #inputText>
+        <button id="sendButton" 
+                (click)="sendMessage()" 
+                [disabled]="isSending">
+          <div class="spinner" *ngIf="isSending"></div>
+          <span *ngIf="!isSending">Send</span>
+        </button>
+      </div>
+
+     <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
+
+     <!-- Ventana Emergente -->
+     <div class="overlay" *ngIf="mostrarModal">
+       <div class="modal">
+         <app-upload (cerrarModal)="cerrarModal()"></app-upload>
+       </div>
+     </div>
+    </div>
+  </div>
+</div>
