@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
 import { DdbbServices } from '../../services/ddbb.service';
-
+import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 interface UserMessage {
   user: string;
 }
@@ -20,7 +20,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })

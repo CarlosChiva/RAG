@@ -15,7 +15,19 @@ async def get_configurations(user):
     print("Enter to get_configurations    ", user)
     try:
         print("file path  ",os.getenv("CONFIG_FOLDER")+user+".json")
-        conf_list=os.getenv("CONFIG_FOLDER")+user+".json"
+        config_folder = os.getenv("CONFIG_FOLDER")
+        conf_list=config_folder+user+".json"
+                # Verificar si el directorio existe, si no, crearlo
+        if not os.path.exists(config_folder):
+            os.makedirs(config_folder)
+            print(f"Created directory: {config_folder}")
+        
+        # Verificar si el archivo existe, si no, crearlo con una lista vacía
+        if not os.path.exists(conf_list):
+            print("File not found, creating empty file")
+            with open(conf_list, "w") as f:
+                json.dump([], f)
+        
         with open(conf_list, "r") as f:
             conf_list = json.load(f)  
             print("Load json  ",conf_list)
