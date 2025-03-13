@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {DbConfig} from '../interfaces/db-conf.interface';
 @Injectable({
     providedIn: 'root'
   })
@@ -14,8 +15,8 @@ import { Observable } from 'rxjs';
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         });
       }
-    getConfigs(): Observable<{configs: string[]}> { // mirar los tipos de datos
-        return this.http.get<{configs: string[]}>(`${this.apiUrl}/get-list-configurations`, {
+    getConfigs(): Observable<{configs: DbConfig}> { // mirar los tipos de datos
+        return this.http.get<{configs: DbConfig}>(`${this.apiUrl}/get-list-configurations`, {
           headers: this.getHeaders()
         });
       }
@@ -30,10 +31,10 @@ import { Observable } from 'rxjs';
           responseType: 'json' as any
         });
       }
-    addConfig(config: string): Observable<{configs: string[]}> {
-        return this.http.post<{configs: string[]}>(`${this.apiUrl}/add_configuration`, {config}, {
-          headers: this.getHeaders()
-        });
+    addConfig(config: DbConfig): Observable<{configs: DbConfig}> {
+      return this.http.post<{ configs: DbConfig }>(`${this.apiUrl}/add_configuration`, config, {
+        headers: this.getHeaders()
+      });
       }
     removeConfig(config: string): Observable<{configs: string[]}> {
         return this.http.delete<{configs: string[]}>(`${this.apiUrl}/remove-configuration`, {
@@ -41,9 +42,18 @@ import { Observable } from 'rxjs';
           body: {config}
         });
       }
-    tryConnection(config: string): Observable<{configs: string[]}> {
-        return this.http.get<{configs: string[]}>(`${this.apiUrl}/try-connection`, {
-          headers: this.getHeaders()
+    tryConnection(config: DbConfig): Observable<{response: string}> {
+      const params = new HttpParams()
+      .set('type_db', config.type_db)
+      .set('user', config.user)
+      .set('password', config.password)
+      .set('host', config.host)
+      .set('port', config.port)
+      .set('database_name', config.database_name);
+  
+        return this.http.get<{response: string}>(`${this.apiUrl}/try-connection`, {
+          headers: this.getHeaders(),
+          params:params
         });
       }
 

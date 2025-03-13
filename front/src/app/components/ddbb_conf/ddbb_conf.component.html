@@ -1,5 +1,5 @@
 <!-- upload.component.html -->
-<div class="upload-container">
+<div class="config-adder-container">
     <button class="backButton" id="backButton" (click)="cerrar()">X</button>
   
     <h1>Add DDBB Configuration</h1>
@@ -8,7 +8,6 @@
       
       <!-- Nuevos campos para configuración de base de datos -->
       <div class="database-config">
-        <h3>Database Configuration</h3>
         
         <div class="form-group">
           <label for="type_db">Database Type:</label>
@@ -86,5 +85,8 @@
           <div class="circle"></div>
         </div>
       </div> -->
+      <button class="connectButton" id="connectButton" (click)="try_connection()">Try connection</button>
+      <button class="saveButton" id="saveButton" (click)="save_config()">save config</button>
+
     </form>
   </div>

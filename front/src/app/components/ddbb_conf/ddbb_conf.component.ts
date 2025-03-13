@@ -4,14 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DdbbServices } from '../../services/ddbb.service';
-interface DbConfig {
-  type_db: string;
-  user: string;
-  password: string;
-  host: string;
-  port: string;
-  database_name: string;
-}
+import {DbConfig} from '../../interfaces/db-conf.interface';
 
 @Component({
   selector: 'app-ddbb-conf',
@@ -35,6 +28,7 @@ export class DdbbConfComponent {
 
   constructor(
     private router: Router,
+    private ddbbServices: DdbbServices
 //    private collectionsService: CollectionsService
   ) {}
   ngOnInit(): void {
@@ -148,4 +142,30 @@ export class DdbbConfComponent {
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
+  try_connection(){
+    this.ddbbServices.tryConnection(this.dbConfig).subscribe({
+      next: (response) => {
+        console.log("Conexión exitosa:", response);
+        alert("Conexión exitosa");
+      },
+      error: (error) => {
+        console.error("Error de conexión:", error);
+        alert("Hubo un error de conexión.");
+      }
+    });
+  };
+  save_config(){
+    console.log("Enviando configuración:", this.dbConfig);
+    
+    this.ddbbServices.addConfig(this.dbConfig).subscribe({
+      next: (response) => {
+        console.log("Configuración guardada con éxito:", response);
+        alert("Configuración guardada correctamente.");
+      },
+      error: (error) => {
+        console.error("Error al guardar configuración:", error);
+        alert("Hubo un error al guardar la configuración.");
+      }
+  });
+}
 }
