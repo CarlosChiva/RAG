@@ -70,3 +70,52 @@
   #backButton:hover {
     background-color: #0056b3;
   }
+  .database-config {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Primera columna para label, segunda para input */
+    gap: 5px;
+    width: 93%; /* Asegura que ocupe el ancho completo del contenedor */
+    max-width: 93%; /* Evita que se salga de su contenedor */
+    padding: 20px; /* Reduce padding para mantener proporción */
+  //  background: rgba(255, 255, 255, 0.1); /* Sutil fondo para diferenciarlo */
+    border-radius: 10px;
+    margin-right: 10px;
+    
+}
+
+// .config-adder-container {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     width: 100%;
+//     max-width: 600px;
+//     background-color: #4b4b4b;
+//     border-radius: 15px;
+//     padding: 30px;
+//     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+//     text-align: center;
+//     position: relative;
+//     animation: fadeIn 0.3s ease-in-out;
+// }
+
+.form-group {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Asegura que se mantenga el formato dentro del grid */
+    align-items: center;
+    width: 100%;
+}
+
+label {
+    font-weight: bold;
+    text-align: right;
+    padding-right: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+}

@@ -6,7 +6,6 @@ import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
-
 interface UserMessage {
   user: string;
 }

@@ -2,12 +2,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import {ConversationMessage} from '../interfaces/conversations.interface'; // Definir la interfaz para el mensaje de conversación
 // Definir la interfaz para el mensaje de conversación
-export interface ConversationMessage {
-  user?: string;
-  bot?: string;
-}
 
 @Injectable({
   providedIn: 'root'

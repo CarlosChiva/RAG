@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
   private handleSignUp(username: string, password: string): void {
     this.authService.signup(username, password).subscribe({
       next: (result) => {
-        this.router.navigate(['/menu']);
+        this.ngOnInit()
       },
       error: (error) => {
         console.error(error);
