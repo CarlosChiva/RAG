@@ -119,3 +119,19 @@ input {
     background: #fff;
     color: #000;
 }
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px; /* Espacio entre botones */
+  margin-top: 10px;
+}
+.connectButton, .saveButton {
+  margin: 0 70px; /* Espacio a los lados */
+  border-radius: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+}
+#connectButton:hover,#saveButton:hover  {
+  background-color: #0056b3;
+}
