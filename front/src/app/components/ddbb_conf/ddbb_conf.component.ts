@@ -15,6 +15,7 @@ import {DbConfig} from '../../interfaces/db-conf.interface';
 
 export class DdbbConfComponent {
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  isLoading: boolean = false; // Estado del loader
 
   // Nueva propiedad para la configuración de la base de datos
   dbConfig: DbConfig = {
@@ -143,16 +144,26 @@ export class DdbbConfComponent {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
   try_connection(){
+    this.isLoading = true; // Activar el loader
+
     this.ddbbServices.tryConnection(this.dbConfig).subscribe({
-      next: (response) => {
-        console.log("Conexión exitosa:", response);
+      next: (response: boolean) => {
+      if (response) {
+        console.log("Conexión exitosa");
         alert("Conexión exitosa");
-      },
-      error: (error) => {
-        console.error("Error de conexión:", error);
-        alert("Hubo un error de conexión.");
+      } else {
+        console.log("Conexión fallida");
+        alert("No se pudo conectar a la base de datos.");
       }
-    });
+    },
+    error: (error) => {
+      console.error("Error de conexión:", error);
+      alert("Hubo un error de conexión.");
+    },
+    complete: () => {
+      this.isLoading = false; // Desactivar el loader cuando la conexión termine
+    }
+  });
   };
   save_config(){
     console.log("Enviando configuración:", this.dbConfig);

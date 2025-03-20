@@ -1,5 +1,9 @@
 # Usa una imagen base de Python 3.10
 FROM python:3.12
+RUN apt-get update && apt-get install -y \
+    libpq-dev gcc python3-dev
+RUN pip install psycopg2-binary
+RUN pip install psycopg2    
 # Establece el directorio de trabajo en /app
 WORKDIR /app
 

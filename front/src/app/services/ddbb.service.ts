@@ -42,7 +42,7 @@ import {DbConfig} from '../interfaces/db-conf.interface';
           body: {config}
         });
       }
-    tryConnection(config: DbConfig): Observable<{response: string}> {
+    tryConnection(config: DbConfig): Observable<boolean> {
       const params = new HttpParams()
       .set('type_db', config.type_db)
       .set('user', config.user)
@@ -51,7 +51,7 @@ import {DbConfig} from '../interfaces/db-conf.interface';
       .set('port', config.port)
       .set('database_name', config.database_name);
   
-        return this.http.get<{response: string}>(`${this.apiUrl}/try-connection`, {
+        return this.http.get<boolean>(`${this.apiUrl}/try-connection`, {
           headers: this.getHeaders(),
           params:params
         });

@@ -56,9 +56,9 @@ async def try_connection(    type_db: str = Query(...),
         database_name=database_name
     )
     if await controllers.try_connection(conf):
-        return {"Response ":"Connect to database successfully."}
+        return True
     else:
-        return {"Response ":"Can't connect to database."}
+        return False
 
 @router.delete("/remove-configuration")
 async def remove_conf(conf_rm:Config,
