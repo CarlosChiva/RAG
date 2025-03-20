@@ -16,7 +16,7 @@
     display: grid;
     max-width: 600px;
     width: 100%;
-    background-color: #4b4b4b;
+    background-color: rgb(2, 83, 170);
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
@@ -51,12 +51,12 @@
     height: fit-content;
   }
   #backButton {
-    margin-top: 15px;
+    margin-top: 5px;
     width: fit-content;
     height: fit-content;
     bottom: 20px;
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #023b77;
     color: white;
     border: none;
     border-radius: 5px;
@@ -66,9 +66,10 @@
     transition: background-color 0.3s ease;
   
   }
-  
-  #backButton:hover {
-    background-color: #0056b3;
+  h1{
+    color: #fff;
+    font-size: 20px;
+    margin-bottom: 20px;
   }
   .database-config {
     display: grid;
@@ -128,10 +129,21 @@ input {
 }
 .connectButton, .saveButton {
   margin: 0 70px; /* Espacio a los lados */
-  border-radius: 10px;
-  padding: 10px 20px;
-  background-color: #007bff;
+  margin-top: 15px;
+    width: fit-content;
+    height: fit-content;
+    bottom: 20px;
+    padding: 10px 20px;
+    background-color: #023b77;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  
 }
-#connectButton:hover,#saveButton:hover  {
-  background-color: #0056b3;
+#connectButton:hover,#saveButton:hover ,  #backButton:hover {
+  background-color: #032952;
 }

@@ -2,7 +2,7 @@
 <div class="config-adder-container">
     <button class="backButton" id="backButton" (click)="cerrar()">X</button>
   
-    <h1>Add DDBB Configuration</h1>
+    <h1 >Add DDBB Configuration</h1>
   
     <form (submit)="uploadFiles(); $event.preventDefault()">
       
@@ -70,23 +70,17 @@
         </div>
       </div>
       
-      <!-- <button 
-        type="submit" 
-        id="uploadButton" 
-        [disabled]="isLoading" 
-        [style.backgroundColor]="isLoading ? '#666' : '#007bff'"
-        [style.cursor]="isLoading ? 'not-allowed' : 'pointer'">
-        Upload
-      </button>
-   -->
+
+   
       <!-- Círculo de carga
       <div class="loader-container" [style.display]="isLoading ? 'block' : 'none'">
         <div class="circle-loader">
           <div class="circle"></div>
         </div>
       </div> -->
-      <button class="connectButton" id="connectButton" (click)="try_connection()">Try connection</button>
-      <button class="saveButton" id="saveButton" (click)="save_config()">save config</button>
-
+      <div class="buttons-container">
+        <button class="connectButton" id="connectButton" (click)="try_connection()">Try connection</button>
+        <button class="saveButton" id="saveButton" (click)="save_config()">save config</button>
+    </div>
     </form>
   </div>
