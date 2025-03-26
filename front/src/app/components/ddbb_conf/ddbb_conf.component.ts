@@ -80,28 +80,6 @@ export class DdbbConfComponent {
     // });
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    const dropzone = event.currentTarget as HTMLElement;
-    dropzone.classList.add('dragover');
-  }
-
-  onDragLeave(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    const dropzone = event.currentTarget as HTMLElement;
-    dropzone.classList.remove('dragover');
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    
-  }
-
-  uploadFiles(): void {
-  }
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }

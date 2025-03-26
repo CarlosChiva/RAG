@@ -4,8 +4,6 @@
   
     <h1 >Add DDBB Configuration</h1>
   
-    <form (submit)="uploadFiles(); $event.preventDefault()">
-      
       <!-- Nuevos campos para configuración de base de datos -->
       <div class="database-config">
         
@@ -86,5 +84,4 @@
         <button class="connectButton" id="connectButton" (click)="try_connection()">Try connection</button>
         <button class="saveButton" id="saveButton" (click)="save_config()">save config</button>
     </div>
-    </form>
   </div>
