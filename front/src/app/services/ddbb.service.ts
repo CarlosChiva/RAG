@@ -15,8 +15,8 @@ import {DbConfig} from '../interfaces/db-conf.interface';
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         });
       }
-    getConfigs(): Observable<{configs: DbConfig}> { // mirar los tipos de datos
-        return this.http.get<{configs: DbConfig}>(`${this.apiUrl}/get-list-configurations`, {
+    getConfigs(): Observable<{configs: DbConfig[]}> { // mirar los tipos de datos
+        return this.http.get<{configs: DbConfig[]}>(`${this.apiUrl}/get-list-configurations`, {
           headers: this.getHeaders()
         });
       }

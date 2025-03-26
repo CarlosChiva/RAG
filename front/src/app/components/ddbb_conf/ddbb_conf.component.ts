@@ -16,7 +16,7 @@ import {DbConfig} from '../../interfaces/db-conf.interface';
 export class DdbbConfComponent {
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
   isLoading: boolean = false; // Estado del loader
-
+  
   // Nueva propiedad para la configuración de la base de datos
   dbConfig: DbConfig = {
     type_db: '',
@@ -26,7 +26,7 @@ export class DdbbConfComponent {
     port: '',
     database_name: ''
   };
-
+  configList: DbConfig[] = [];
   constructor(
     private router: Router,
     private ddbbServices: DdbbServices
@@ -45,40 +45,16 @@ export class DdbbConfComponent {
   }
 
   loadCollections(): void {
-    // this.collectionsService.getCollections().subscribe({
-    //   next: (data) => {
-    //     this.collections = data.collections_name;
-    //   },
-    //   error: (error) => console.error('Error fetching collections:', error)
-    // });
+    this.ddbbServices.getConfigs().subscribe({  
+      next: (data:{configs:DbConfig[]}) => {
+        this.configList = data.configs;
+      },
+      error: (error) => console.error('Error fetching configurations:', error)      
+    })
+
+
   }
 
-  openFileDialog(): void {
-  //  this.fileInput.nativeElement.click();
-  }
-
-  handleFileInput(event: Event): void {
-    // const input = event.target as HTMLInputElement;
-    // if (input.files && input.files.length > 0) {
-    //   this.files = input.files;
-    // }
-  }
-
-  navigateBack(): void {
-    // this.collectionsService.getCollections().subscribe({
-    //   next: (data) => {
-    //     if (data.collections_name.length === 0) {
-    //       alert('No collections found');
-    //       this.router.navigate(['/menu']);
-    //     } else {
-    //       this.router.navigate(['/pdf']);
-    //     }
-    //   },
-    //   error: (error) => {
-    //     console.error('Error fetching collections:', error);
-    //   }
-    // });
-  }
 
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
