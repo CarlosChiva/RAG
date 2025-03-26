@@ -98,47 +98,9 @@ export class DdbbConfComponent {
     event.preventDefault();
     event.stopPropagation();
     
-    // const dropzone = event.currentTarget as HTMLElement;
-    // dropzone.classList.remove('dragover');
-    
-    // if (event.dataTransfer?.files) {
-    //   this.files = event.dataTransfer.files;
-    // }
   }
 
   uploadFiles(): void {
-    // if (!this.files || this.files.length === 0) {
-    //   alert('Please select a file.');
-    //   return;
-    // }
-
-    // if (!this.selectedCollection && !this.newCollection) {
-    //   alert('Please select an existing collection or create a new one.');
-    //   return;
-    // }
-
-    // // Definir correctamente la variable collectionName
-    // const collectionToUse = this.selectedCollection || this.newCollection;
-       
-    // this.isLoading = true;
-    
-    // this.collectionsService.uploadFiles(this.files, collectionToUse).subscribe({
-    //   next: (response: any) => {
-    //     alert('Files uploaded successfully!');
-    //     this.files = null;
-    //     this.selectedCollection = '';
-    //     this.newCollection = '';
-    //     if (this.fileInput.nativeElement) {
-    //       this.fileInput.nativeElement.value = '';
-    //     }
-    //   },
-    //   error: (error) => {
-    //     alert(error.error?.error || 'Error uploading files.');
-    //   },
-    //   complete: () => {
-    //     this.isLoading = false;
-    //   }
-    // });
   }
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
@@ -154,11 +116,15 @@ export class DdbbConfComponent {
       } else {
         console.log("Conexión fallida");
         alert("No se pudo conectar a la base de datos.");
+        this.isLoading = false; // Desactivar el loader cuando la conexión termine
+
       }
     },
     error: (error) => {
       console.error("Error de conexión:", error);
       alert("Hubo un error de conexión.");
+      this.isLoading = false; // Desactivar el loader cuando la conexión termine
+
     },
     complete: () => {
       this.isLoading = false; // Desactivar el loader cuando la conexión termine
