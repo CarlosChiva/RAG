@@ -31,6 +31,7 @@ async def llm_response(input: str,
 @router.get("/get-list-configurations")
 async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)):
     result = await controllers.get_configurations(credentials)
+    print("Return get_list_configurations  ",result)
     return result
 
 @router.post("/add_configuration")

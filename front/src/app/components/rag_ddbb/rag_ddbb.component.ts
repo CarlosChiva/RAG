@@ -8,6 +8,8 @@ import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
 import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
+import {DbConfig} from '../../interfaces/db-conf.interface';
+
 interface UserMessage {
   user: string;
 }
@@ -34,10 +36,20 @@ export class RagDdbbComponent {
 
   
   sidebarCollapsed = false;
-  configs: string[] = [];
+  configs: DbConfig[] = [];
   conversation: any[] = [];
+  dbConfig: DbConfig = {
+    type_db: '',
+    user: '',
+    password: '',
+    host: '',
+    port: '',
+    database_name: ''
+  };
+  configList: DbConfig[] = [];
 
-  selectedConfig: string | null = null;
+  selectedConfig: DbConfig | null = null; // Configuración seleccionada
+
   message: string = '';
   
   //messages: Message[] = [];
@@ -84,58 +96,28 @@ export class RagDdbbComponent {
   }
 
   loadConfigs(): void {
-    this.configsService.getConfigs().subscribe({
-    //   next: (data: {collections_name: string[]}) => {
-    //     this.collections = data.collections_name;
-        
-    //     if (this.collections.length === 0) {
-    //       this.abrirModal();
-    //     }
-    //   },
-    //   error: (error: any) => console.error('Error fetching collections:', error)
-     });
-  }
+      this.configsService.getConfigs().subscribe({  
+        next: (data:DbConfig[]) => {
+          console.log(data);
+  
+          this.configList = data;
+          console.log(this.configList);
+        },
+        error: (error) => console.error('Error fetching configurations:', error)      
+      })
+  
+  
+    }
+  
 
-  selectConfig(collectionName: string): void {
-    this.selectedConfig = collectionName;
-    
-    // this.configsService.getConversation(collectionName).subscribe({
-    //   next: (conversation: any) => {
-    //     this.messages = [];
-    //     console.log(conversation);
-        
-    //     conversation.forEach((message: any) => {
-    //       if ('user' in message) {
-    //         this.messages.push({
-    //           text: message.user || '',
-    //           isUser: true
-    //         });
-    //       }
-    //       else if ('bot' in message) {
-    //         this.messages.push({
-    //           text: message.bot || '',
-    //           isUser: false
-    //         });
-    //       }
-    //     });
-        
-    //     this.scrollChatToBottom();
-    //   },
-    //   error: (error: any) => {
-    //     console.error('Error loading conversation:', error);
-    //   }
-    // });
-  }
+    selectConfig(config: DbConfig): void {
+      this.selectedConfig = config; // Selecciona una configuración
+    }
 
-  deleteCollection(collectionName: string, event: Event): void {
-    event.stopPropagation(); // Prevent triggering selectCollection
-    this.configsService.removeConfig(collectionName).subscribe({
-      next: () => {
-        //this.selectedConfig = this.configs.filter(name => name !== collectionName);
-      },
-      error: (error: any) => console.error('Error deleting collection:', error)
-    });
-  }
+    deleteConfig(config: DbConfig, event: Event): void {
+      event.stopPropagation(); // Evita que se active `selectConfig`
+      this.configs = this.configs.filter(c => c !== config); // Elimina la configuración
+    }
 
 
   sendMessage(): void {
@@ -167,14 +149,12 @@ export class RagDdbbComponent {
       isTyping: true
     });
     
-    this.configsService.question(messageText, this.selectedConfig).subscribe({
+    this.configsService.question(messageText, this.selectedConfig!).subscribe({
       next: (data: string) => {
-        // Iniciar animación de escritura
         this.typeTextInMessage(botMessageIndex, data);
       },
       error: (error: any) => {
         console.error('Error sending message:', error);
-        // Actualizar mensaje con error
         this.messages[botMessageIndex] = {
           text: 'Error: Could not get response',
           isUser: false

@@ -3,12 +3,12 @@
   <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar">
     <h2 align="right" id="collectionsTitle">Configs</h2>
     <ul id="collections-list">
-      <li *ngFor="let collection of configs" 
-          [class.selected]="selectedConfig === collection"
+      <li *ngFor="let config of configList"
+          [class.selected]="selectedConfig === config"
           class="collection-item"
-          (click)="selectConfig(collection)">
-        {{ collection }}
-        <button class="delete-button" (click)="deleteCollection(collection, $event)">-</button>
+          (click)="selectConfig(config)">
+        {{ config.database_name }} ({{ config.type_db }})
+        <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
       </li>
     </ul>
     <div class="button-container">

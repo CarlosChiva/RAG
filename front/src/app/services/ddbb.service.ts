@@ -15,21 +15,15 @@ import {DbConfig} from '../interfaces/db-conf.interface';
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         });
       }
-    getConfigs(): Observable<{configs: DbConfig[]}> { // mirar los tipos de datos
-        return this.http.get<{configs: DbConfig[]}>(`${this.apiUrl}/get-list-configurations`, {
+    getConfigs(): Observable<DbConfig[]> { // mirar los tipos de datos
+        return this.http.get<DbConfig[]>(`${this.apiUrl}/get-list-configurations`, {
           headers: this.getHeaders()
         });
       }
-    question(message: string, collectionName: string): Observable<string> {
-      const params = new URLSearchParams({
-        input: message,
-        collection_name: collectionName
-      });
+      question(message: string, collection: DbConfig): Observable<string> {
+        const params = new HttpParams().set('input', message);
       
-        return this.http.get<string>(`${this.apiUrl}/question${params.toString()}`, {
-          headers: this.getHeaders(),
-          responseType: 'json' as any
-        });
+        return this.http.post<string>(`${this.apiUrl}/question`, collection, { params });
       }
     addConfig(config: DbConfig): Observable<{configs: DbConfig}> {
       return this.http.post<{ configs: DbConfig }>(`${this.apiUrl}/add_configuration`, config, {

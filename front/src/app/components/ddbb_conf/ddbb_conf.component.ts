@@ -41,19 +41,8 @@ export class DdbbConfComponent {
       return;
     }
     
-    this.loadCollections();
   }
 
-  loadCollections(): void {
-    this.ddbbServices.getConfigs().subscribe({  
-      next: (data:{configs:DbConfig[]}) => {
-        this.configList = data.configs;
-      },
-      error: (error) => console.error('Error fetching configurations:', error)      
-    })
-
-
-  }
 
 
   cerrar() {
