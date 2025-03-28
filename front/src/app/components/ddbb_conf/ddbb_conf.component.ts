@@ -26,6 +26,11 @@ export class DdbbConfComponent {
     port: '',
     database_name: ''
   };
+  dbSQLite ={
+    type_db: 'sqlite',
+    database_path:''
+
+  }
   configList: DbConfig[] = [];
   constructor(
     private router: Router,

@@ -26,9 +26,6 @@ type ConversationMessage = UserMessage | BotMessage;
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
-// Define interfaces para tus tipos de mensajes
-
-// Tipo unión para cualquier tipo de mensaje
 
 export class RagDdbbComponent {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
@@ -52,10 +49,9 @@ export class RagDdbbComponent {
 
   message: string = '';
   
-  //messages: Message[] = [];
   isSending: boolean = false;
   mostrarModal: boolean = false;
-  // Añade esta interfaz y la propiedad messages
+
   messages: {
     text: string;
     isUser: boolean;
