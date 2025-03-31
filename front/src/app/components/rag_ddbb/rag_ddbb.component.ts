@@ -41,7 +41,8 @@ export class RagDdbbComponent {
     password: '',
     host: '',
     port: '',
-    database_name: ''
+    database_name: '',
+    database_path : ''
   };
   configList: DbConfig[] = [];
 

@@ -20,7 +20,7 @@ import {DbConfig} from '../interfaces/db-conf.interface';
           headers: this.getHeaders()
         });
       }
-      question(message: string, collection: DbConfig): Observable<string> {
+    question(message: string, collection: DbConfig): Observable<string> {
         const params = new HttpParams().set('input', message);
       
         return this.http.post<string>(`${this.apiUrl}/question`, collection, { params });

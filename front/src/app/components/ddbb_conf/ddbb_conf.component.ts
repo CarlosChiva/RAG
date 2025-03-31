@@ -24,13 +24,11 @@ export class DdbbConfComponent {
     password: '',
     host: '',
     port: '',
-    database_name: ''
-  };
-  dbSQLite ={
-    type_db: 'sqlite',
-    database_path:''
+    database_name: '',
+    database_path : ''
 
-  }
+  };
+
   configList: DbConfig[] = [];
   constructor(
     private router: Router,

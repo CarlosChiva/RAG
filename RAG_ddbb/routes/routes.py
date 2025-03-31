@@ -14,7 +14,7 @@ class User(BaseModel):
 class CollectionRequest(BaseModel):
     collection_name: str
 #-------------------------Principal routes-----------------------
-@router.get("/question")
+@router.post("/question")
 async def llm_response(input: str,
                         database_conf:Config,
                         credentials  = Depends(credentials_controllers.verify_jws)

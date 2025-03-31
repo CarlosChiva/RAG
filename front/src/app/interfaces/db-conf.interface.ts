@@ -5,4 +5,5 @@ export interface DbConfig {
     host: string;
     port: string;
     database_name: string;
+    database_path: string;
   }
