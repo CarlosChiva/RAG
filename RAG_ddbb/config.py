@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import json
 
 class Config(BaseModel):
+    connection_name: str
     type_db: str
     user: str
     password: str

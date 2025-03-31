@@ -19,6 +19,7 @@ export class DdbbConfComponent {
   
   // Nueva propiedad para la configuración de la base de datos
   dbConfig: DbConfig = {
+    connection_name: '',
     type_db: '',
     user: '',
     password: '',

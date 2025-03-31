@@ -7,6 +7,15 @@
       <!-- Nuevos campos para configuración de base de datos -->
       <div class="database-config">
         <div class="form-group">
+
+        <input 
+        type="text" 
+        id="name of connection" 
+        placeholder="Name of connection" 
+        [(ngModel)]="dbConfig.connection_name" 
+        name="sqlite_path">
+        </div>
+        <div class="form-group">
           <label for="type_db">Database Type:</label>
           <select 
             id="type_db" 

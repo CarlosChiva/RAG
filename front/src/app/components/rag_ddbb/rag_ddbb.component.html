@@ -7,7 +7,7 @@
           [class.selected]="selectedConfig === config"
           class="collection-item"
           (click)="selectConfig(config)">
-        {{ config.database_name }} ({{ config.type_db }})
+        {{ config.connection_name }}
         <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
       </li>
     </ul>

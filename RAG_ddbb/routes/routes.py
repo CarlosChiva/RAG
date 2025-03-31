@@ -42,13 +42,16 @@ async def delete_collection(conf: Config,
     return result
 
 @router.get("/try-connection")  
-async def try_connection(    type_db: str = Query(...),
+async def try_connection(    
+    connection_name: str = Query(...),
+    type_db: str = Query(...),
     user: str = Query(...),
     password: str = Query(...),
     host: str = Query(...),
     port: str = Query(...),
     database_name: str = Query(...),credentials  = Depends(credentials_controllers.verify_jws)):
     conf = Config(
+        connection_name=connection_name,
         type_db=type_db,
         user=user,
         password=password,

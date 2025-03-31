@@ -36,6 +36,7 @@ export class RagDdbbComponent {
   configs: DbConfig[] = [];
   conversation: any[] = [];
   dbConfig: DbConfig = {
+    connection_name: '',
     type_db: '',
     user: '',
     password: '',

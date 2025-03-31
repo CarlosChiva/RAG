@@ -72,16 +72,24 @@
     margin-bottom: 20px;
   }
   .database-config {
-    display: grid;
-    grid-template-columns: 1fr 2fr; /* Primera columna para label, segunda para input */
-    gap: 5px;
-    width: 93%; /* Asegura que ocupe el ancho completo del contenedor */
-    max-width: 93%; /* Evita que se salga de su contenedor */
-    padding: 20px; /* Reduce padding para mantener proporción */
-  //  background: rgba(255, 255, 255, 0.1); /* Sutil fondo para diferenciarlo */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
     border-radius: 10px;
-    margin-right: 10px;
-    
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    align-self: center;
 }
 
 // .config-adder-container {
@@ -99,12 +107,12 @@
 //     animation: fadeIn 0.3s ease-in-out;
 // }
 
-.form-group {
-    display: grid;
-    grid-template-columns: 1fr 2fr; /* Asegura que se mantenga el formato dentro del grid */
-    align-items: center;
-    width: 100%;
-}
+// .form-group {
+//     display: grid;
+//     grid-template-columns: 1fr 2fr; /* Asegura que se mantenga el formato dentro del grid */
+//     align-items: center;
+//     width: 100%;
+// }
 
 label {
     font-weight: bold;

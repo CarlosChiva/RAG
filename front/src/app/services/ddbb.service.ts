@@ -38,6 +38,7 @@ import {DbConfig} from '../interfaces/db-conf.interface';
       }
     tryConnection(config: DbConfig): Observable<boolean> {
       const params = new HttpParams()
+      .set('connection_name', config.connection_name)
       .set('type_db', config.type_db)
       .set('user', config.user)
       .set('password', config.password)
