@@ -4,8 +4,6 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { CollectionsService } from '../../services/collections.service';
-import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
 import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
@@ -46,8 +44,8 @@ export class RagDdbbComponent {
     database_path : ''
   };
   configList: DbConfig[] = [];
+  selectedConfig: DbConfig = this.getEmptyConfig();
 
-  selectedConfig: DbConfig | null = null; // Configuración seleccionada
 
   message: string = '';
   
@@ -63,13 +61,16 @@ export class RagDdbbComponent {
 
   constructor(
     private configsService: DdbbServices,
-    private router: Router
+    private router: Router,
   ) { }
-  abrirModal() {
+  abrirModal(config?: DbConfig) {
+    this.selectedConfig = config ? { ...config } : this.getEmptyConfig();
     this.mostrarModal = true;
-    document.body.classList.add('modal-open'); // Bloquea el fondo
+    document.body.classList.add('modal-open');
   }
-
+  private getEmptyConfig(): DbConfig {
+    return { connection_name: '', type_db: '', user: '', password: '', host: '', port: '', database_name: '', database_path: '' };
+  }
   cerrarModal() {
     this.mostrarModal = false;
     document.body.classList.remove('modal-open');

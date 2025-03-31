@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Output, Input, EventEmitter } from '@angular/core';
 import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
@@ -14,21 +14,23 @@ import {DbConfig} from '../../interfaces/db-conf.interface';
 })
 
 export class DdbbConfComponent {
+  @Input() dbConfig!: DbConfig;  // Recibe la configuración desde el padre
+
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
   isLoading: boolean = false; // Estado del loader
   
   // Nueva propiedad para la configuración de la base de datos
-  dbConfig: DbConfig = {
-    connection_name: '',
-    type_db: '',
-    user: '',
-    password: '',
-    host: '',
-    port: '',
-    database_name: '',
-    database_path : ''
+  // dbConfig: DbConfig = {
+  //   connection_name: '',
+  //   type_db: '',
+  //   user: '',
+  //   password: '',
+  //   host: '',
+  //   port: '',
+  //   database_name: '',
+  //   database_path : ''
 
-  };
+  // };
 
   configList: DbConfig[] = [];
   constructor(

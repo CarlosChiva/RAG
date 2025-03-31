@@ -8,6 +8,8 @@
           class="collection-item"
           (click)="selectConfig(config)">
         {{ config.connection_name }}
+        <button (click)="abrirModal(config)">⚙ Edit</button>
+
         <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
       </li>
     </ul>
@@ -56,8 +58,8 @@
      <!-- Ventana Emergente -->
      <div class="overlay" *ngIf="mostrarModal">
        <div class="modal">
-         <app-ddbb-conf (cerrarModal)="cerrarModal()"></app-ddbb-conf>
-       </div>
+        <app-ddbb-conf *ngIf="mostrarModal" [dbConfig]="selectedConfig" (cerrarModal)="cerrarModal()"></app-ddbb-conf>
+      </div>
      </div>
     </div>
   </div>
