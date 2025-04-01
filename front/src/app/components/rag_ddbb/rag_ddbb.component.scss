@@ -4,20 +4,20 @@ body {
   padding: 0;
   display: flex;
   height: 100vh;
-  background-color: #504f4f;
+  background-color: #01257D;
 }
 
 .container {
   display: flex;
   width: 100%;
   height: 100%;
-  background-color: #504f4f;
+  background-color: #01257D;
 
 }
 
 .sidebar {
   width: 250px;
-  background-color: #333;
+  background: linear-gradient(to right,#031d5e, #01257D);
   color: white;
   padding: 20px;
   box-sizing: border-box;
@@ -38,7 +38,7 @@ body {
   left: 0;
   width: 50px; /* Ajusta el ancho del botón para que se mantenga en pantalla */
   height: 50px;
-  background-color: #444;
+  background-color: #031d5e;
   text-align: center;
 }
 .collapse-btn {
@@ -70,13 +70,13 @@ body {
 }
 
 .sidebar ul li:hover, .sidebar ul li.selected {
-  background-color: #555;
+  background-color: #031d5e;
 }
 
 .chat-area {
   width: 100%;
   display: flex;
-  background-color: #504f4f;
+  background-color: #01257D;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
@@ -170,10 +170,10 @@ body {
 #chat-output {
   flex-grow: 1;
   overflow-y: auto;
-  border: 1px solid #504f4f;
+  border: 1px solid #01257D;
   padding: 10px;
   height: 300px;
-  background-color: #504f4f;
+  background-color: #01257D;
   margin-bottom: 5px;
   margin-right: 100px;
 
