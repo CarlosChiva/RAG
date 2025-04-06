@@ -26,11 +26,11 @@ body {
   overflow: hidden;
 }
 
-.sidebar.collapsed {
-  width: 0px; /* Colapsa completamente */
-  padding: 0;
-  visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
-}
+// .sidebar.collapsed {
+//   width: 0px; /* Colapsa completamente */
+//   padding: 0;
+//   visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
+// }
 .sidebar.collapsed {
   visibility: visible; /* Mantiene visible el botón de colapsar */
   position: absolute;
@@ -40,6 +40,8 @@ body {
   height: 50px;
   background-color: #444;
   text-align: center;
+  visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
+
 }
 .collapse-btn {
   position: absolute;
