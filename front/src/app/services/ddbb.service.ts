@@ -30,10 +30,10 @@ import {DbConfig} from '../interfaces/db-conf.interface';
         headers: this.getHeaders()
       });
       }
-    removeConfig(config: string): Observable<{configs: string[]}> {
-        return this.http.delete<{configs: string[]}>(`${this.apiUrl}/remove-configuration`, {
+    removeConfig(config: DbConfig): Observable<DbConfig> {
+        return this.http.delete<DbConfig>(`${this.apiUrl}/remove-configuration`, {
           headers: this.getHeaders(),
-          body: {config}
+          body: config
         });
       }
     tryConnection(config: DbConfig): Observable<boolean> {

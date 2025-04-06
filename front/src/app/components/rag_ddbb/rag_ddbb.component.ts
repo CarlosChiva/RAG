@@ -115,6 +115,17 @@ export class RagDdbbComponent {
 
     deleteConfig(config: DbConfig, event: Event): void {
       event.stopPropagation(); // Evita que se active `selectConfig`
+      this.configsService.removeConfig(config).subscribe({
+        next: () => {
+          console.log('Configuration deleted:', config);
+          alert('Configuration deleted successfully');
+          this.loadConfigs(); // Recarga la lista de configuraciones
+        },
+        error: (error) => {
+          console.error('Error deleting configuration:', error);
+          alert('Error deleting configuration');
+        }
+      });
       this.configs = this.configs.filter(c => c !== config); // Elimina la configuración
     }
 

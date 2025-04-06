@@ -207,7 +207,6 @@ body {
   margin-right: auto;
 }
 
-// Añade esto al final de tu archivo SCSS
 .typing-indicator {
   display: inline-block;
   margin-left: 5px;
@@ -283,7 +282,6 @@ body {
   background-color: #504f4f;
   flex-grow: 1;
   transition: margin-left 0.3s;
-   /* Espacio dejado por la barra lateral */
   position: relative; /* Necesario para el posicionamiento absoluto del botón */
 }
 
@@ -344,38 +342,6 @@ body {
   z-index: 1000; // Asegura que esté por encima de todo
 }
 
-/* Caja blanca centrada */
-// .modal {
-//  // background: white;
-//   padding: 20px;
-//   border-radius: 10px;
-//   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-//   width: 50%;
-//   max-width: 600px;
-//   min-width: 300px;
-//   position: relative;
-//   animation: fadeIn 0.3s ease-in-out;
-// }
-
-/* Botón de cierre */
-// .close-button {
-//   position: absolute;
-//   top: 10px;
-//   right: 10px;
-//   background: #ff4d4d;
-//   color: white;
-//   border: none;
-//   padding: 5px 10px;
-//   font-size: 16px;
-//   font-weight: bold;
-//   cursor: pointer;
-//   border-radius: 5px;
-//   transition: background 0.3s ease;
-
-//   &:hover {
-//     background: #cc0000;
-//   }
-// }
 
 /* Animación de entrada */
 @keyframes fadeIn {
