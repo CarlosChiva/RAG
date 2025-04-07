@@ -23,6 +23,7 @@
     text-align: center;
     position: relative; // Asegura que esté en el centro del modal
     align-items: center;
+    align-content: center;
     animation: fadeIn 0.3s ease-in-out;
   
   }
@@ -77,8 +78,9 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    width: 100%;
-    max-width: 500px;
+    width: 90%;
+    margin: 0 auto;
+    max-width: 100%;
     padding: 20px;
     border-radius: 10px;
 }
