@@ -2,17 +2,19 @@
 <div class="config-adder-container">
     <button class="backButton" id="backButton" (click)="cerrar()">X</button>
   
-    <h1 >Add DDBB Configuration</h1>
   
       <!-- Nuevos campos para configuración de base de datos -->
       <div class="database-config">
+        <h1 >Add DDBB Configuration</h1>
+
         <div class="form-group">
 
         <input 
         type="text" 
         id="name of connection" 
         placeholder="Name of connection" 
-        [(ngModel)]="dbConfig.connection_name" 
+        [(ngModel)]="dbConfig.connection_name"
+        text-size="11" 
         name="sqlite_path">
         </div>
         <div class="form-group">
@@ -37,7 +39,8 @@
               type="text" 
               id="sqlite_path" 
               placeholder="e.g., /path/to/database.sqlite" 
-              [(ngModel)]="dbConfig.database_path" 
+              [(ngModel)]="dbConfig.database_path"
+              text-size="11" 
               name="sqlite_path">
           </div>
         </div>
@@ -50,7 +53,8 @@
               type="text" 
               id="user" 
               placeholder="Username" 
-              [(ngModel)]="dbConfig.user" 
+              [(ngModel)]="dbConfig.user"
+              text-size="11" 
               name="user">
           </div>
           
@@ -60,7 +64,8 @@
               type="password" 
               id="password" 
               placeholder="Password" 
-              [(ngModel)]="dbConfig.password" 
+              [(ngModel)]="dbConfig.password"
+              text-size="11" 
               name="password">
           </div>
           
@@ -70,7 +75,8 @@
               type="text" 
               id="host" 
               placeholder="e.g., localhost, 127.0.0.1" 
-              [(ngModel)]="dbConfig.host" 
+              [(ngModel)]="dbConfig.host"
+              text-size="11" 
               name="host">
           </div>
           
@@ -80,7 +86,8 @@
               type="text" 
               id="port" 
               placeholder="e.g., 5432, 3306" 
-              [(ngModel)]="dbConfig.port" 
+              [(ngModel)]="dbConfig.port"
+              text-size="11" 
               name="port">
           </div>
           
@@ -90,7 +97,8 @@
               type="text" 
               id="database_name" 
               placeholder="Database name" 
-              [(ngModel)]="dbConfig.database_name" 
+              [(ngModel)]="dbConfig.database_name"
+              text-size="11" 
               name="database_name">
           </div>
         </div>
