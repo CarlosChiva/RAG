@@ -82,22 +82,19 @@
     padding: 20px;
     border-radius: 10px;
 }
-
 .form-group {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: row; /* ⬅️ Cambia de column a row */
+  align-items: center; /* ⬅️ Centra verticalmente el label con el input */
+  gap: 10px; /* Espacio entre label e input */
+  margin-bottom: 10px;
 }
 
 .form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    align-self: center;
-}
-
-label {
-    font-weight: bold;
-    text-align: right;
-    padding-right: 10px;
+  min-width: 120px; /* ⬅️ Define un ancho fijo para alinear bien */
+  text-align: right;
+  font-weight: bold;
+  margin-bottom: 0; /* Elimina el margen si lo tenías para diseño en columna */
 }
 
 input {
