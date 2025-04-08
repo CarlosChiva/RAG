@@ -110,8 +110,27 @@ export class RagDdbbComponent {
   
 
     selectConfig(config: DbConfig): void {
-      this.selectedConfig = config; // Selecciona una configuración
-    }
+      this.configsService.tryConnection(this.dbConfig).subscribe({
+        next: (response: boolean) => {
+        if (response) {
+          this.selectedConfig = config; // Selecciona una configuración
+        } else {
+          console.log("Conexión fallida");
+          alert("No se pudo conectar a la base de datos.");
+    
+        }
+      },
+      error: (error) => {
+        const backendError = error?.error?.detail;
+  
+        console.error("Error de conexión:", error);
+        alert(`❌ Error: ${backendError}`);
+    
+      },
+     
+    });
+    };
+    
 
     deleteConfig(config: DbConfig, event: Event): void {
       event.stopPropagation(); // Evita que se active `selectConfig`
