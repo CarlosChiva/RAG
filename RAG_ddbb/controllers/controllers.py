@@ -1,4 +1,6 @@
 import ast
+
+from fastapi import HTTPException
 from model.rag_model import RagModel,DataBase
 import os
 from config import Config
@@ -67,8 +69,15 @@ async def add_configurations(user,conf:Config):
         return {"error": str(e)}
 async def try_connection(config):
     
-    database=DataBase(config)
-    return database.try_connect()
+    try:
+        database = DataBase(config)
+        result = database.try_connect()
+        return result
+    except HTTPException as http_exc:
+        # Propagamos el error para que FastAPI lo maneje
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error inesperado al probar conexión: {str(e)}")
 async def remove_configuration(conf_rm:Config,user):
     try:
         config_file = os.getenv("CONFIG_FOLDER") + user + ".json"

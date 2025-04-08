@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from langchain_community.utilities import SQLDatabase
 from langchain_experimental.sql.base import SQLDatabaseChain
 from langchain_community.agent_toolkits import create_sql_agent
@@ -16,15 +17,19 @@ from langchain_core.runnables import RunnablePassthrough
 
 class DataBase:
     def __init__(self,conf:Config):
-        self.driver=self.extract_driver(conf.type_db)
-        self.user=conf.user
-        self.password=conf.password
-        self.host=conf.host
-        self.port=conf.port
-        self.database_name=conf.database_name
-        self.database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
-
-        self.connect_db()
+        try:
+            self.driver = self.extract_driver(conf.type_db)
+            self.user = conf.user
+            self.password = conf.password
+            self.host = conf.host
+            self.port = conf.port
+            self.database_name = conf.database_name
+            self.database_url = f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}"
+            self.connect_db()
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error al inicializar la base de datos: {e}")
 
     def extract_driver(self,type_db):
         print(type_db)
@@ -43,25 +48,23 @@ class DataBase:
     def get_engine(self):
         return create_engine(self.database_url)
     def try_connect(self):
-        # Construcción de la URL de conexión
         try:
-            # Crear un motor de SQLAlchemy
             engine = create_engine(self.database_url)
         except Exception as e:
-            print(f"Error al crear el motor de SQLAlchemy: {e}")
-            return {"response":"Can't create the SQLAlchemy engine."}
-        # Probar la conexión
-        try:
-            with engine.connect() as connection:
-                pass
-            return True
-             
-        except Exception as e:
-            print(f"Error al conectar con la base de datos: {e}")
-            return False
-    def connect_db(self):
-        self.database = SQLDatabase.from_uri(f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database_name}")
+            return {"success": False, "error": f"No se pudo crear el motor de conexión: {str(e)}"}
 
+        try:
+            with engine.connect():
+                pass
+            return {"success": True}
+        except Exception as e:
+            return {"success": False, "error": f"No se pudo conectar con la base de datos: {str(e)}"}
+
+    def connect_db(self):
+        try:
+            self.database = SQLDatabase.from_uri(self.database_url)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"No se pudo conectar a la base de datos: {e}")
 
 
 class SQLQueryParser(StrOutputParser):

@@ -59,10 +59,13 @@ async def try_connection(
         port=port,
         database_name=database_name
     )
-    if await controllers.try_connection(conf):
-        return True
-    else:
-        return False
+    result = await controllers.try_connection(conf)
+    if not result["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=result["error"]
+        )
+    return {"message": "Conexión exitosa"}
 
 @router.delete("/remove-configuration")
 async def remove_conf(conf_rm:Config,

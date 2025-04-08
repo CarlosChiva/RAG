@@ -70,8 +70,10 @@ export class DdbbConfComponent {
       }
     },
     error: (error) => {
+      const backendError = error?.error?.detail;
+
       console.error("Error de conexión:", error);
-      alert("Hubo un error de conexión.");
+      alert(`❌ Error: ${backendError}`);
       this.isLoading = false; // Desactivar el loader cuando la conexión termine
 
     },
