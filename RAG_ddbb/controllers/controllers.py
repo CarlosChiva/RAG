@@ -58,7 +58,21 @@ async def add_configurations(user,conf:Config):
                     data = json.load(f)  # Leer JSON existente
                 except json.JSONDecodeError:
                     data = []  # Si el archivo está vacío o corrupto, inicializar lista vacía
-                data.append(conf.serialize())  # Agregar nueva configuración
+              # Serializar la nueva configuración
+                new_conf = conf.serialize()
+                updated = False
+
+                # Buscar si ya existe una config con el mismo nombre
+                for i, existing_conf in enumerate(data):
+                    if existing_conf.get("connection_name") == new_conf.get("connection_name"):
+                        data[i] = new_conf  # Reemplazar la configuración existente
+                        updated = True
+                        break
+
+                if not updated:
+                    data.append(new_conf)  # Si no se encontró, agregar como nueva configuración
+                
+
                 f.seek(0)  # Volver al inicio del archivo para sobrescribirlo
                 f.truncate()  # Eliminar el contenido anterior
                 json.dump(data, f, indent=2)  # Escribir nuevo JSON correctamente

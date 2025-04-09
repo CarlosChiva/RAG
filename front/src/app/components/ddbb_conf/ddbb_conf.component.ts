@@ -1,14 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef, Output, Input, EventEmitter } from '@angular/core';
 import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DdbbServices } from '../../services/ddbb.service';
 import {DbConfig} from '../../interfaces/db-conf.interface';
 
 @Component({
   selector: 'app-ddbb-conf',
-  imports: [CommonModule, HttpClientModule,  FormsModule],
+  imports: [CommonModule,   FormsModule],
   templateUrl: './ddbb_conf.component.html',
   styleUrl: './ddbb_conf.component.scss'
 })
