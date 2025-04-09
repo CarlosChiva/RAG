@@ -110,7 +110,7 @@ export class RagDdbbComponent {
   
 
     selectConfig(config: DbConfig): void {
-      this.configsService.tryConnection(this.dbConfig).subscribe({
+      this.configsService.tryConnection(config).subscribe({
         next: (response: boolean) => {
         if (response) {
           this.selectedConfig = config; // Selecciona una configuración

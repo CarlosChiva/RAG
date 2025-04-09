@@ -19,19 +19,6 @@ export class DdbbConfComponent {
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
   isLoading: boolean = false; // Estado del loader
   
-  // Nueva propiedad para la configuración de la base de datos
-  // dbConfig: DbConfig = {
-  //   connection_name: '',
-  //   type_db: '',
-  //   user: '',
-  //   password: '',
-  //   host: '',
-  //   port: '',
-  //   database_name: '',
-  //   database_path : ''
-
-  // };
-
   configList: DbConfig[] = [];
   constructor(
     private router: Router,
