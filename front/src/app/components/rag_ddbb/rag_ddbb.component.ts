@@ -179,8 +179,13 @@ export class RagDdbbComponent {
     });
     
     this.configsService.question(messageText, this.selectedConfig!).subscribe({
-      next: (data: string) => {
-        this.typeTextInMessage(botMessageIndex, data);
+      next: (data: Object) => {
+        var message=JSON.stringify(data);
+        var dataParse = JSON.parse(message);
+        const resultText = dataParse.result; // contendrá "Hay 2 personas en la lista."
+        const tableData = dataParse.table
+        
+        this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
       },
       error: (error: any) => {
         console.error('Error sending message:', error);

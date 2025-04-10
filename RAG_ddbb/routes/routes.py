@@ -20,12 +20,12 @@ async def llm_response(input: str,
                         credentials  = Depends(credentials_controllers.verify_jws)
                         ):
     
-    result = await controllers.querier(question=input,conf=database_conf)
+    result, table = await controllers.querier(question=input,conf=database_conf)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-    
-    return result
+    print(result, table)
+    return {"result":result,"table":table}
 
 
 @router.get("/get-list-configurations")

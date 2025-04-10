@@ -1,9 +1,6 @@
 from fastapi import HTTPException
 from langchain_community.utilities import SQLDatabase
-from langchain_experimental.sql.base import SQLDatabaseChain
-from langchain_community.agent_toolkits import create_sql_agent
 from langchain_ollama import ChatOllama
-from langchain import hub
 from dotenv import load_dotenv
 import os
 from enums_type import Enumms as ennum
@@ -52,7 +49,6 @@ class DataBase:
             engine = create_engine(self.database_url)
         except Exception as e:
             return {"success": False, "error": f"No se pudo crear el motor de conexión: {str(e)}"}
-
         try:
             with engine.connect():
                 pass
@@ -96,7 +92,8 @@ class RagModel:
         return self.db.get_table_info()
 
     def get_chain_extract_query(self):
-        return(    RunnablePassthrough.assign(schema=self.get_schema)
+        return(    
+            RunnablePassthrough.assign(schema=self.get_schema)
             | self.get_sql_query_extractor_prompt()
             | self.model
             | SQLQueryParser()
@@ -113,7 +110,7 @@ class RagModel:
                 """
         return ChatPromptTemplate.from_template(template)
     def run_query(self,query):
-        return self.db.run(query)
+        return self.db.run(query,include_columns=True)
     def get_chain_full_response(self):
         
         return (
@@ -126,6 +123,7 @@ class RagModel:
         | StrOutputParser()
         )
     def query(self,query):
+        
         try:
 
             result=self.model_full_response.invoke({"question":query})
@@ -133,7 +131,7 @@ class RagModel:
             with self.engine.connect() as connection:
                 
                 print(pd.read_sql(otro,connection).to_json())
-        #pd.read_sql(otro,conn).to_json()
+                table=pd.read_sql(otro,connection).to_json()
         except:
             result={"response":"Esa informacion no existe"}
-        return result
+        return result, table
