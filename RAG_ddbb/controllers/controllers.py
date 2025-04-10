@@ -9,9 +9,9 @@ async def querier(question:str,conf:Config):
 
     database=DataBase(conf).get_database()
     engine=DataBase(conf).get_engine()
-    result=RagModel(database,engine).query(question)
+    result, table=RagModel(database,engine).query(question)
 
-    return result
+    return result, table
 
 async def get_configurations(user):
     print("Enter to get_configurations    ", user)

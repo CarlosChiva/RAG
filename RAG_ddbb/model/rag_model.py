@@ -113,7 +113,7 @@ class RagModel:
                 """
         return ChatPromptTemplate.from_template(template)
     def run_query(self,query):
-        return self.db.run(query)
+        return self.db.run(query,include_columns=True)
     def get_chain_full_response(self):
         
         return (
@@ -133,7 +133,7 @@ class RagModel:
             with self.engine.connect() as connection:
                 
                 print(pd.read_sql(otro,connection).to_json())
-        #pd.read_sql(otro,conn).to_json()
+                table=pd.read_sql(otro,connection).to_json()
         except:
             result={"response":"Esa informacion no existe"}
-        return result
+        return result, table
