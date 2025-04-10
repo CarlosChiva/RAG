@@ -35,13 +35,29 @@ export class DdbbConfComponent {
     
   }
 
+  isValidConfig(): boolean {
+    // Verificar que port sea una cadena de 4 dígitos
+    const hasPort = typeof this.dbConfig.port === 'string' && 
+                    this.dbConfig.port.length === 4 &&
+                    /^\d{4}$/.test(this.dbConfig.port);
+    
+    // Verificar que host tenga formato de IP (IPv4)
+    const isHostValid = /^(?:\d{1,3}\.){3}\d{1,3}$/.test(this.dbConfig.host);
 
+    return hasPort && isHostValid;
+  }
 
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
   try_connection(){
     this.isLoading = true; // Activar el loader
+
+    if (!this.isValidConfig()) {
+      alert("La configuración no es válida. Verifique el puerto y el host.");
+      this.isLoading = false; // Desactivar el loader
+      return;
+    }
 
     this.ddbbServices.tryConnection(this.dbConfig).subscribe({
       next: (response: boolean) => {
@@ -51,8 +67,7 @@ export class DdbbConfComponent {
       } else {
         console.log("Conexión fallida");
         alert("No se pudo conectar a la base de datos.");
-        this.isLoading = false; // Desactivar el loader cuando la conexión termine
-
+        this.isLoading = false;
       }
     },
     error: (error) => {
@@ -64,11 +79,16 @@ export class DdbbConfComponent {
 
     },
     complete: () => {
-      this.isLoading = false; // Desactivar el loader cuando la conexión termine
+      this.isLoading = false; 
     }
   });
   };
   save_config(){
+    if (!this.isValidConfig()) {
+      alert("La configuración no es válida. Verifique el puerto y el host.");
+      this.isLoading = false; 
+      return;
+    }
     console.log("Enviando configuración:", this.dbConfig);
     
     this.ddbbServices.addConfig(this.dbConfig).subscribe({
