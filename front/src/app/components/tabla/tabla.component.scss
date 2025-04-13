@@ -12,15 +12,11 @@
     th, td {
       padding: 8px;
       border: 1px solid #ddd;
-      text-align: left;
+      text-align: center;  // Cambia 'left' a 'center' para alineación horizontal
+      vertical-align: middle;  // Añade esto para alineación vertical
     }
     
     th {
-      background-color: #f2f2f2;
       font-weight: bold;
-    }
-    
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
     }
   }
