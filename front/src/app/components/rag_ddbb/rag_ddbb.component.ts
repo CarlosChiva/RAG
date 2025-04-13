@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
+import {TablaComponent} from '../tabla/tabla.component';
 
 interface UserMessage {
   user: string;
@@ -20,7 +21,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,TablaComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -45,6 +46,7 @@ export class RagDdbbComponent {
   };
   configList: DbConfig[] = [];
   selectedConfig: DbConfig = this.getEmptyConfig();
+  tableData: any[] = []; // Añade esta propiedad a la clase
 
 
   message: string = '';
@@ -56,6 +58,8 @@ export class RagDdbbComponent {
     text: string;
     isUser: boolean;
     isTyping?: boolean;
+    tableData?: any;
+
   }[] = [];
 
 
@@ -183,7 +187,19 @@ export class RagDdbbComponent {
         var message=JSON.stringify(data);
         var dataParse = JSON.parse(message);
         const resultText = dataParse.result; // contendrá "Hay 2 personas en la lista."
-        const tableData = dataParse.table
+        this.tableData = dataParse.table
+        console.log(dataParse);
+        console.log(this.tableData);
+        console.log(resultText);
+            // Parse el string de la tabla a un objeto JavaScript
+        if (typeof dataParse.table === 'string') {
+          this.tableData = JSON.parse(dataParse.table);
+        } else {
+          this.tableData = dataParse.table;
+        }
+        
+        console.log('Datos parseados:', this.tableData);
+        
         
         this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
       },
@@ -225,7 +241,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       this.messages[messageIndex] = {
         ...message,
         text: fullText,
-        isTyping: false
+        isTyping: false,
+        tableData: this.tableData
       };
     }
   };

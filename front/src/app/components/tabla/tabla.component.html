@@ -1,0 +1,12 @@
+<table class="data-table">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columnas">{{ col }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filas">
+        <td *ngFor="let col of columnas">{{ row[col] ?? '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
