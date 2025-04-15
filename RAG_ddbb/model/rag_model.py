@@ -106,7 +106,7 @@ class RagModel:
                 Question: {question}
                 SQL Query: {query}
                 SQL Response: {response}
-                Return a response with natural language. only return the information that is relevant to the user's question. without add any explaination 
+                Return a response with natural language. only return the information that is relevant to the user's question. without add any explaination. Use markdown format to respond. 
                 """
         return ChatPromptTemplate.from_template(template)
     def run_query(self,query):
@@ -133,5 +133,6 @@ class RagModel:
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
         except:
-            result={"response":"Esa informacion no existe"}
+            result="Esa informacion no existe"
+            table={}
         return result, table

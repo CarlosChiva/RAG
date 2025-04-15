@@ -8,7 +8,8 @@ import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
 import {TablaComponent} from '../tabla/tabla.component';
-
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {marked } from 'marked';
 interface UserMessage {
   user: string;
 }
@@ -55,7 +56,7 @@ export class RagDdbbComponent {
   mostrarModal: boolean = false;
 
   messages: {
-    text: string;
+    text: string | Promise<String> | SafeHtml;
     isUser: boolean;
     isTyping?: boolean;
     tableData?: any;
@@ -66,6 +67,7 @@ export class RagDdbbComponent {
   constructor(
     private configsService: DdbbServices,
     private router: Router,
+    private sanitizer:DomSanitizer,
   ) { }
   abrirModal(config?: DbConfig) {
     this.selectedConfig = config ? { ...config } : this.getEmptyConfig();
@@ -223,9 +225,11 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
   const addNextChar = () => {
     if (index < fullText.length) {
       // Actualizar el texto letra por letra
+      const markdownText=marked(fullText.substring(0, index + 1))
+      const safeHtml=this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
       this.messages[messageIndex] = {
         ...message,
-        text: fullText.substring(0, index + 1),
+        text: safeHtml,
         isTyping: true
       };
       
@@ -237,10 +241,13 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
         this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
       }
     } else {
+      const markdownText = marked(fullText);
+      const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+      
       // Finalizar la animación
       this.messages[messageIndex] = {
         ...message,
-        text: fullText,
+        text: safeHtml,
         isTyping: false,
         tableData: this.tableData
       };

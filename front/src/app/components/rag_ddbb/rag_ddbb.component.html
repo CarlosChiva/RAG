@@ -29,7 +29,7 @@
               [class.user-message]="msg.isUser"
               [class.bot-message]="!msg.isUser"
               [class.typing]="msg.isTyping">
-            {{ msg.text }}
+            <div [innerHTML]="msg.text"></div>
             <div *ngIf="msg.isTyping" class="typing-indicator">
               <span></span>
               <span></span>
