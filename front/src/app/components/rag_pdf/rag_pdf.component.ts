@@ -6,6 +6,8 @@ import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {marked } from 'marked';
 interface UserMessage {
   user: string;
 }
@@ -43,7 +45,7 @@ export class PdfComponent implements OnInit {
   mostrarModal: boolean = false;
   // Añade esta interfaz y la propiedad messages
   messages: {
-    text: string;
+    text: string|Promise<String>|SafeHtml;
     isUser: boolean;
     isTyping?: boolean;
   }[] = [];
@@ -51,7 +53,9 @@ export class PdfComponent implements OnInit {
 
   constructor(
     private collectionsService: CollectionsService,
-    private router: Router
+    private router: Router,
+    private sanitizer:DomSanitizer,
+
   ) { }
   abrirModal() {
     this.mostrarModal = true;
@@ -191,9 +195,11 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
   const addNextChar = () => {
     if (index < fullText.length) {
       // Actualizar el texto letra por letra
+      const markdownText=marked(fullText.substring(0, index + 1))
+      const safeHtml=this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
       this.messages[messageIndex] = {
         ...message,
-        text: fullText.substring(0, index + 1),
+        text: safeHtml,
         isTyping: true
       };
       
@@ -205,10 +211,13 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
         this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
       }
     } else {
+      const markdownText = marked(fullText);
+      const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+      
       // Finalizar la animación
       this.messages[messageIndex] = {
         ...message,
-        text: fullText,
+        text: safeHtml,
         isTyping: false
       };
     }

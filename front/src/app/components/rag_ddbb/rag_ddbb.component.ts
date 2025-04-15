@@ -190,9 +190,7 @@ export class RagDdbbComponent {
         var dataParse = JSON.parse(message);
         const resultText = dataParse.result; // contendrá "Hay 2 personas en la lista."
         this.tableData = dataParse.table
-        console.log(dataParse);
-        console.log(this.tableData);
-        console.log(resultText);
+
             // Parse el string de la tabla a un objeto JavaScript
         if (typeof dataParse.table === 'string') {
           this.tableData = JSON.parse(dataParse.table);
