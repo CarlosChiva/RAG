@@ -106,7 +106,9 @@ class RagModel:
                 Question: {question}
                 SQL Query: {query}
                 SQL Response: {response}
-                Return a response with natural language. only return the information that is relevant to the user's question. without add any explaination. Use markdown format to respond. 
+                Return a response with natural language. 
+                Only return the information that is relevant to the user's question. without add any explaination. 
+                Use markdown format to respond without markdwon header in your output. 
                 """
         return ChatPromptTemplate.from_template(template)
     def run_query(self,query):
