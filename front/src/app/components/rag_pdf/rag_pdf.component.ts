@@ -8,6 +8,8 @@ import { CollectionsService } from '../../services/collections.service';
 import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importar componente
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
+import {ChatOutputComponent} from '../chat-output/chat-output.component';
+
 interface UserMessage {
   user: string;
 }
@@ -20,7 +22,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -31,6 +33,7 @@ type ConversationMessage = UserMessage | BotMessage;
 export class PdfComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
+  @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
 
   
   sidebarCollapsed = false;
@@ -207,8 +210,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       setTimeout(addNextChar, speed);
       
       // Hacer scroll hacia abajo mientras se escribe
-      if (this.chatOutput) {
-        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
+      if (this.chatOutputComponent) {
+        this.chatOutputComponent.scrollToBottom();
       }
     } else {
       const markdownText = marked(fullText);
@@ -233,8 +236,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
   }
   private scrollChatToBottom(): void {
     setTimeout(() => {
-      if (this.chatOutput) {
-        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
+     if (this.chatOutputComponent) {
+        this.chatOutputComponent.scrollToBottom();
       }
     });
   }

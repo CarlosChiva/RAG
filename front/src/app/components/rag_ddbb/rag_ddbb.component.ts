@@ -7,7 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
-import {TablaComponent} from '../tabla/tabla.component';
+import {ChatOutputComponent} from '../chat-output/chat-output.component';
+
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
 interface UserMessage {
@@ -22,7 +23,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,TablaComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -30,6 +31,7 @@ type ConversationMessage = UserMessage | BotMessage;
 export class RagDdbbComponent {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
+  @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
 
   
   sidebarCollapsed = false;
@@ -262,8 +264,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
   }
   private scrollChatToBottom(): void {
     setTimeout(() => {
-      if (this.chatOutput) {
-        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
+      if (this.chatOutputComponent) {
+        this.chatOutputComponent.scrollToBottom();
       }
     });
   }

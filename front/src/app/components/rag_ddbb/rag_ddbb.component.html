@@ -23,25 +23,10 @@
 
   <div class="main-content" [class.expanded]="sidebarCollapsed">
     <div class="chat-area" id="chat-area">
-      <div id="chat-output" #chatOutput>
-        <div *ngFor="let msg of messages" 
-              [class.message]="true"
-              [class.user-message]="msg.isUser"
-              [class.bot-message]="!msg.isUser"
-              [class.typing]="msg.isTyping">
-            <div [innerHTML]="msg.text"></div>
-            <div *ngIf="msg.isTyping" class="typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <!-- Añade esto para mostrar la tabla dentro del mensaje -->
-            <div *ngIf="msg.tableData" class="message-table">
-              <app-tabla [data]="msg.tableData"></app-tabla>
-            </div>
-        </div>
-      
-      </div>
+    <!-- primera-ventana.component.html -->
+    <div class="ventana1">
+      <app-chat-output id="chat-output" [messages]="messages" [showTables]="true"></app-chat-output>
+    </div>
       <div class="input-area">
         <input type="text" 
         id="inputText" 

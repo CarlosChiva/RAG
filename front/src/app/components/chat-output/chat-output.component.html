@@ -1,0 +1,19 @@
+<!-- chat-output.component.html -->
+<div id="chat-output" #chatOutput>
+    <div *ngFor="let msg of messages" 
+         [class.message]="true"
+         [class.user-message]="msg.isUser"
+         [class.bot-message]="!msg.isUser"
+         [class.typing]="msg.isTyping">
+      <div [innerHTML]="msg.text"></div>
+      <div *ngIf="msg.isTyping" class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <!-- Solo muestra la tabla si showTables es true y el mensaje tiene tableData -->
+      <div *ngIf="showTables && msg.tableData" class="message-table">
+        <app-tabla [data]="msg.tableData"></app-tabla>
+      </div>
+    </div>
+  </div>
