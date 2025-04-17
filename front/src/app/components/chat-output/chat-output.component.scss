@@ -1,0 +1,27 @@
+pre, code, table {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  table {
+    display: block; // Hace que las tablas se comporten como bloques
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  p {
+    margin: 0.5em 0;
+    width: 100%;
+  }
+  
+  ul, ol {
+    padding-left: 20px;
+    width: 100%;
+  }

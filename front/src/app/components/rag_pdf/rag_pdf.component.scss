@@ -168,7 +168,7 @@ body {
   background-color: #377cc7;
 }
 /* Estilos para el área de chat */
-.ventana1{
+.chat-output{
   ::ng-deep{
   #chat-output {
     flex-grow: 1;
@@ -208,6 +208,9 @@ body {
     float: left;
     text-align: left;
     margin-right: auto;
+    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
+    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
+
   }
 
   .typing-indicator {
@@ -236,6 +239,7 @@ body {
       }
     }
   }
+
 }
 }
 

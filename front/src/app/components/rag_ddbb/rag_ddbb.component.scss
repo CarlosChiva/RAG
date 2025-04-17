@@ -170,7 +170,7 @@ body {
 /* Estilos para el área de chat */
 
 /* Mensajes del usuario alineados a la derecha */
-.ventana1{
+.chat-output{
   ::ng-deep{
     #chat-output {
     flex-grow: 1;
@@ -179,6 +179,7 @@ body {
      background-color: #01257D;    
      margin-bottom: 5px;
      margin-right: 100px;
+
      
     }
     .message {
@@ -188,7 +189,6 @@ body {
       display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
       word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
       clear: both;
-      max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
         }
     .user-message {
       background-color: #1bc073;

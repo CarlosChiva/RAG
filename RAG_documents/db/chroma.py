@@ -20,7 +20,7 @@ async def get_chain(model,vector_store):
         - Utiliza solo la informacion proporcionada en el contexto para saber si esa informacion contesta la pregunta del usuario correctamente,
         - Si la informacion proporcionada por el contexto es util para la respuesta, utilizala para contestar al usuario
         - Si la informacion proporcionada por el contexto no es util para la respuesta, responde solo 'no tengo informacion suficiente para responder a esta pregunta'.
-    Responde siempre en formato markdown.
+    Responde siempre con formato markdown.
      Respuesta:"""
     
     prompt = PromptTemplate(template=template, input_variables=["context", "input", "chat_history"])

@@ -209,10 +209,10 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       index++;
       setTimeout(addNextChar, speed);
       
-      // Hacer scroll hacia abajo mientras se escribe
-      if (this.chatOutputComponent) {
-        this.chatOutputComponent.scrollToBottom();
-      }
+      // // Hacer scroll hacia abajo mientras se escribe
+      // if (this.chatOutputComponent) {
+      //   this.chatOutputComponent.scrollToBottom();
+      // }
     } else {
       const markdownText = marked(fullText);
       const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
