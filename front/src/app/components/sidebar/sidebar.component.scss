@@ -1,0 +1,38 @@
+
+.sidebar {
+width: 250px;
+//   background: linear-gradient(to right,#333, #504f4f);
+color: white;
+padding: 20px;
+box-sizing: border-box;
+transition: width 0.3s ease, visibility 0.3s ease;
+position: relative;
+overflow: hidden;
+height: 100vh;
+}
+
+
+.sidebar.collapsed {
+visibility: visible; /* Mantiene visible el botón de colapsar */
+position: absolute;
+top: 0;
+left: 0;
+width: 50px; /* Ajusta el ancho del botón para que se mantenga en pantalla */
+height: 50px;
+background-color: #444;
+text-align: center;
+visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
+
+}
+.sidebar h2 {
+margin-top: 0;
+}
+
+
+
+
+.collection-item {
+position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
+padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
+margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
+}

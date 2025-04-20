@@ -1,23 +1,30 @@
 <!-- pdf.component.html -->
 <div class="container">
-  <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar">
-    <h2 align="right" id="collectionsTitle">Collections</h2>
-    <ul id="collections-list">
-      <li *ngFor="let collection of collections" 
-          [class.selected]="selectedCollection === collection"
-          class="collection-item"
-          (click)="selectCollection(collection)">
-        {{ collection }}
-        <button class="delete-button" (click)="deleteCollection(collection, $event)">-</button>
-      </li>
-    </ul>
+<div class ="sidebar_container">
+  <app-sidebar class="sidebar"
+    [title]="'Collecitons'"
+    [sidebarCollapsed]="sidebarCollapsed" 
+>
+    <div sidebarContent>
+      <ul id="collections-list">
+        <li *ngFor="let collection of collections" 
+            [class.selected]="selectedCollection === collection"
+            class="collection-item"
+            (click)="selectCollection(collection)">
+          {{ collection }}
+          <button class="delete-button" (click)="deleteCollection(collection, $event)">-</button>
+        </li>
+      </ul>
+
     <div class="button-container">
       <button id="logoutButton" class="logout-btn" (click)="logout()">Logout</button>
       <button id="menuButton" class="main-btn" (click)="navigateToMenu()">Menu</button>
     </div>
   </div>
-  
-  <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button>
+  </app-sidebar>
+</div>
+  <!-- <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar"> -->
+  <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
 
   <div class="main-content" [class.expanded]="sidebarCollapsed">
     <div class="chat-area" id="chat-area">

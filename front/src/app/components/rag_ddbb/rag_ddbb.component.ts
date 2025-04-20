@@ -8,6 +8,7 @@ import { DdbbServices } from '../../services/ddbb.service';
 import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
 import {ChatOutputComponent} from '../chat-output/chat-output.component';
+import {SidebarComponent} from '../sidebar/sidebar.component';
 
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
@@ -23,7 +24,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -32,6 +33,7 @@ export class RagDdbbComponent {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
+  @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
 
   
   sidebarCollapsed = false;

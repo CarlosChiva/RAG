@@ -14,34 +14,33 @@ body {
   background-color: #504f4f;
 
 }
-
-.sidebar {
-  width: 250px;
+.sidebar_container{
   background: linear-gradient(to right,#333, #504f4f);
-  color: white;
-  padding: 20px;
-  box-sizing: border-box;
-  transition: width 0.3s ease, visibility 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
 
-// .sidebar.collapsed {
-//   width: 0px; /* Colapsa completamente */
-//   padding: 0;
-//   visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
-// }
-.sidebar.collapsed {
-  visibility: visible; /* Mantiene visible el botón de colapsar */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50px; /* Ajusta el ancho del botón para que se mantenga en pantalla */
-  height: 50px;
-  background-color: #444;
-  text-align: center;
-  visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
+  ::ng-deep{
 
+
+   
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 20px;
+    }
+
+    .sidebar ul li:hover, .sidebar ul li.selected {
+      background-color: #555;
+    }
+    .collection-item {
+    position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
+    padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
+    margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
+    }
+  }
 }
 .collapse-btn {
   position: absolute;
@@ -56,25 +55,6 @@ body {
   border-radius: 10px;
   z-index: 1; /* Asegura que el botón esté por encima de todo */
 }
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.sidebar ul li:hover, .sidebar ul li.selected {
-  background-color: #555;
-}
-
 .chat-area {
   width: 100%;
   display: flex;
@@ -175,7 +155,7 @@ body {
     overflow-y: auto;
     border: 1px solid #504f4f;
     padding: 10px;
-    height: 300px;
+    height: 80vh;
     background-color: #504f4f;
     margin-bottom: 5px;
     margin-right: 100px;
@@ -253,12 +233,8 @@ body {
 }
 
 
-/* Estilos para la lista */
-.collection-item {
-  position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
-  padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
-  margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
-}
+// /* Estilos para la lista */
+
 
 /* Estilos para el botón de eliminación */
 .delete-button {

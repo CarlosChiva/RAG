@@ -1,0 +1,13 @@
+<!-- sidebar.component.html -->
+<div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar">
+    <h2 align="right" id="collectionsTitle">{{ title }}</h2>
+    
+    <!-- Content projection para que cada componente pueda insertar su propio contenido -->
+    <ng-content select="[sidebarContent]"></ng-content>
+    
+    <!-- Content projection para botones específicos del footer -->
+    <div class="button-container">
+      <ng-content select="[sidebarFooter]"></ng-content>
+    </div>
+</div>
+  

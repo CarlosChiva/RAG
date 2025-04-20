@@ -9,6 +9,7 @@ import { UploadComponent } from '../upload_pdf/upload_pdf.component'; // Importa
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
 import {ChatOutputComponent} from '../chat-output/chat-output.component';
+import {SidebarComponent} from '../sidebar/sidebar.component';
 
 interface UserMessage {
   user: string;
@@ -22,7 +23,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -34,6 +35,7 @@ export class PdfComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
+  @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
 
   
   sidebarCollapsed = false;
@@ -75,6 +77,7 @@ export class PdfComponent implements OnInit {
   }
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+    this.sidebarComponent.toggleSidebar();
   }
 
   logout(): void {

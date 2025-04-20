@@ -1,22 +1,28 @@
 <!-- rag-ddbb.component.html -->
 <div class="container">
-  <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar">
-    <h2 align="right" id="collectionsTitle">Configs</h2>
-    <ul id="collections-list">
-      <li *ngFor="let config of configList"
-          [class.selected]="selectedConfig === config"
-          class="collection-item"
-          (click)="selectConfig(config)">
-        {{ config.connection_name }}
-        <button class="edit-button" (click)="abrirModal(config)">⚙</button>
+  <div class ="sidebar_container">
+  <app-sidebar class="sidebar"
+    [title]="'ddbb'"
+    [sidebarCollapsed]="sidebarCollapsed" 
+    (toggleSidebarEvent)="toggleSidebar()">
+    <div sidebarContent>
+      <ul id="collections-list">
+        <li *ngFor="let config of configList"
+            [class.selected]="selectedConfig === config"
+            class="collection-item"
+            (click)="selectConfig(config)">
+          {{ config.connection_name }}
+          <button class="edit-button" (click)="abrirModal(config)">⚙</button>
 
-        <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
-      </li>
-    </ul>
+          <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
+        </li>
+      </ul>
     <div class="button-container">
       <button id="logoutButton" class="logout-btn" (click)="logout()">Logout</button>
       <button id="menuButton" class="main-btn" (click)="navigateToMenu()">Menu</button>
     </div>
+    </div>
+  </app-sidebar>
   </div>
   
   <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button>

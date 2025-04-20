@@ -14,67 +14,49 @@ body {
   background-color: #01257D;
 
 }
-
-.sidebar {
-  width: 250px;
+.sidebar_container{
   background: linear-gradient(to right,#031d5e, #01257D);
-  color: white;
-  padding: 20px;
-  box-sizing: border-box;
-  transition: width 0.3s ease, visibility 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
 
-// .sidebar.collapsed {
-//   width: 0px; /* Colapsa completamente */
-//   padding: 0;
-//   visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
-// }
-.sidebar.collapsed {
-  visibility: visible; /* Mantiene visible el botón de colapsar */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50px; /* Ajusta el ancho del botón para que se mantenga en pantalla */
-  height: 50px;
-  background-color: #031d5e;
-  text-align: center;
-  visibility: hidden; /* Evita que se pueda interactuar con los elementos dentro del sidebar */
+  ::ng-deep{
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
 
+    .sidebar ul li {
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 20px;
+    }
+   
+
+    .sidebar ul li:hover, .sidebar ul li.selected {
+      background-color: #031d5e;
+
+    }
+    .collection-item {
+      position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
+      padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
+      margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
+    }
+  }
 }
 .collapse-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color:transparent;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  font-size: 20px;
-  border-radius: 10px;
-  z-index: 1; /* Asegura que el botón esté por encima de todo */
-}
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.sidebar ul li:hover, .sidebar ul li.selected {
-  background-color: #031d5e;
-}
-
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color:transparent;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 10px;
+    z-index: 1; /* Asegura que el botón esté por encima de todo */
+  }
+  .sidebar h2 {
+    margin-top: 0;
+  }
 .chat-area {
   width: 100%;
   display: flex;
@@ -263,11 +245,7 @@ body {
 
 
 /* Estilos para la lista */
-.collection-item {
-  position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
-  padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
-  margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
-}
+
 
 /* Estilos para el botón de eliminación */
 .delete-button {
