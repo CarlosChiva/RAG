@@ -44,7 +44,12 @@ services:
       - "./RAG_ddbb/.env"
     network_mode: host
     volumes:
-      - rag_ddbb:/app/configs_folder   
+      - rag_ddbb:/app/configs_folder
+  chatbot:
+    build: ./chatbot
+    ports:
+      - "8003:8003"
+    network_mode: host       
   front:
     build: ./front
     ports:
