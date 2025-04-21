@@ -17,6 +17,7 @@ export class SidebarItemComponent {
   @Output() selectItem = new EventEmitter<any>();
   @Output() deleteItem = new EventEmitter<any>();
   @Output() itemDeleted = new EventEmitter<any>();
+  @Output() conversationLoaded = new EventEmitter<any[]>();
 
   constructor(private collectionService:CollectionsService){}
   
@@ -30,6 +31,16 @@ export class SidebarItemComponent {
   onSelect(): void {
     if (this.collection) {
       this.selectItem.emit(this.collection);
+      // Obtenemos la conversación desde el servicio
+      this.collectionService.getConversation(this.collection).subscribe({
+        next: (conversation) => {
+          console.log('Conversation loaded:', conversation);
+          this.conversationLoaded.emit(conversation);
+        },
+        error: (err) => {
+          console.error('Error loading conversation:', err);
+        }
+      });
     }
   }
 

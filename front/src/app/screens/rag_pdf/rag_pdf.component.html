@@ -13,6 +13,7 @@
             [isSelected]="selectedCollection === collection"
             [displayField]="'collection'"
             (selectItem)="selectCollection($event)"
+            (conversationLoaded)="renderConversation($event)"
             (itemDeleted)="deleteCollection($event)">
           </app-sidebar-item>
         </ul>

@@ -106,37 +106,21 @@ export class PdfComponent implements OnInit {
     });
   }
 
-  selectCollection(collectionName: string): void {
-    this.selectedCollection = collectionName;
-    
-    this.collectionsService.getConversation(collectionName).subscribe({
-      next: (conversation: any) => {
-        this.messages = [];
-        console.log(conversation);
-        
-        conversation.forEach((message: any) => {
-          if ('user' in message) {
-            this.messages.push({
-              text: message.user || '',
-              isUser: true
-            });
-          }
-          else if ('bot' in message) {
-            this.messages.push({
-              text: message.bot || '',
-              isUser: false
-            });
-          }
-        });
-        
-        this.scrollChatToBottom();
-      },
-      error: (error: any) => {
-        console.error('Error loading conversation:', error);
+  renderConversation(conversation: any[]): void {
+    this.messages=[]
+    conversation.forEach((message) => {
+      if ('user' in message) {
+        this.messages.push({ text: message.user, isUser: true });
+      } else if ('bot' in message) {
+        this.messages.push({ text: this.markdownRender(marked(message.bot)), isUser: false });
       }
     });
+  
+    this.scrollChatToBottom();
   }
-
+  selectCollection(collection:string){
+    this.selectedCollection=collection;
+  }
   deleteCollection(collectionName: string): void {
    // event.stopPropagation(); // Prevent triggering selectCollection
     this.loadCollections();
@@ -190,7 +174,10 @@ export class PdfComponent implements OnInit {
       }
     });
   }
-
+  markdownRender(message:string | Promise<String>){
+    return this.sanitizer.bypassSecurityTrustHtml(message as string);
+       
+  }
 typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
   let index = 0;
   const message = this.messages[messageIndex];
@@ -199,10 +186,10 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
     if (index < fullText.length) {
       // Actualizar el texto letra por letra
       const markdownText=marked(fullText.substring(0, index + 1))
-      const safeHtml=this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+      const messageRenderized= this.markdownRender(markdownText)
       this.messages[messageIndex] = {
         ...message,
-        text: safeHtml,
+        text: messageRenderized,
         isTyping: true
       };
       
