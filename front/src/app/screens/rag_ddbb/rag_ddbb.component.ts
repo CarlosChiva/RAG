@@ -10,6 +10,7 @@ import {DbConfig} from '../../interfaces/db-conf.interface';
 import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 import {SidebarItemComponent} from '../../components/sidebar-ddbb-item/sidebar-ddbb-item.component';
+import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
 
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
@@ -25,7 +26,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -95,16 +96,6 @@ export class RagDdbbComponent {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
-  logout(): void {
-    if (confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('access_token');
-      this.router.navigate(['/login']);
-    }
-  }
-
-  navigateToMenu(): void {
-    this.router.navigate(['/menu']);
-  }
 
   loadConfigs(): void {
       this.configsService.getConfigs().subscribe({  

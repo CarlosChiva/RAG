@@ -21,7 +21,6 @@ services:
       - "./ddbb/.env"
     ports:
       - "8001:8001"
-#    network_mode: host    
     depends_on:
       - db
     links:
@@ -34,7 +33,6 @@ services:
     env_file: 
       - "./RAG_documents/.env"
     network_mode: host
-
     volumes:
       - RAG_documents:/app/PersistDirectory
       - conversations:/app/conversations

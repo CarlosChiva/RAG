@@ -1,0 +1,37 @@
+
+.button-container {
+    position: absolute;
+    bottom: 20px; /* Distancia desde la parte inferior */
+    left: 50%; /* Centrar horizontalmente */
+    transform: translateX(-50%); /* Ajuste fino de centrado */
+    display: flex; /* Mostrar elementos en una fila */
+    gap: 10px; /* Espaciado entre botones */
+    justify-content: center; /* Centrar los botones horizontalmente */
+    align-items: center; /* Asegurar alineación vertical */
+    width: 100%; /* Usar el ancho total del sidebar */
+    box-sizing: border-box;
+  }
+  .logout-btn, .main-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px; /* Ajusta el padding para un tamaño basado en el texto */
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  }
+  
+  .logout-btn:hover {
+    background-color: #377cc7;
+  }
+  
+  .main-btn {
+    background-color: #28a745; /* Color verde para diferenciación */
+  }
+  
+  .main-btn:hover {
+    background-color: #218838;
+  }
+  

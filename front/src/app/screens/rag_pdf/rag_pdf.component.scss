@@ -14,6 +14,7 @@ body {
   background-color: #504f4f;
 
 }
+// -------------------------------- sidebar ---------------------------------------
 .sidebar_container{
   background: linear-gradient(to right,#333, #504f4f);
 
@@ -55,6 +56,7 @@ body {
   border-radius: 10px;
   z-index: 1; /* Asegura que el botón esté por encima de todo */
 }
+// ------------------------------- Chat area -------------------------------------
 .chat-area {
   width: 100%;
   display: flex;
@@ -74,7 +76,7 @@ body {
 .chat-area.collapsed {
   width: calc(100% - 50px); 
 }
-/* ----------------------------- */
+// --------------------------- Input area -------------------- /
 
 .input-area {
   display: flex;
@@ -88,6 +90,7 @@ body {
   flex-grow: 1;
   padding: 15px;
   border-radius: 10px;
+  margin-bottom: 5px;
 }
 
 #sendButton {
@@ -124,6 +127,8 @@ body {
   background-color: #0056b3;
   border : none;
 }
+
+// -------------------------------  Upload collections ------------------------------
 #uploadButton{
   position: absolute;
   margin: 10px;
@@ -264,42 +269,6 @@ body {
   z-index: 1000; // Asegura que esté por encima de todo
 }
 
-
-.button-container {
-  position: absolute;
-  bottom: 20px; /* Distancia desde la parte inferior */
-  left: 50%; /* Centrar horizontalmente */
-  transform: translateX(-50%); /* Ajuste fino de centrado */
-  display: flex; /* Mostrar elementos en una fila */
-  gap: 10px; /* Espaciado entre botones */
-  justify-content: center; /* Centrar los botones horizontalmente */
-  align-items: center; /* Asegurar alineación vertical */
-  width: 100%; /* Usar el ancho total del sidebar */
-  box-sizing: border-box;
-}
-.logout-btn, .main-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px; /* Ajusta el padding para un tamaño basado en el texto */
-  cursor: pointer;
-  font-size: 14px;
-  text-align: center;
-  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-}
-
-.logout-btn:hover {
-  background-color: #377cc7;
-}
-
-.main-btn {
-  background-color: #28a745; /* Color verde para diferenciación */
-}
-
-.main-btn:hover {
-  background-color: #218838;
-}
 
 /* Animación de entrada */
 @keyframes fadeIn {

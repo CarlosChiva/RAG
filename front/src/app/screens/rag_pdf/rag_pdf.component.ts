@@ -1,6 +1,5 @@
 // pdf.component.ts
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +10,7 @@ import {marked } from 'marked';
 import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
-
+import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
 interface UserMessage {
   user: string;
 }
@@ -24,7 +23,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -60,7 +59,6 @@ export class PdfComponent implements OnInit {
 
   constructor(
     private collectionsService: CollectionsService,
-    private router: Router,
     private sanitizer:DomSanitizer,
 
   ) { }
@@ -82,16 +80,6 @@ export class PdfComponent implements OnInit {
     this.sidebarComponent.toggleSidebar();
   }
 
-  logout(): void {
-    if (confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('access_token');
-      this.router.navigate(['/login']);
-    }
-  }
-
-  navigateToMenu(): void {
-    this.router.navigate(['/menu']);
-  }
 
   loadCollections(): void {
     this.collectionsService.getCollections().subscribe({
