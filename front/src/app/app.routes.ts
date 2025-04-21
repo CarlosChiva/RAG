@@ -1,12 +1,12 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
+import { LoginComponent } from './screens/login/login.component';
 import { inject } from '@angular/core';
 import { AuthGuard } from './guards/auth.guard';
-import { MenuComponent } from './components/menu/menu.component';
-import { PdfComponent } from './components/rag_pdf/rag_pdf.component';
+import { MenuComponent } from './screens/menu/menu.component';
+import { PdfComponent } from './screens/rag_pdf/rag_pdf.component';
 //import { UploadComponent } from './components/upload_pdf/upload_pdf.component';
-import { RagDdbbComponent } from './components/rag_ddbb/rag_ddbb.component';
+import { RagDdbbComponent } from './screens/rag_ddbb/rag_ddbb.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },

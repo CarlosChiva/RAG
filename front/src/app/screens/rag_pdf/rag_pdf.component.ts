@@ -4,15 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { DdbbServices } from '../../services/ddbb.service';
-import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
-import {DbConfig} from '../../interfaces/db-conf.interface';
-import {ChatOutputComponent} from '../chat-output/chat-output.component';
-import {SidebarComponent} from '../sidebar/sidebar.component';
-import {SidebarItemComponent} from '../sidebar-ddbb-item/sidebar-ddbb-item.component';
-
+import { CollectionsService } from '../../services/collections.service';
+import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component'; // Importar componente
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
+import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
+import {SidebarComponent} from '../../components/sidebar/sidebar.component';
+import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
+
 interface UserMessage {
   user: string;
 }
@@ -23,14 +22,17 @@ interface BotMessage {
 type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
-  selector: 'app-rag-ddbb',
+  selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
-  templateUrl: './rag_ddbb.component.html',
-  styleUrls: ['./rag_ddbb.component.scss']
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
+  templateUrl: './rag_pdf.component.html',
+  styleUrls: ['./rag_pdf.component.scss']
 })
+// Define interfaces para tus tipos de mensajes
 
-export class RagDdbbComponent {
+// Tipo unión para cualquier tipo de mensaje
+
+export class PdfComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
@@ -39,60 +41,45 @@ export class RagDdbbComponent {
 
   
   sidebarCollapsed = false;
-  configs: DbConfig[] = [];
+  collections: string[] = [];
   conversation: any[] = [];
-  dbConfig: DbConfig = {
-    connection_name: '',
-    type_db: '',
-    user: '',
-    password: '',
-    host: '',
-    port: '',
-    database_name: '',
-    database_path : ''
-  };
-  configList: DbConfig[] = [];
-  selectedConfig: DbConfig = this.getEmptyConfig();
-  tableData: any[] = []; // Añade esta propiedad a la clase
 
-
+  selectedCollection: string | null = null;
   message: string = '';
   
+  //messages: Message[] = [];
   isSending: boolean = false;
   mostrarModal: boolean = false;
-
+  // Añade esta interfaz y la propiedad messages
   messages: {
-    text: string | Promise<String> | SafeHtml;
+    text: string|Promise<String>|SafeHtml;
     isUser: boolean;
     isTyping?: boolean;
-    tableData?: any;
-
   }[] = [];
 
 
   constructor(
-    private configsService: DdbbServices,
+    private collectionsService: CollectionsService,
     private router: Router,
     private sanitizer:DomSanitizer,
+
   ) { }
-  abrirModal(config?: DbConfig) {
-    this.selectedConfig = config ? { ...config } : this.getEmptyConfig();
+  abrirModal() {
     this.mostrarModal = true;
-    document.body.classList.add('modal-open');
+    document.body.classList.add('modal-open'); // Bloquea el fondo
   }
-  private getEmptyConfig(): DbConfig {
-    return { connection_name: '', type_db: '', user: '', password: '', host: '', port: '', database_name: '', database_path: '' };
-  }
+
   cerrarModal() {
     this.mostrarModal = false;
     document.body.classList.remove('modal-open');
     this.ngOnInit();
 }
   ngOnInit(): void {
-    this.loadConfigs();
+    this.loadCollections();
   }
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+    this.sidebarComponent.toggleSidebar();
   }
 
   logout(): void {
@@ -106,42 +93,60 @@ export class RagDdbbComponent {
     this.router.navigate(['/menu']);
   }
 
-  loadConfigs(): void {
-      this.configsService.getConfigs().subscribe({  
-        next: (data:DbConfig[]) => {
-          console.log(data);
-  
-          this.configList = data;
-          console.log(this.configList);
-        },
-        error: (error) => console.error('Error fetching configurations:', error)      
-      })
-  
-  
-    }
-  
+  loadCollections(): void {
+    this.collectionsService.getCollections().subscribe({
+      next: (data: {collections_name: string[]}) => {
+        this.collections = data.collections_name;
+        
+        if (this.collections.length === 0) {
+          this.abrirModal();
+        }
+      },
+      error: (error: any) => console.error('Error fetching collections:', error)
+    });
+  }
 
-    onSelectItem(config: DbConfig): void {
-      this.selectedConfig = config;
-    }
-    handleConnectionError(errorMessage: string): void {
-      console.error('Connection error:', errorMessage);
-      // Puedes implementar un manejo de errores adicional si es necesario
-    }
+  selectCollection(collectionName: string): void {
+    this.selectedCollection = collectionName;
+    
+    this.collectionsService.getConversation(collectionName).subscribe({
+      next: (conversation: any) => {
+        this.messages = [];
+        console.log(conversation);
+        
+        conversation.forEach((message: any) => {
+          if ('user' in message) {
+            this.messages.push({
+              text: message.user || '',
+              isUser: true
+            });
+          }
+          else if ('bot' in message) {
+            this.messages.push({
+              text: message.bot || '',
+              isUser: false
+            });
+          }
+        });
+        
+        this.scrollChatToBottom();
+      },
+      error: (error: any) => {
+        console.error('Error loading conversation:', error);
+      }
+    });
+  }
 
-    onItemDeleted(config: Event): void {
-      // Actualizar la lista local después de la eliminación
-    //  this.configList = this.configList.filter(c => c !== config);
-      this.loadConfigs();
-      // O, si prefieres recargar todos los datos
-      // this.loadConfigs();
-    }
+  deleteCollection(collectionName: string): void {
+   // event.stopPropagation(); // Prevent triggering selectCollection
+    this.loadCollections();
+  }
 
 
   sendMessage(): void {
     const messageText = this.message.trim();
     
-    if (!messageText || !this.selectedConfig) {
+    if (!messageText || !this.selectedCollection) {
       alert('Please enter a message and select a collection.');
       return;
     }
@@ -167,27 +172,14 @@ export class RagDdbbComponent {
       isTyping: true
     });
     
-    this.configsService.question(messageText, this.selectedConfig!).subscribe({
-      next: (data: Object) => {
-        var message=JSON.stringify(data);
-        var dataParse = JSON.parse(message);
-        const resultText = dataParse.result; // contendrá "Hay 2 personas en la lista."
-        this.tableData = dataParse.table
-
-            // Parse el string de la tabla a un objeto JavaScript
-        if (typeof dataParse.table === 'string') {
-          this.tableData = JSON.parse(dataParse.table);
-        } else {
-          this.tableData = dataParse.table;
-        }
-        
-        console.log('Datos parseados:', this.tableData);
-        
-        
-        this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
+    this.collectionsService.sendMessage(messageText, this.selectedCollection).subscribe({
+      next: (data: string) => {
+        // Iniciar animación de escritura
+        this.typeTextInMessage(botMessageIndex, data);
       },
       error: (error: any) => {
         console.error('Error sending message:', error);
+        // Actualizar mensaje con error
         this.messages[botMessageIndex] = {
           text: 'Error: Could not get response',
           isUser: false
@@ -217,10 +209,10 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       index++;
       setTimeout(addNextChar, speed);
       
-      // Hacer scroll hacia abajo mientras se escribe
-      if (this.chatOutput) {
-        this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
-      }
+      // // Hacer scroll hacia abajo mientras se escribe
+      // if (this.chatOutputComponent) {
+      //   this.chatOutputComponent.scrollToBottom();
+      // }
     } else {
       const markdownText = marked(fullText);
       const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
@@ -229,8 +221,7 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       this.messages[messageIndex] = {
         ...message,
         text: safeHtml,
-        isTyping: false,
-        tableData: this.tableData
+        isTyping: false
       };
     }
   };
@@ -245,7 +236,7 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
   }
   private scrollChatToBottom(): void {
     setTimeout(() => {
-      if (this.chatOutputComponent) {
+     if (this.chatOutputComponent) {
         this.chatOutputComponent.scrollToBottom();
       }
     });
