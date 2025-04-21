@@ -233,33 +233,6 @@ body {
 }
 
 
-// /* Estilos para la lista */
-
-
-/* Estilos para el botón de eliminación */
-.delete-button {
-  display: flex; /* Utiliza Flexbox para facilitar el centrado */
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  padding: 5px 10px; /* Ajustar el tamaño del botón */
-  background-color: #d15151; /* Color de fondo */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  border-radius: 10px; /* Bordes redondeados */
-  cursor: pointer; /* Cambiar el cursor cuando esté sobre el botón */
-  height: 20px;
-  position: absolute; /* Mantener el posicionamiento absoluto */
-  right: 10px; /* A 10px del borde derecho */
-  top: 50%; /* Centrar verticalmente dentro del contenedor */
-  transform: translateY(-50%); /* Ajuste final del centrado vertical */
-}
-
-/* Efecto hover para el botón */
-.delete-button:hover {
-  background-color: #ff4a4a;
-}
-
-
 /* Contenedor principal de contenido */
 .main-content {
   display: flex;
@@ -273,42 +246,6 @@ body {
 /* Contenedor expandido */
 .main-content.expanded {
   margin-left: 5px; /* Reducir el margen cuando la barra lateral esté colapsada */
-}
-
-.button-container {
-  position: absolute;
-  bottom: 20px; /* Distancia desde la parte inferior */
-  left: 50%; /* Centrar horizontalmente */
-  transform: translateX(-50%); /* Ajuste fino de centrado */
-  display: flex; /* Mostrar elementos en una fila */
-  gap: 10px; /* Espaciado entre botones */
-  justify-content: center; /* Centrar los botones horizontalmente */
-  align-items: center; /* Asegurar alineación vertical */
-  width: 100%; /* Usar el ancho total del sidebar */
-  box-sizing: border-box;
-}
-.logout-btn, .main-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px; /* Ajusta el padding para un tamaño basado en el texto */
-  cursor: pointer;
-  font-size: 14px;
-  text-align: center;
-  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
-}
-
-.logout-btn:hover {
-  background-color: #377cc7;
-}
-
-.main-btn {
-  background-color: #28a745; /* Color verde para diferenciación */
-}
-
-.main-btn:hover {
-  background-color: #218838;
 }
 
 

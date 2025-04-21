@@ -7,16 +7,18 @@
     (toggleSidebarEvent)="toggleSidebar()">
     <div sidebarContent>
       <ul id="collections-list">
-        <li *ngFor="let config of configList"
-            [class.selected]="selectedConfig === config"
-            class="collection-item"
-            (click)="selectConfig(config)">
-          {{ config.connection_name }}
-          <button class="edit-button" (click)="abrirModal(config)">⚙</button>
-
-          <button class="delete-button" (click)="deleteConfig(config, $event)">-</button>
-        </li>
-      </ul>
+        <app-sidebar-item 
+        *ngFor="let config of configList"
+        [item]="config"
+        [isSelected]="selectedConfig === config"
+        [displayField]="'connection_name'"
+        (selectItem)="onSelectItem($event)"
+        (itemDeleted)="onItemDeleted($event)"
+        (connectionError)="handleConnectionError($event)"
+        (openModal)="abrirModal($event)">
+        >
+      </app-sidebar-item>
+      </ul>    
     <div class="button-container">
       <button id="logoutButton" class="logout-btn" (click)="logout()">Logout</button>
       <button id="menuButton" class="main-btn" (click)="navigateToMenu()">Menu</button>

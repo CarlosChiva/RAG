@@ -9,6 +9,7 @@ import  { DdbbConfComponent} from '../ddbb_conf/ddbb_conf.component';
 import {DbConfig} from '../../interfaces/db-conf.interface';
 import {ChatOutputComponent} from '../chat-output/chat-output.component';
 import {SidebarComponent} from '../sidebar/sidebar.component';
+import {SidebarItemComponent} from '../sidebar-ddbb-item/sidebar-ddbb-item.component';
 
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
@@ -24,7 +25,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -34,6 +35,7 @@ export class RagDdbbComponent {
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
+  @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
 
   
   sidebarCollapsed = false;
@@ -119,43 +121,20 @@ export class RagDdbbComponent {
     }
   
 
-    selectConfig(config: DbConfig): void {
-      this.configsService.tryConnection(config).subscribe({
-        next: (response: boolean) => {
-        if (response) {
-          this.selectedConfig = config; // Selecciona una configuración
-        } else {
-          console.log("Conexión fallida");
-          alert("No se pudo conectar a la base de datos.");
-    
-        }
-      },
-      error: (error) => {
-        const backendError = error?.error?.detail;
-  
-        console.error("Error de conexión:", error);
-        alert(`❌ Error: ${backendError}`);
-    
-      },
-     
-    });
-    };
-    
+    onSelectItem(config: DbConfig): void {
+      this.selectedConfig = config;
+    }
+    handleConnectionError(errorMessage: string): void {
+      console.error('Connection error:', errorMessage);
+      // Puedes implementar un manejo de errores adicional si es necesario
+    }
 
-    deleteConfig(config: DbConfig, event: Event): void {
-      event.stopPropagation(); // Evita que se active `selectConfig`
-      this.configsService.removeConfig(config).subscribe({
-        next: () => {
-          console.log('Configuration deleted:', config);
-          alert('Configuration deleted successfully');
-          this.loadConfigs(); // Recarga la lista de configuraciones
-        },
-        error: (error) => {
-          console.error('Error deleting configuration:', error);
-          alert('Error deleting configuration');
-        }
-      });
-      this.configs = this.configs.filter(c => c !== config); // Elimina la configuración
+    onItemDeleted(config: Event): void {
+      // Actualizar la lista local después de la eliminación
+    //  this.configList = this.configList.filter(c => c !== config);
+      this.loadConfigs();
+      // O, si prefieres recargar todos los datos
+      // this.loadConfigs();
     }
 
 

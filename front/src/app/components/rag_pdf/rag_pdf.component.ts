@@ -10,6 +10,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
 import {ChatOutputComponent} from '../chat-output/chat-output.component';
 import {SidebarComponent} from '../sidebar/sidebar.component';
+import {SidebarItemComponent} from '../sidebar-ddbb-item/sidebar-ddbb-item.component';
 
 interface UserMessage {
   user: string;
@@ -23,7 +24,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -36,6 +37,7 @@ export class PdfComponent implements OnInit {
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
+  @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
 
   
   sidebarCollapsed = false;
@@ -135,8 +137,8 @@ export class PdfComponent implements OnInit {
     });
   }
 
-  deleteCollection(collectionName: string, event: Event): void {
-    event.stopPropagation(); // Prevent triggering selectCollection
+  deleteCollection(collectionName: string): void {
+   // event.stopPropagation(); // Prevent triggering selectCollection
     this.collectionsService.deleteCollection(collectionName).subscribe({
       next: () => {
         this.collections = this.collections.filter(name => name !== collectionName);

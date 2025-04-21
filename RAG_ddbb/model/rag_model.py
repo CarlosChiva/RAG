@@ -134,7 +134,8 @@ class RagModel:
                 
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
-        except:
+        except Exception as e:
+            print("Error",e)
             result="Esa informacion no existe"
             table={}
         return result, table
