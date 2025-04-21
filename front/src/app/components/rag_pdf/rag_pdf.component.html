@@ -9,11 +9,11 @@
         <ul id="collections-list">
           <app-sidebar-item 
             *ngFor="let collection of collections"
-            [item]="collection"
+            [collection]="collection"
             [isSelected]="selectedCollection === collection"
-            [displayField]="'connection_name'"
+            [displayField]="'collection'"
             (selectItem)="selectCollection($event)"
-            (deleteItem)="deleteCollection($event)">
+            (itemDeleted)="deleteCollection($event)">
           </app-sidebar-item>
         </ul>
       </div>

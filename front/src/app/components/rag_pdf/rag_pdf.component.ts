@@ -10,7 +10,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
 import {ChatOutputComponent} from '../chat-output/chat-output.component';
 import {SidebarComponent} from '../sidebar/sidebar.component';
-import {SidebarItemComponent} from '../sidebar-ddbb-item/sidebar-ddbb-item.component';
+import {SidebarItemComponent} from '../sidebar-pdf-item/sidebar-pdf-item.component';
 
 interface UserMessage {
   user: string;
@@ -139,12 +139,7 @@ export class PdfComponent implements OnInit {
 
   deleteCollection(collectionName: string): void {
    // event.stopPropagation(); // Prevent triggering selectCollection
-    this.collectionsService.deleteCollection(collectionName).subscribe({
-      next: () => {
-        this.collections = this.collections.filter(name => name !== collectionName);
-      },
-      error: (error: any) => console.error('Error deleting collection:', error)
-    });
+    this.loadCollections();
   }
 
 
