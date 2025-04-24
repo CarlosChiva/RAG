@@ -7,8 +7,9 @@ from services.ollama_services import get_models
 async def query(question:str,conf):
     #invoke grafo(input,conf_id_conversation,configuracion_modelo)
     config = {"configurable": {"thread_id": str(conf)}}
-    for i in graph.stream({"messages":question},
+    for i in graph.invoke({"messages":question},
                           config,
+                          conf,
                           stream_mode="values"):
         print(i)
     pass
