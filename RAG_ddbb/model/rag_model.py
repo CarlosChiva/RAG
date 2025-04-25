@@ -136,10 +136,10 @@ class RagModel:
                 table=pd.read_sql(otro,connection).to_json()
         except Exception as e:
             print("Error",e)
-            result=self.model.invoke([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked
-                                       . Return a message explaining to user that him question was not found in database. Don't comment anything else.
-                                       Return your message in markdown format"""),("human",query)]).content
+            result=self.model.invoke([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
+                                       Return a message explaining to user that him question was not found in database.
+                                       Don't comment anything else.
+                                       Return your message in markdown format."""),("human",query)]).content
             print(result)
-           # result="Esa informacion no existe"
             table={}
         return result, table
