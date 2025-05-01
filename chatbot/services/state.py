@@ -8,7 +8,5 @@ class Config(TypedDict):
     model: str
     conversation_id: str
     image: bool 
-    path_of_image_generation_json: Optional[Literal["generation.json"]]
+  #  path_of_image_generation_json: Optional[Literal["generation.json"]]
 
-class State(TypedDict):
-    messages:Annotated[list,add_messages]

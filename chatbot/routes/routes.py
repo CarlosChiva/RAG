@@ -9,11 +9,11 @@ from config import Config
 
 
 router = APIRouter()    
-@router.get("/query")
-async def query(query:str,config,credentials  = Depends(credentials_controllers.verify_jws)
+@router.post("/query")
+async def query(query:str,config:Config,credentials  = Depends(credentials_controllers.verify_jws)
                         ):
 
-    result = await controllers.query(query,credentials)
+    result = await controllers.query(query,credentials,config)
     return {"result":result}
 
 
