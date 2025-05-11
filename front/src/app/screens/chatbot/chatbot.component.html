@@ -1,0 +1,62 @@
+<!-- pdf.component.html -->
+<div class="container">
+  <div class ="sidebar_container">
+    <app-sidebar class="sidebar"
+      [title]="'Collecitons'"
+      [sidebarCollapsed]="sidebarCollapsed" 
+      >
+      <div sidebarContent>
+        <ul id="collections-list">
+          <app-sidebar-item 
+            *ngFor="let collection of collections"
+            [collection]="collection"
+            [isSelected]="selectedCollection === collection"
+            [displayField]="'collection'"
+            (selectItem)="selectCollection($event)"
+            (conversationLoaded)="renderConversation($event)"
+            (itemDeleted)="deleteCollection($event)">
+          </app-sidebar-item>
+        </ul>
+        <app-button-container></app-button-container>
+
+
+
+
+    </div>
+    </app-sidebar>
+  </div>
+  <!-- <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar"> -->
+  <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
+
+  <div class="main-content" [class.expanded]="sidebarCollapsed">
+    <div class="chat-area" id="chat-area">
+      <div class="chat-output">
+        <app-chat-output id="chat-output" [messages]="messages" [showTables]="false"></app-chat-output>
+      </div>
+      <div class="input-area">
+        <input type="text" 
+        id="inputText" 
+        placeholder="Type your message here..." 
+        [value]="message"
+        (input)="message = $any($event.target).value" 
+        (keydown.enter)="sendMessage(); $event.preventDefault()"
+        #inputText>
+        <button id="sendButton" 
+                (click)="sendMessage()" 
+                [disabled]="isSending">
+          <div class="spinner" *ngIf="isSending"></div>
+          <span *ngIf="!isSending">Send</span>
+        </button>
+      </div>
+
+      <app-models-list></app-models-list>
+
+     <!-- Ventana Emergente -->
+     <div class="overlay" *ngIf="mostrarModal">
+       <div class="modal">
+         <app-upload (cerrarModal)="cerrarModal()"></app-upload>
+       </div>
+     </div>
+    </div>
+  </div>
+</div>

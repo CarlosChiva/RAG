@@ -23,7 +23,7 @@ export class MenuComponent implements OnInit {
     "multimedia": "icons/multimedia.png",
     "audio": "icons/chatbot.png",
     "ddbb": "icons/ddbb.png",
-    "chat": "icons/chatbot.png"
+    "chatbot": "icons/chatbot.png"
   };
   services: string[] = [];
   availableServices: string[] = [];

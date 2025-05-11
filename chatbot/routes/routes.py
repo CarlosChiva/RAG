@@ -19,7 +19,7 @@ async def query(query:str,config:Config,credentials  = Depends(credentials_contr
 
 @router.get("/get_ollama_models")
 async def query(credentials  = Depends(credentials_controllers.verify_jws)
-                        ):
+                        )-> list[str]:
 
     result = await controllers.get_ollama_models()
     return {"result":result}
