@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ModelsService } from '../../services/models.service';
 import { CommonModule} from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {ModelItem} from '../../interfaces/models.inferface'; // Definir la interfaz para el mensaje de conversación
 
 
 @Component({
@@ -15,12 +16,21 @@ export class ModelsListComponent {
       private ModelsService: ModelsService,
 
 ){};
-  models: string[] = [];
-  selectedValue: string = '';
+  models: ModelItem[] = [];
+  selectedValue: ModelItem ={
+    name: '',
+    size: ''
+  };
+  ngOnInit(): void {
+    this.loadModels();
+  }
   loadModels(): void {
     this.ModelsService.getOllamaModels().subscribe({
       next: (data) => {
-        this.models = data;
+        console.log(data);
+
+        this.models=data;
+        console.log(this.models);
               },
       error: (error: any) => console.error('Error fetching collections:', error)
     });

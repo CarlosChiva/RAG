@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {ConversationMessage} from '../interfaces/conversations.interface'; // Definir la interfaz para el mensaje de conversación
+import {ModelItem} from '../interfaces/models.inferface'; // Definir la interfaz para el mensaje de conversación
 // Definir la interfaz para el mensaje de conversación
 
 @Injectable({
@@ -24,12 +24,12 @@ export class ModelsService {
   }
 
   // Nueva función para obtener los modelos de Ollama
-  getOllamaModels(): Observable<string[]> {
+  getOllamaModels(): Observable<ModelItem[]> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`
     });
     
-    return this.http.get<string[]>(`${this.apiUrl}/get_ollama_models`, { 
+    return this.http.get<ModelItem[]>(`${this.apiUrl}/get_ollama_models`, { 
       headers 
     });
   }

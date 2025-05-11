@@ -27,6 +27,7 @@
   </div>
   <!-- <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar"> -->
   <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
+      <app-models-list></app-models-list>
 
   <div class="main-content" [class.expanded]="sidebarCollapsed">
     <div class="chat-area" id="chat-area">
@@ -49,7 +50,6 @@
         </button>
       </div>
 
-      <app-models-list></app-models-list>
 
      <!-- Ventana Emergente -->
      <div class="overlay" *ngIf="mostrarModal">
