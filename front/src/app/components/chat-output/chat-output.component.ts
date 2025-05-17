@@ -8,7 +8,7 @@ import { TablaComponent } from '../tabla/tabla.component';
   standalone: true,
   imports: [CommonModule, TablaComponent],
   templateUrl: './chat-output.component.html',
-  styleUrls: ['./chat-output.component.css']
+  styleUrls: ['./chat-output.component.scss']
 })
 export class ChatOutputComponent implements AfterViewChecked {
   @Input() messages: any[] = [];
