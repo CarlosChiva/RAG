@@ -6,12 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { ModelsService } from '../../services/models.service';
 import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component'; // Importar componente
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {marked } from 'marked';
+import {marked, use } from 'marked';
 import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
 import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
 import {ModelsListComponent} from '../../components/models-list/models-list.component';
+import {Config} from '../../interfaces/config.interface';
+import { ModelItem } from '../../interfaces/models.inferface';
 interface UserMessage {
   user: string;
 }
@@ -38,7 +40,11 @@ export class ChatbotComponent implements OnInit {
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
   @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
-
+  @ViewChild(ModelsListComponent) modelsListComponent!: ModelsListComponent;
+  selectedModel:ModelItem={
+    name: '',
+    size: ''
+  }
   
   sidebarCollapsed = false;
   collections: string[] = [];
@@ -57,6 +63,13 @@ export class ChatbotComponent implements OnInit {
     isTyping?: boolean;
   }[] = [];
 
+  config:Config={
+
+        conversation: '',
+        modelName: '',
+        userInput: '',
+        image: false
+  }
 
   constructor(
     private ModelsService: ModelsService,
@@ -81,7 +94,10 @@ export class ChatbotComponent implements OnInit {
     this.sidebarComponent.toggleSidebar();
   }
 
+  onModelSelected(model: ModelItem): void {
+  this.selectedModel = model as ModelItem;
 
+  }
   loadCollections(): void {
     // this.ModelsService.getCollections().subscribe({
     //   next: (data: {collections_name: string[]}) => {
@@ -119,10 +135,10 @@ export class ChatbotComponent implements OnInit {
   sendMessage(): void {
     const messageText = this.message.trim();
     
-    if (!messageText || !this.selectedCollection) {
-      alert('Please enter a message and select a collection.');
-      return;
-    }
+    // if (!messageText || !this.selectedCollection) {
+    //   alert('Please enter a message and select a collection.');
+    //   return;
+    // }
     
     this.isSending = true;
     
@@ -144,7 +160,34 @@ export class ChatbotComponent implements OnInit {
       isUser: false,
       isTyping: true
     });
-    
+
+    this.config={
+      userInput: messageText,
+       conversation: "aaaa",
+        modelName: this.selectedModel.name,
+        image:false
+      }; 
+    console.log(this.config);
+    this.ModelsService.query(this.config).subscribe({
+      next: (data: string) => {
+        // Iniciar animación de escritura
+        console.log("data recived",data);
+        this.typeTextInMessage(botMessageIndex, data);
+      },
+      error: (error: any) => {
+        console.error('Error sending message:', error);
+        // Actualizar mensaje con error
+        this.messages[botMessageIndex] = {
+          text: 'Error: Could not get response',
+          isUser: false
+        };
+      },
+      complete: () => {
+        this.isSending = false;
+      }
+    });
+  
+      
     // this.ModelsService.sendMessage(messageText, this.selectedCollection).subscribe({
     //   next: (data: string) => {
     //     // Iniciar animación de escritura

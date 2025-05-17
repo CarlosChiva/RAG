@@ -3,8 +3,9 @@ import os
 from services.graph_service import graph
 from services.ollama_services import get_models
 from config import Config
+from langchain_core.messages import HumanMessage
 
-async def query(question:str,credentials,conf:Config):
+async def query(credentials,conf:Config):
     #invoke grafo(input,conf_id_conversation,configuracion_modelo)
     config = {
         "configurable": {
@@ -16,7 +17,8 @@ async def query(question:str,credentials,conf:Config):
     if hasattr(conf, "__dict__"):
         config["configurable"].update(conf.__dict__)
     print(config)
-    for i in graph.invoke({"messages":question},
+    input_messages = [HumanMessage(conf.userInput)]
+    for i in graph.invoke({"messages":input_messages},
                           config,
                           stream_mode="updates"):
         last=i

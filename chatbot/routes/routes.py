@@ -6,15 +6,18 @@ import tempfile
 import os
 from pydantic import BaseModel
 from config import Config
-
+import logging
+logging.basicConfig(level=logging.INFO)
 
 router = APIRouter()    
 @router.post("/query")
-async def query(query:str,config:Config,credentials  = Depends(credentials_controllers.verify_jws)
+async def query(config:Config,credentials  = Depends(credentials_controllers.verify_jws)
                         ):
 
-    result = await controllers.query(query,credentials,config)
-    return {"result":result}
+    result = await controllers.query(credentials,config)
+    logging.info(f"i: {result.content}")
+
+    return result.content
 
 
 @router.get("/get_ollama_models")

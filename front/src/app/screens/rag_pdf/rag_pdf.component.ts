@@ -146,6 +146,7 @@ export class PdfComponent implements OnInit {
     
     this.collectionsService.sendMessage(messageText, this.selectedCollection).subscribe({
       next: (data: string) => {
+
         // Iniciar animación de escritura
         this.typeTextInMessage(botMessageIndex, data);
       },

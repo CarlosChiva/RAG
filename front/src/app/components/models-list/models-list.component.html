@@ -1,7 +1,8 @@
 <div class="dropdown-container">
   <label>Seleccione una opción:</label>
-<select [(ngModel)]="selectedValue" (change)="onSelectChange($event)">  
-    <option *ngFor="let model of models" [value]="model">
+  <select [(ngModel)]="selectedModelName" (change)="onSelectChange($event)">  
+    <option value="" disabled>Selecciona un modelo</option>
+    <option *ngFor="let model of models" [value]="model.name">
       {{model.name}}
     </option>
   </select>
