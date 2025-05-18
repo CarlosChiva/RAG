@@ -1,6 +1,6 @@
 .dropdown-container {
   width: 300px;
-  margin: 50px auto;
+  margin-top: 10px;
 }
 
 select {
@@ -8,7 +8,9 @@ select {
   padding: 10px;
   border-radius: 10px;
   border: none;
-  background-color: #00000015;
+  background-color: #504f4f2f;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Para compatibilidad */
   cursor: pointer;
   box-sizing: border-box;
 }
@@ -23,7 +25,7 @@ select:hover {
   padding: 10px;
   border-radius: 10px;
   border: none;
-  background-color: rgba(12, 12, 12, 0.021);
+  background-color: #504f4f28;
   cursor: pointer;
 
   backdrop-filter: blur(8px);
@@ -46,5 +48,10 @@ select:hover {
 }
 
 .ng-option:hover {
-  background-color: #f8f9fa;
+  background-color: #504f4f;
+}
+
+select option {
+  background-color: #504f4f36; /* Esto a veces funciona, pero no en todos los navegadores */
+  color: white;
 }

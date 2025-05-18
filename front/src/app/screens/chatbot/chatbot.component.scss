@@ -155,16 +155,48 @@ body {
 }
 /* Estilos para el área de chat */
 .chat-output{
+    position: relative;
+  overflow: hidden; // clave para recortar los pseudo-elementos
+  overflow-y: auto;
+
+  margin-bottom: 5px;
+  margin-top: 11px;
+  border: 1px solid #504f4f;
+  background-color: #504f4f;
+  height: 85vh;
+
+  &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 30px; // Altura del difuminado
+      
+        pointer-events: none;
+      }
+
+      &::before {
+        top: 0;
+        background: linear-gradient(to bottom, #504f4f, transparent);
+      }
+
+      &::after {
+        bottom: 0;
+        background: linear-gradient(to top, #504f4f, transparent);
+      }
+
   ::ng-deep{
   #chat-output {
     flex-grow: 1;
     overflow-y: auto;
+    height: 80vh;
     border: 1px solid #504f4f;
     padding: 10px;
     background-color: #504f4f;
-    margin-bottom: 5px;
+//    margin-bottom: 5px;
     margin-right: 100px;
-
+    //margin-top: 11px;
   }
 
   /* Estilo general para los mensajes */
@@ -226,6 +258,26 @@ body {
   }
 
 }
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, #504f4f, transparent);
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(to top, #504f4f, transparent);
+  }
 }
 
 @keyframes bounce {
