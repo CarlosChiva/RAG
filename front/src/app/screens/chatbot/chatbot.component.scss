@@ -84,6 +84,7 @@ body {
   border: 1px solid transparent;
   border-radius: 10px;
   align-items: center;
+  margin-bottom: 3px;
 }
 
 #inputText {
@@ -160,7 +161,6 @@ body {
     overflow-y: auto;
     border: 1px solid #504f4f;
     padding: 10px;
-    height: 80vh;
     background-color: #504f4f;
     margin-bottom: 5px;
     margin-right: 100px;
@@ -285,4 +285,12 @@ body {
 /* Deshabilitar scroll y clicks en el fondo */
 body.modal-open {
   overflow: hidden;
+}
+.fixed-models-list {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
 }
