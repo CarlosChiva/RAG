@@ -157,7 +157,6 @@ body {
 .chat-output{
     position: relative;
   overflow: hidden; // clave para recortar los pseudo-elementos
-  overflow-y: auto;
 
   margin-bottom: 5px;
   margin-top: 11px;
@@ -195,7 +194,7 @@ body {
     padding: 10px;
     background-color: #504f4f;
 //    margin-bottom: 5px;
-    margin-right: 100px;
+    margin-right: 5px;
     //margin-top: 11px;
   }
 
