@@ -16,7 +16,6 @@ services:
   db_service:
     container_name: mysql_connector
     build: ./ddbb
-    restart: always
     env_file: 
       - "./ddbb/.env"
     ports:
@@ -47,6 +46,9 @@ services:
       - rag_ddbb:/app/configs_folder
   chatbot:
     build: ./chatbot
+    volumes:
+      - chats:/app/chats
+
     ports:
       - "8003:8003"
     network_mode: host       
@@ -60,3 +62,4 @@ volumes:
   db_data:
   rag_ddbb:
   conversations:
+  chats:

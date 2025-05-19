@@ -11,6 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 # Copia todo el contenido del directorio actual al directorio de trabajo en el contenedor
 COPY . .
+RUN mkdir -p chats
 
 # Expone el puerto en el que se ejecutará la aplicación (ajusta según sea necesario)
 EXPOSE 8003

@@ -27,3 +27,10 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     result = await controllers.get_ollama_models()
     print("Return get_ollama_models  ",result)
     return result
+@router.post("/new_chat")
+async def query(credentials  = Depends(credentials_controllers.verify_jws)
+                        )-> list[dict]:
+
+    result = await controllers.new_chat(credentials)
+    
+    return result
