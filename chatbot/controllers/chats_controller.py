@@ -1,6 +1,8 @@
 import json
 import os
 import os
+from dotenv import load_dotenv
+load_dotenv()
 PATH_CONVERSATIONS=os.getenv("PATH_CONVERSATIONS")
 async def add_conversation(collection_name,credentials,user_input,bot_output):
     with open (PATH_CONVERSATIONS,"r") as f:
@@ -16,7 +18,7 @@ async def clear_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
 
-async def get_conversation(collection_name,credentials):
+async def get_conversation(credentials):
         # Verificar si el archivo existe, si no, crearlo con un diccionario vacío
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:
@@ -28,15 +30,9 @@ async def get_conversation(collection_name,credentials):
 
    # Inicializar la estructura si no existe
     if credentials not in data:
-        data[credentials] = {}
+        data[credentials] = {"New_chat":[]}
     
-    if collection_name not in data[credentials]:
-        data[credentials][collection_name] = []
-        # Guardar los cambios
-        with open(PATH_CONVERSATIONS, "w") as f:
-            json.dump(data, f)
-    
-    return data[credentials][collection_name]
+    return [data[credentials]]
 async def new_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)

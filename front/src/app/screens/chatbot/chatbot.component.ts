@@ -9,7 +9,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked, use } from 'marked';
 import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
-import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
+import {SidebarItemComponent} from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
 import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
 import {ModelsListComponent} from '../../components/models-list/models-list.component';
 import {Config} from '../../interfaces/config.interface';
@@ -48,7 +48,7 @@ export class ChatbotComponent implements OnInit {
   
   sidebarCollapsed = false;
   collections: string[] = [];
-  conversation: any[] = [];
+  collection: any[] = [];
 
   selectedCollection: string | null = null;
   message: string = '';
@@ -99,16 +99,15 @@ export class ChatbotComponent implements OnInit {
 
   }
   loadCollections(): void {
-    // this.ModelsService.getCollections().subscribe({
-    //   next: (data: {collections_name: string[]}) => {
-    //     this.collections = data.collections_name;
+    this.ModelsService.getChats().subscribe({
+      next: (data: {collections_name: string[]}) => {
+        console.log("chat·", data);
+        console.log("chat·", data.collections_name);
+        this.collections = data.collections_name.flatMap(item => Object.keys(item));
         
-    //     if (this.collections.length === 0) {
-    //       this.abrirModal();
-    //     }
-    //   },
-    //   error: (error: any) => console.error('Error fetching collections:', error)
-    // });
+      },
+      error: (error: any) => console.error('Error fetching collections:', error)
+    });
   }
 
   renderConversation(conversation: any[]): void {

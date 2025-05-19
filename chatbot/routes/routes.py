@@ -34,3 +34,10 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     result = await controllers.new_chat(credentials)
     
     return result
+@router.get("/get_chats")
+async def query(credentials  = Depends(credentials_controllers.verify_jws)
+                        )-> dict[str,list[dict]]:
+
+    result = await controllers.get_chats(credentials)
+    logging.info(f"i: {type(result[0])}")
+    return {"collections_name":result}
