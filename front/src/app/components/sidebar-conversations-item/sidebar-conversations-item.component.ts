@@ -19,7 +19,7 @@ export class SidebarItemComponent {
   @Output() itemDeleted = new EventEmitter<any>();
   @Output() conversationLoaded = new EventEmitter<any[]>();
 
-  constructor(private collectionService:ModelsService){}
+  constructor(private modelsService:ModelsService){}
   
   getDisplayValue(): string {
     if (!this.collection) return '';
@@ -32,7 +32,7 @@ export class SidebarItemComponent {
     if (this.collection) {
       this.selectItem.emit(this.collection);
       // Obtenemos la conversación desde el servicio
-      this.collectionService.getConversation(this.collection).subscribe({
+      this.modelsService.getConversation(this.collection).subscribe({
         next: (conversation) => {
           console.log('Conversation loaded:', conversation);
           this.conversationLoaded.emit(conversation);
@@ -46,17 +46,17 @@ export class SidebarItemComponent {
 
   onDelete(event: Event): void {
     event.stopPropagation();
-    // this.collectionService.deleteCollection(this.collection as string).subscribe({
-    //   next: () => {
-    //     console.log('Configuration deleted:', this.collection);
-    //     alert('Collection deleted successfully');
-    //     this.itemDeleted.emit(this.collection);
-    //   },
-    //   error: (error) => {
-    //     console.error('Error deleting configuration:', error);
-    //     alert('Error deleting configuration');
-    //   }
-   // });
+    this.modelsService.removeChat(this.collection as string).subscribe({
+      next: () => {
+        console.log('Configuration deleted:', this.collection);
+        alert('Collection deleted successfully');
+        this.itemDeleted.emit(this.collection);
+      },
+      error: (error) => {
+        console.error('Error deleting configuration:', error);
+        alert('Error deleting configuration');
+      }
+   });
 
   }
 

@@ -10,6 +10,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 router = APIRouter()    
+class ChatItem(BaseModel):
+    chatName: str
 @router.post("/query")
 async def query(config:Config,credentials  = Depends(credentials_controllers.verify_jws)
                         ):
@@ -41,3 +43,9 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     result = await controllers.get_chats(credentials)
     logging.info(f"i: {type(result[0])}")
     return {"collections_name":result}
+@router.post("/remove-chat")
+async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
+                        )-> dict:
+
+    result = await controllers.remove_chat(chatName,credentials)
+    return {"Response":result}

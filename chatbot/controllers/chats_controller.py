@@ -31,11 +31,21 @@ async def get_conversation(credentials):
    # Inicializar la estructura si no existe
     if credentials not in data:
         data[credentials] = {"New_chat":[]}
-    
+        await new_conversation("New_chat",credentials)
     return [data[credentials]]
 async def new_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
+    if not credentials in data:
+        data[credentials] = {} 
     data[credentials][collection_name]=[]
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)    
+
+async def remove_conversation(chat_name,credendials):
+    with open (PATH_CONVERSATIONS,"r") as f:
+        data=json.load(f)
+    data[credendials].pop(chat_name.chatName)
+    with open (PATH_CONVERSATIONS,"w") as f:
+        json.dump(data,f)
+    return f"remove chat {chat_name} successfully"    

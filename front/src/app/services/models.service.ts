@@ -44,7 +44,7 @@ export class ModelsService {
     });
   }
 
-    getChats(): Observable<{collections_name: string[]}> {
+  getChats(): Observable<{collections_name: string[]}> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`
     });
@@ -58,6 +58,13 @@ export class ModelsService {
       headers: this.getHeaders(),
       params: { collection_name: collectionName }
     });
+  }
+  removeChat(collectionName: string): Observable<any> {
+    const options = {
+      headers: this.getHeaders()
+    };
+    
+    return this.http.post(`${this.apiUrl}/remove-chat`, { chatName: collectionName }, options);
   }
 
 
