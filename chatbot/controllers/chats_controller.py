@@ -18,7 +18,7 @@ async def clear_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
 
-async def get_conversation(credentials):
+async def get_conversation(credentials)->list[dict]:
         # Verificar si el archivo existe, si no, crearlo con un diccionario vacío
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:
@@ -32,7 +32,7 @@ async def get_conversation(credentials):
     if credentials not in data:
         data[credentials] = {"New_chat":[]}
     return [data[credentials]]
-async def new_conversation(credentials,new_chat_name):
+async def new_conversation(credentials,new_chat_name)->str:
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
     if not credentials in data:
@@ -42,7 +42,7 @@ async def new_conversation(credentials,new_chat_name):
         json.dump(data,f)  
     return f"new chat {new_chat_name} created successfully"      
 
-async def remove_conversation(chat_name,credendials):
+async def remove_conversation(chat_name,credendials)-> str:
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
     data[credendials].pop(chat_name)

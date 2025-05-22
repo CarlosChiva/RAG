@@ -29,6 +29,7 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     result = await controllers.get_ollama_models()
     print("Return get_ollama_models  ",result)
     return result
+
 @router.post("/new_chat")
 async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
                         )-> dict:
@@ -36,6 +37,7 @@ async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers
     result = await controllers.new_chat(credentials,chatName.chatName)
     
     return {"Response":result}
+
 @router.get("/get_chats")
 async def query(credentials  = Depends(credentials_controllers.verify_jws)
                         )-> dict[str,list[dict]]:
@@ -43,6 +45,7 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     result = await controllers.get_chats(credentials)
     logging.info(f"result: {result}")
     return {"collections_name":result}
+
 @router.post("/remove-chat")
 async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
                         )-> dict:
