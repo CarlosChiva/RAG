@@ -52,3 +52,10 @@ async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers
 
     result = await controllers.remove_chat(chatName.chatName,credentials)
     return {"Response":result}
+@router.get("/get-conversation")
+async def query(chatName:str,credentials  = Depends(credentials_controllers.verify_jws)
+                        )-> dict[str,list[dict]]:
+
+    result = await controllers.get_conversation(credentials,chatName)
+    logging.info(f"result: {result}")
+    return {"collections_name":result}

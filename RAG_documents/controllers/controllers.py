@@ -52,7 +52,7 @@ async def clear_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
 
-async def get_conversation(collection_name,credentials):
+async def get_conversation(collection_name,credentials)->list[dict[str,list[str]]]:
         # Verificar si el archivo existe, si no, crearlo con un diccionario vacío
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:

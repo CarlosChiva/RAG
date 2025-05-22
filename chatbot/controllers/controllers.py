@@ -4,7 +4,7 @@ from services.graph_service import graph
 from services.ollama_services import get_models
 from config import Config
 from langchain_core.messages import HumanMessage
-from controllers.chats_controller import new_conversation,get_conversation, remove_conversation
+from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_chat_conversation
 async def query(credentials,conf:Config):
     #invoke grafo(input,conf_id_conversation,configuracion_modelo)
     config = {
@@ -27,12 +27,17 @@ async def query(credentials,conf:Config):
 async def get_ollama_models():
     # from ollama service, get all models availables and return them
     return get_models()
+
 async def new_chat(credentials,new_chat_name)->str:
     return await new_conversation(credentials,new_chat_name)
+
 async def get_chats(credentials)->list[dict]:
-    return await get_conversation(credentials)
+    return await get_chats_list(credentials)
+
 async def remove_chat(chat_name,credentials)->str:
     return await remove_conversation(chat_name,credentials)
 
+async def get_conversation(credentials,chat_name)->list[dict[str,list[str]]]:
+    return await get_chat_conversation(credentials,chat_name)
 
 

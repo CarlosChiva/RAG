@@ -18,7 +18,7 @@ async def clear_conversation(collection_name,credentials):
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
 
-async def get_conversation(credentials)->list[dict]:
+async def get_chats_list(credentials)->list[dict]:
         # Verificar si el archivo existe, si no, crearlo con un diccionario vacío
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:
@@ -49,3 +49,5 @@ async def remove_conversation(chat_name,credendials)-> str:
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
     return f"remove chat {chat_name} successfully"    
+async def get_chat_conversation(credentials,chat_name)->list[dict[str,list[str]]]:
+    pass

@@ -53,12 +53,7 @@ export class ModelsService {
       headers 
     });
   }
-    getConversation(collectionName: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/get-conversation`, {
-      headers: this.getHeaders(),
-      params: { collection_name: collectionName }
-    });
-  }
+   
   removeChat(collectionName: string): Observable<any> {
     const options = {
       headers: this.getHeaders()
@@ -73,4 +68,11 @@ export class ModelsService {
 
   return this.http.post(`${this.apiUrl}/new_chat`, { chatName: newChatName }, options);
 }
+ getConversation(chatNAme: string): Observable<any> {
+    
+  return this.http.get<any>(`${this.apiUrl}/get-conversation`, {
+      headers: this.getHeaders(),
+      params: { chatName: chatNAme }
+    });
+  }
 }
