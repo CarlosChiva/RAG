@@ -30,22 +30,22 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
     print("Return get_ollama_models  ",result)
     return result
 @router.post("/new_chat")
-async def query(credentials  = Depends(credentials_controllers.verify_jws)
-                        )-> list[dict]:
+async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
+                        )-> dict:
 
-    result = await controllers.new_chat(credentials)
+    result = await controllers.new_chat(credentials,chatName.chatName)
     
-    return result
+    return {"Response":result}
 @router.get("/get_chats")
 async def query(credentials  = Depends(credentials_controllers.verify_jws)
                         )-> dict[str,list[dict]]:
 
     result = await controllers.get_chats(credentials)
-    logging.info(f"i: {type(result[0])}")
+    logging.info(f"result: {result}")
     return {"collections_name":result}
 @router.post("/remove-chat")
 async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
                         )-> dict:
 
-    result = await controllers.remove_chat(chatName,credentials)
+    result = await controllers.remove_chat(chatName.chatName,credentials)
     return {"Response":result}

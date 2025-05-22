@@ -8,7 +8,11 @@
       [sidebarCollapsed]="sidebarCollapsed" 
       >
       <div sidebarContent>
-        <button></button>
+        <button id="createChatButton"
+          (click)="createChat($event)" 
+          class="add-button">
+      Create Chat
+        </button>
         <ul id="collections-list">
           <app-sidebar-conversations-item 
             *ngFor="let collection of collections"

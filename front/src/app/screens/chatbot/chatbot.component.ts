@@ -259,4 +259,15 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
       }
     });
   }
+  createChat(event:Event): void {
+    this.ModelsService.createChat("New_chat").subscribe({
+      next: (data: {collections_name: any}) => {
+        console.log("chat·", data);
+        console.log("chat·", data.collections_name);
+      },
+      error: (error: any) => console.error('Error fetching collections:', error)
+    })
+        this.loadCollections();
+
+  }
 };

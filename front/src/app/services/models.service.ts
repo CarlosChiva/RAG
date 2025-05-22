@@ -66,6 +66,11 @@ export class ModelsService {
     
     return this.http.post(`${this.apiUrl}/remove-chat`, { chatName: collectionName }, options);
   }
+ createChat(newChatName:string): Observable<any> {
+  const options = {
+    headers: this.getHeaders()
+  };
 
-
+  return this.http.post(`${this.apiUrl}/new_chat`, { chatName: newChatName }, options);
+}
 }

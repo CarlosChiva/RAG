@@ -27,8 +27,8 @@ async def query(credentials,conf:Config):
 async def get_ollama_models():
     # from ollama service, get all models availables and return them
     return get_models()
-async def new_chat(credentials):
-    return await new_conversation(credentials)
+async def new_chat(credentials,new_chat_name):
+    return await new_conversation(credentials,new_chat_name)
 async def get_chats(credentials):
     return await get_conversation(credentials)
 async def remove_chat(chat_name,credentials):
