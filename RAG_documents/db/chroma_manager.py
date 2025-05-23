@@ -13,7 +13,7 @@ async def get_collections(cli)->list[str]:
     return collection_names
 
 # Función principal para añadir el PDF a una colección específica
-async def add_pdf_to_collection(filename,name_collection,cli):
+async def add_pdf_to_collection(filename,name_collection,cli)-> dict[str,str]:
 
     """Method to add a PDF to a collection."""
     """ Collection_name and filename to pdf are required to add a pdf to a collection."""
@@ -55,19 +55,18 @@ async def add_pdf_to_collection(filename,name_collection,cli):
     return {"message": f"Added {len(splits)} documents to collection '{name_collection}'"}
 
 
-async def get_vectorstore(cli,collection_name):
+async def get_vectorstore(cli,collection_name)-> Chroma:
     
     """ Simple method to get the vectorstore. Return vectorstore with the collection_name passed as argument."""
 
     embedding_func =  init_embedding_model()
-    vectorstore = Chroma(
+    return Chroma(
         client= cli,
         collection_name=collection_name,
         embedding_function=embedding_func
     )
-    return vectorstore
 
-async def remove_collection_db(collection_name,cli):
+async def remove_collection_db(collection_name,cli)->dict[str,str]:
     """Method to remove a collection. Returns a message indicating the success of the operation."""
 
     cli.delete_collection(collection_name)

@@ -18,7 +18,7 @@ class RagModel:
                 raise ValueError("The environment variable 'MODEL' is not set.")
             self.model = Ollama(model=model_name, temperature=0)
 
-    def get_model(self):
+    def get_model(self)-> Ollama:
         return self.model
 
 

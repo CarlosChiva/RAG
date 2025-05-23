@@ -19,9 +19,11 @@ class CollectionRequest(BaseModel):
 async def llm_response(input: str,
                         collection_name:str,
                         credentials  = Depends(credentials_controllers.verify_jws)
-                        ):
+                        )->str:
     
-    result = await controllers.querier(question=input,collection_name=collection_name,credentials=credentials)
+    result = await controllers.querier(question=input,
+                                       collection_name=collection_name,
+                                       credentials=credentials)
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
@@ -52,24 +54,24 @@ async def add_document(file: UploadFile = File(...),
 #-------------------------Collection routes-----------------------
 
 @router.get("/collections")
-async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws))->dict[str,list[str]]:
+async def get_collections_name(credentials  = Depends(credentials_controllers.verify_jws)
+                               )->dict[str,list[str]]:
 
     collections= await controllers.show_name_collections(credentials)
-    logging.info(f"type of collecitons:{type(collections)}")
     return {"collections_name": collections}
 
 @router.get("/get-conversation")
 async def get_conversation(collection_name,
-                            credentials  = Depends(credentials_controllers.verify_jws)):
+                            credentials  = Depends(credentials_controllers.verify_jws)
+                            )->list[dict[str,str]]:
 
     collection_name=collection_name
-    conversation=await controllers.get_conversation(collection_name,credentials)
-    logging.info(f"type of conversation:{type(conversation)}")
-    return conversation 
+    return await controllers.get_conversation(collection_name,credentials)
 
 @router.post("/delete-collection")
 async def delete_collection(collection: CollectionRequest,
-                            credentials  = Depends(credentials_controllers.verify_jws)):
+                            credentials  = Depends(credentials_controllers.verify_jws)
+                            )->dict[str,str]:
 
     collection_name=collection.collection_name
     await controllers.remove_collections(collection_name,credentials)

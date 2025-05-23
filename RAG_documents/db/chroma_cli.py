@@ -2,10 +2,11 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 import chromadb
-async def get_chroma_client(credentials=None):
+from chromadb.api.client import Client
+import logging
+logging.basicConfig(level=logging.INFO)
+async def get_chroma_client(credentials=None)-> Client:
     """Simple method to get the chroma client."""
-
     PERSIT_DIRECTORY=os.getenv("PERSIST_DIRECTORY")
-    print("Credentials:",credentials)
     PERSIST_DIRECTORY=PERSIT_DIRECTORY+"/"+credentials
     return chromadb.PersistentClient(path=PERSIST_DIRECTORY)
