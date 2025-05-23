@@ -49,6 +49,5 @@ async def text_split(documents, chunk_size=1000, chunk_overlap=20):
     all_splits = text_splitter.split_documents([document])
     return all_splits
 # Función para inicializar el modelo y tokenizer de embeddings
-def init_embedding_model():
-    embedding_func = OllamaEmbeddings(model="mxbai-embed-large")
-    return embedding_func
+def init_embedding_model()-> OllamaEmbeddings:
+    return OllamaEmbeddings(model=os.getenv("EMBEDD_MODEL"))

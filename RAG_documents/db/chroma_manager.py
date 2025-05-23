@@ -4,7 +4,7 @@ from tools import load_document, text_split, init_embedding_model
 from langchain_chroma import Chroma
 import uuid
 
-async def get_collections(cli):
+async def get_collections(cli)->list[str]:
     """Method to get the name of collections. Returns a list of collection names."""
 
     collections = cli.list_collections()

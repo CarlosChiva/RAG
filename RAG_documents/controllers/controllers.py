@@ -5,7 +5,7 @@ from db.chroma_cli import get_chroma_client
 import json
 import os
 PATH_CONVERSATIONS=os.getenv("PATH_CONVERSATIONS")
-async def show_name_collections(credentials):
+async def show_name_collections(credentials)->list[str]:
     cli=await get_chroma_client(credentials)
     print("User show_name_collections:",credentials)
     names= await get_collections(cli)

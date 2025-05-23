@@ -50,4 +50,6 @@ async def remove_conversation(chat_name,credendials)-> str:
         json.dump(data,f)
     return f"remove chat {chat_name} successfully"    
 async def get_chat_conversation(credentials,chat_name)->list[dict[str,list[str]]]:
-    pass
+    with open (PATH_CONVERSATIONS,"r") as f:
+        data=json.load(f)
+    return data[credentials][chat_name]
