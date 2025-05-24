@@ -217,7 +217,7 @@ def read_document(pdf_path):
     # Display the content of the page
     return text_per_page
 
-async def pdf_text_extraction(file):
+async def pdf_text_extraction(file)-> str:
     with tempfile.NamedTemporaryFile(delete=True, suffix=".pdf") as temp_file:
         temp_file.write(await file.read())
         pdf_path = temp_file.name

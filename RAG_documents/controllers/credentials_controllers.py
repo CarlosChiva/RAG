@@ -11,7 +11,8 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 security = HTTPBearer()
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)
+                           )->str:
     token = credentials.credentials
     if token.startswith("Bearer "):  # Eliminar el prefijo si existe
         token = token.split("Bearer ")[1]
@@ -25,7 +26,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.InvalidTokenError as e :
         raise HTTPException(status_code=401, detail=f"Invalid token {e} {payload}")
     
-async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def verify_jws(credentials: HTTPAuthorizationCredentials = Depends(security)
+                     )->str:
     token = credentials.credentials
     if token.startswith("Bearer "):
         token = token.split("Bearer ")[1]

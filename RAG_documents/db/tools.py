@@ -9,7 +9,7 @@ from pdf_tools import pdf_text_extraction
 
 
 
-async def load_document(file: UploadFile):
+async def load_document(file: UploadFile)-> str:
     extension = file.filename.split(".")[-1]
 
     match extension:
@@ -38,7 +38,7 @@ async def load_document(file: UploadFile):
     return documents
 
 # Función para dividir el texto de los documentos
-async def text_split(documents, chunk_size=1000, chunk_overlap=20):
+async def text_split(documents, chunk_size=1000, chunk_overlap=20)->list[Document]:
 # Supongamos que 'result' es el string que obtuviste previamente
     foc=documents
     # Crear una lista con un solo documento, ya que split_documents espera un iterable
