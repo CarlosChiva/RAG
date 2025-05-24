@@ -142,6 +142,7 @@ body {
   font-size: 12px; /* Ajusta el tamaño de fuente si es necesario */
   text-align: center; /* Asegura que el texto esté centrado */
   text-decoration: none;
+  z-index: 100;
 
 }
 #uploadButton:hover {
@@ -156,8 +157,8 @@ body {
 
   margin-bottom: 5px;
   margin-top: 11px;
-  border: 1px solid #504f4f;
-  background-color: #504f4f;
+  border: 1px solid transparent;
+  background-color: transparent;
   height: 85vh;
 
   &::before,
@@ -173,12 +174,12 @@ body {
 
       &::before {
         top: 0;
-        background: linear-gradient(to bottom, #504f4f, transparent);
+        background: linear-gradient(to bottom, #01257D, transparent);
       }
 
       &::after {
         bottom: 0;
-        background: linear-gradient(to top, #504f4f, transparent);
+        background: linear-gradient(to top, #01257D, transparent);
       }
 
   ::ng-deep{
@@ -186,9 +187,9 @@ body {
     flex-grow: 1;
     overflow-y: auto;
     height: 80vh;
-    border: 1px solid #504f4f;
+    border: 1px solid transparent;
     padding: 10px;
-    background-color: #504f4f;
+    background-color: transparent;
 //    margin-bottom: 5px;
     margin-right: 5px;
     //margin-top: 11px;
@@ -266,12 +267,12 @@ body {
 
   &::before {
     top: 0;
-    background: linear-gradient(to bottom, #504f4f, transparent);
+    background: linear-gradient(to bottom, #01257D, transparent);
   }
 
   &::after {
     bottom: 0;
-    background: linear-gradient(to top, #504f4f, transparent);
+    background: linear-gradient(to top, #01257D, transparent);
   }
 }
 

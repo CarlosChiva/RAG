@@ -19,4 +19,5 @@ COPY . .
 EXPOSE 8002
 
 # Comando para ejecutar la aplicación
-CMD ["python", "main.py"]
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8002"]
