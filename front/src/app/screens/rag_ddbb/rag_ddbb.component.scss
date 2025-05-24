@@ -151,87 +151,138 @@ body {
 
 /* Mensajes del usuario alineados a la derecha */
 .chat-output{
-  ::ng-deep{
-    #chat-output {
-    flex-grow: 1;
-    overflow-y: auto;  
-     border: 1px solid #01257D;
-     background-color: #01257D;    
-     margin-bottom: 5px;
-     margin-right: 100px;
+    position: relative;
+  overflow: hidden; // clave para recortar los pseudo-elementos
 
-     
-    }
-    .message {
-      margin: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
-      word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
-      clear: both;
-        }
-    .user-message {
-      background-color: #1bc073;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
-      word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
-      clear: both;
-      max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
-      float: right;
-      text-align: right;
-      margin-left: auto;  
-  
-    }
+  margin-bottom: 5px;
+  margin-top: 11px;
+  border: 1px solid #504f4f;
+  background-color: #504f4f;
+  height: 85vh;
+
+  &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 30px; // Altura del difuminado
+      
+        pointer-events: none;
+      }
+
+      &::before {
+        top: 0;
+        background: linear-gradient(to bottom, #504f4f, transparent);
+      }
+
+      &::after {
+        bottom: 0;
+        background: linear-gradient(to top, #504f4f, transparent);
+      }
+
+  ::ng-deep{
+  #chat-output {
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 80vh;
+    border: 1px solid #504f4f;
+    padding: 10px;
+    background-color: #504f4f;
+//    margin-bottom: 5px;
+    margin-right: 5px;
+    //margin-top: 11px;
+  }
+
+  /* Estilo general para los mensajes */
+  .message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
+    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
+    clear: both;
+    max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
+
+  }
+
+  /* Mensajes del usuario alineados a la derecha */
+  .user-message {
+    background-color: #79e795;
+    float: right;
+    text-align: right;
+    margin-left: auto;
+  }
 
   /* Mensajes del bot alineados a la izquierda */
-    .bot-message {
-      background-color: #5097c7;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
-      word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
-      clear: both;
-      max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
-      float: left;
-      text-align: left;
-      margin-right: auto;
-      padding: 5px;
-    
-    }
+  .bot-message {
+    background-color: #6c90d6;
+    float: left;
+    text-align: left;
+    margin-right: auto;
+    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
+    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
 
-  // Añade esto al final de tu archivo SCSS
-    .typing-indicator {
+  }
+
+  .typing-indicator {
+    display: inline-block;
+    margin-left: 5px;
+    
+    span {
       display: inline-block;
-      margin-left: 5px;
+      width: 8px;
+      height: 8px;
+      background-color: #fff;
+      border-radius: 50%;
+      margin: 0 2px;
+      animation: bounce 1.4s infinite ease-in-out;
+      
+      &:nth-child(1) {
+        animation-delay: 0s;
+      }
+      
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      &:nth-child(3) {
+        animation-delay: 0.4s;
+      }
     }
   }
-     
-  span {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background-color: #fff;
-    border-radius: 50%;
-    margin: 0 2px;
-    animation: bounce 1.4s infinite ease-in-out;
-    
-    &:nth-child(1) {
-      animation-delay: 0s;
-    }
-    
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    
-    &:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+
+}
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(to bottom, #504f4f, transparent);
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(to top, #504f4f, transparent);
   }
 }
 
+@keyframes bounce {
+  0%, 80%, 100% { 
+    transform: scale(0);
+  }
+  40% { 
+    transform: scale(1.0);
+  }
+}
 @keyframes bounce {
   0%, 80%, 100% { 
     transform: scale(0);
