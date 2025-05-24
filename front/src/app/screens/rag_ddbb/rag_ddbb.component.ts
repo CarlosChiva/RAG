@@ -189,11 +189,9 @@ onMessageChange(message: string): void {
           text: 'Error: Could not get response',
           isUser: false
         };
-        this.isSending = false;
 
       },
       complete: () => {
-        this.isSending = false;
       }
     });
   }
@@ -231,6 +229,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
         isTyping: false,
         tableData: this.tableData
       };
+    this.isSending = false;
+
     }
   };
   
