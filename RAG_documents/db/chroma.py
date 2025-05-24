@@ -2,8 +2,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_retrieval_chain
 from langchain.prompts import PromptTemplate
 from langchain_core.runnables.base import RunnableBinding
-import logging
-logging.basicConfig(level=logging.INFO)
+
 async def get_chain(model,vector_store)-> RunnableBinding:
     """ Function to get the chain. Based on the model and collection passed we get the chain."""
     """Return chain to use it :chain.invoke({"input":question})"""

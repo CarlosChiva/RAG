@@ -4,7 +4,7 @@ from db.model_conf import RagModel
 from db.chroma_cli import get_chroma_client
 import json
 import os
-import logging
+
 PATH_CONVERSATIONS=os.getenv("PATH_CONVERSATIONS")
 async def show_name_collections(credentials)->list[str]:
 

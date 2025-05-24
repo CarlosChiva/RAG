@@ -1,7 +1,6 @@
-import hashlib
 from fastapi import Depends, HTTPException
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import os
 from dotenv import load_dotenv

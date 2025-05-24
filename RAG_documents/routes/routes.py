@@ -5,8 +5,6 @@ from controllers import credentials_controllers
 import tempfile
 import os
 from pydantic import BaseModel
-import logging
-logging.basicConfig(level=logging.INFO)
 router = APIRouter()
 class User(BaseModel):
     username: str
@@ -27,7 +25,6 @@ async def llm_response(input: str,
 
     if "error" in result:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-    logging.info(f"type of result:{type(result)}")
     return result
 
 @router.post("/add_document")
@@ -44,7 +41,6 @@ async def add_document(file: UploadFile = File(...),
 
     try:
             data = await controllers.add_new_document_collections(file,name_collection,credentials)
-            logging.info(f"type of data:{type(data)}")
             return {'data': data}
         
     except Exception as e:
@@ -76,6 +72,5 @@ async def delete_collection(collection: CollectionRequest,
     collection_name=collection.collection_name
     await controllers.remove_collections(collection_name,credentials)
     await controllers.remove_conversation(collection_name,credentials)
-    logging.info(f"type of collection name:{type(collection_name)}")
     return {"collection_name deleted": collection_name}
 
