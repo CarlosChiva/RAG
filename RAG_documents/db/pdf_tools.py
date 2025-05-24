@@ -10,7 +10,7 @@ import pytesseract
 import os
 import tempfile
 
-def text_extraction(element):
+def text_extraction(element)-> tuple[any,list[str]]:
     # Extracting the text from the in line text element
     line_text = element.get_text()
     
@@ -33,7 +33,9 @@ def text_extraction(element):
     return (line_text, format_per_line)
 # Extracting tables from the page
 
-def extract_table(pdf_path, page_num, table_num):
+def extract_table(pdf_path, 
+                  page_num,
+                    table_num)-> any:
     # Open the pdf file
     pdf = pdfplumber.open(pdf_path)
     # Find the examined page
@@ -44,7 +46,7 @@ def extract_table(pdf_path, page_num, table_num):
     return table
 
 # Convert table into appropriate fromat
-def table_converter(table):
+def table_converter(table)-> str:
     table_string = ''
     # Iterate through each row of the table
     for row_num in range(len(table)):
@@ -58,7 +60,9 @@ def table_converter(table):
     return table_string
 
 # Create a function to check if the element is in any tables present in the page
-def is_element_inside_any_table(element, page ,tables):
+def is_element_inside_any_table(element,
+                                 page ,
+                                 tables)-> bool:
     x0, y0up, x1, y1up = element.bbox
     # Change the cordinates because the pdfminer counts from the botton to top of the page
     y0 = page.bbox[3] - y1up
@@ -70,7 +74,9 @@ def is_element_inside_any_table(element, page ,tables):
     return False
 
 # Function to find the table for a given element
-def find_table_for_element(element, page ,tables):
+def find_table_for_element(element,
+                            page ,
+                            tables)->(int|None):
     x0, y0up, x1, y1up = element.bbox
     # Change the cordinates because the pdfminer counts from the botton to top of the page
     y0 = page.bbox[3] - y1up
@@ -81,7 +87,7 @@ def find_table_for_element(element, page ,tables):
             return i  # Return the index of the table
     return None  
 # Create a function to crop the image elements from PDFs
-def crop_image(element, pageObj):
+def crop_image(element, pageObj)-> None:
     # Get the coordinates to crop the image from PDF
     [image_left, image_top, image_right, image_bottom] = [element.x0,element.y0,element.x1,element.y1] 
     # Crop the page using coordinates (left, bottom, right, top)
@@ -95,21 +101,21 @@ def crop_image(element, pageObj):
         cropped_pdf_writer.write(cropped_pdf_file)
 
 # Create a function to convert the PDF to images
-def convert_to_images(input_file,):
+def convert_to_images(input_file)-> None:
     images = convert_from_path(input_file)
     image = images[0]
     output_file = 'PDF_image.png'
     image.save(output_file, 'PNG')
 
 # Create a function to read text from images
-def image_to_text(image_path):
+def image_to_text(image_path)-> str:
     # Read the image
     img = Image.open(image_path)
     # Extract the text from the image
     text = pytesseract.image_to_string(img)
     return text
 
-def read_document(pdf_path):
+def read_document(pdf_path)->dict:
 
     pdfFileObj = open(file=pdf_path, mode='rb')
     # Create a pdf reader object
