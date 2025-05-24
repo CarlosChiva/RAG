@@ -11,6 +11,8 @@ import {ChatOutputComponent} from '../../components/chat-output/chat-output.comp
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
 import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
+import {UserInputComponent} from '../../components/user-input/user-input.component';
+
 interface UserMessage {
   user: string;
 }
@@ -23,7 +25,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-pdf',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent,UserInputComponent],
   templateUrl: './rag_pdf.component.html',
   styleUrls: ['./rag_pdf.component.scss']
 })
@@ -45,7 +47,8 @@ export class PdfComponent implements OnInit {
 
   selectedCollection: string | null = null;
   message: string = '';
-  
+  currentMessage: string = '';
+
   //messages: Message[] = [];
   isSending: boolean = false;
   mostrarModal: boolean = false;
@@ -115,9 +118,14 @@ export class PdfComponent implements OnInit {
   }
 
 
-  sendMessage(): void {
-    const messageText = this.message.trim();
-    
+  onMessageChange(message: string): void {
+    this.currentMessage = message;
+  }
+  sendMessage(messageFromChild?: string): void {
+    // Usar el mensaje del hijo si viene, sino usar this.message (compatibilidad)
+    const messageText = messageFromChild || this.message || this.currentMessage;
+    const trimmedMessage = messageText.trim();
+
     if (!messageText || !this.selectedCollection) {
       alert('Please enter a message and select a collection.');
       return;
@@ -131,8 +139,8 @@ export class PdfComponent implements OnInit {
       isUser: true
     });
     
-    // Limpiar el input
-    this.message = '';
+   this.message = '';
+    this.currentMessage = '';
     
     this.scrollChatToBottom();
     
@@ -144,7 +152,7 @@ export class PdfComponent implements OnInit {
       isTyping: true
     });
     
-    this.collectionsService.sendMessage(messageText, this.selectedCollection).subscribe({
+    this.collectionsService.sendMessage(trimmedMessage, this.selectedCollection).subscribe({
       next: (data: string) => {
 
         // Iniciar animación de escritura
@@ -157,9 +165,9 @@ export class PdfComponent implements OnInit {
           text: 'Error: Could not get response',
           isUser: false
         };
+
       },
       complete: () => {
-        this.isSending = false;
       }
     });
   }
@@ -199,6 +207,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
         text: safeHtml,
         isTyping: false
       };
+            this.isSending = false;
+
     }
   };
   

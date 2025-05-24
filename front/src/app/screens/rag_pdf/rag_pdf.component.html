@@ -29,21 +29,15 @@
       <div class="chat-output">
         <app-chat-output id="chat-output" [messages]="messages" [showTables]="false"></app-chat-output>
       </div>
-      <div class="input-area">
-        <input type="text" 
-        id="inputText" 
-        placeholder="Type your message here..." 
-        [value]="message"
-        (input)="message = $any($event.target).value" 
-        (keydown.enter)="sendMessage(); $event.preventDefault()"
-        #inputText>
-        <button id="sendButton" 
-                (click)="sendMessage()" 
-                [disabled]="isSending">
-          <div class="spinner" *ngIf="isSending"></div>
-          <span *ngIf="!isSending">Send</span>
-        </button>
-      </div>
+        <app-user-input
+    [placeholder]="'Type your message here...'"
+    [isSending]="isSending"
+    [message]="currentMessage"
+    [disabled]="!selectedCollection"
+    [sendButtonText]="'Send'"
+    (messageChange)="onMessageChange($event)"
+    (sendMessage)="sendMessage($event)">
+  </app-user-input> 
 
      <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
 

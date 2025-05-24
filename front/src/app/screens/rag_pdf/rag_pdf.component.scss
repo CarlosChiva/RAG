@@ -86,47 +86,47 @@ body {
   align-items: center;
 }
 
-#inputText {
-  flex-grow: 1;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 5px;
-}
+// #inputText {
+//   flex-grow: 1;
+//   padding: 15px;
+//   border-radius: 10px;
+//   margin-bottom: 5px;
+// }
 
-#sendButton {
-  margin: 10px;
-  padding: 0 15px; /* Añade más padding horizontal para acomodar el texto */
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
-  height: 50px;
-  display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
-  align-items: center; /* Centra verticalmente el texto dentro del botón */
-  justify-content: center; /* Centra horizontalmente el texto dentro del botón */
-  font-size: 15px; /* Ajusta el tamaño de fuente si es necesario */
-  text-align: center; /* Asegura que el texto esté centrado */
-}
-/* Estilos para el spinner */
-.spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-}
+// #sendButton {
+//   margin: 10px;
+//   padding: 0 15px; /* Añade más padding horizontal para acomodar el texto */
+//   background-color: #007bff;
+//   color: white;
+//   border: none;
+//   border-radius: 20px;
+//   cursor: pointer;
+//   height: 50px;
+//   display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
+//   align-items: center; /* Centra verticalmente el texto dentro del botón */
+//   justify-content: center; /* Centra horizontalmente el texto dentro del botón */
+//   font-size: 15px; /* Ajusta el tamaño de fuente si es necesario */
+//   text-align: center; /* Asegura que el texto esté centrado */
+// }
+// /* Estilos para el spinner */
+// .spinner {
+//   border: 4px solid rgba(255, 255, 255, 0.3);
+//   border-top: 4px solid white;
+//   border-radius: 50%;
+//   width: 20px;
+//   height: 20px;
+//   animation: spin 1s linear infinite;
+//   display: inline-block;
+// }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-#sendButton:hover {
-  background-color: #0056b3;
-  border : none;
-}
+// @keyframes spin {
+//   0% { transform: rotate(0deg); }
+//   100% { transform: rotate(360deg); }
+// }
+// #sendButton:hover {
+//   background-color: #0056b3;
+//   border : none;
+// }
 
 // -------------------------------  Upload collections ------------------------------
 #uploadButton{

@@ -129,6 +129,7 @@ export class RagDdbbComponent {
       // this.loadConfigs();
     }
 
+
 onMessageChange(message: string): void {
   this.currentMessage = message;
 }
