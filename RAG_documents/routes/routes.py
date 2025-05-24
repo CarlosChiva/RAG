@@ -34,7 +34,7 @@ async def llm_response(input: str,
 async def add_document(file: UploadFile = File(...),
                         name_collection: str = Form(...),
                         credentials  = Depends(credentials_controllers.verify_jws)
-                        ):
+                        )->dict[str,dict[str,str]]:
 
     if not file.filename:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid file")
