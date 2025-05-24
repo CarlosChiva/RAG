@@ -1,3 +1,4 @@
+from typing import Literal
 from fastapi import HTTPException
 from langchain_community.utilities import SQLDatabase
 from langchain_ollama import ChatOllama
@@ -28,9 +29,8 @@ class DataBase:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error al inicializar la base de datos: {e}")
 
-    def extract_driver(self,type_db):
-        print(type_db)
-        print(type(type_db))
+    def extract_driver(self,type_db)-> Literal["sqlite", "mysql+pymysql", "postgresql+psycopg2"]:
+        
         match type_db:
             case ennum.SQLITE.value:
                 return "sqlite"
@@ -44,7 +44,7 @@ class DataBase:
         return self.database
     def get_engine(self):
         return create_engine(self.database_url)
-    def try_connect(self):
+    def try_connect(self)->dict:
         try:
             engine = create_engine(self.database_url)
         except Exception as e:
@@ -135,11 +135,10 @@ class RagModel:
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
         except Exception as e:
-            print("Error",e)
             result=self.model.invoke([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
                                        Return a message explaining to user that him question was not found in database.
                                        Don't comment anything else.
                                        Return your message in markdown format."""),("human",query)]).content
-            print(result)
             table={}
+
         return result, table

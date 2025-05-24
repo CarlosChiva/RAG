@@ -75,6 +75,7 @@ async def delete_collection(collection: CollectionRequest,
 
     collection_name=collection.collection_name
     await controllers.remove_collections(collection_name,credentials)
+    await controllers.remove_conversation(collection_name,credentials)
     logging.info(f"type of collection name:{type(collection_name)}")
     return {"collection_name deleted": collection_name}
 
