@@ -11,7 +11,7 @@ import {ChatOutputComponent} from '../../components/chat-output/chat-output.comp
 import {SidebarComponent} from '../../components/sidebar/sidebar.component';
 import {SidebarItemComponent} from '../../components/sidebar-ddbb-item/sidebar-ddbb-item.component';
 import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
-
+import {UserInputComponent} from '../../components/user-input/user-input.component';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {marked } from 'marked';
 interface UserMessage {
@@ -26,7 +26,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-rag-ddbb',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,DdbbConfComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent,UserInputComponent],
   templateUrl: './rag_ddbb.component.html',
   styleUrls: ['./rag_ddbb.component.scss']
 })
@@ -58,7 +58,8 @@ export class RagDdbbComponent {
 
 
   message: string = '';
-  
+  currentMessage: string = '';
+
   isSending: boolean = false;
   mostrarModal: boolean = false;
 
@@ -128,10 +129,14 @@ export class RagDdbbComponent {
       // this.loadConfigs();
     }
 
-
-  sendMessage(): void {
-    const messageText = this.message.trim();
-    
+onMessageChange(message: string): void {
+  this.currentMessage = message;
+}
+  sendMessage(messageFromChild?: string): void {
+    // Usar el mensaje del hijo si viene, sino usar this.message (compatibilidad)
+    const messageText = messageFromChild || this.message || this.currentMessage;
+    const trimmedMessage = messageText.trim();
+   
     if (!messageText || !this.selectedConfig) {
       alert('Please enter a message and select a collection.');
       return;
@@ -158,7 +163,7 @@ export class RagDdbbComponent {
       isTyping: true
     });
     
-    this.configsService.question(messageText, this.selectedConfig!).subscribe({
+    this.configsService.question(trimmedMessage, this.selectedConfig!).subscribe({
       next: (data: Object) => {
         var message=JSON.stringify(data);
         var dataParse = JSON.parse(message);
@@ -183,6 +188,8 @@ export class RagDdbbComponent {
           text: 'Error: Could not get response',
           isUser: false
         };
+        this.isSending = false;
+
       },
       complete: () => {
         this.isSending = false;

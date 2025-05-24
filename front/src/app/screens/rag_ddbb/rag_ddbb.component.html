@@ -32,7 +32,16 @@
     <div class="chat-output">
       <app-chat-output id="chat-output" [messages]="messages" [showTables]="true"></app-chat-output>
     </div>
-      <div class="input-area">
+    <app-user-input
+    [placeholder]="'Type your message here...'"
+    [isSending]="isSending"
+    [message]="currentMessage"
+    [disabled]="!selectedConfig"
+    [sendButtonText]="'Send'"
+    (messageChange)="onMessageChange($event)"
+    (sendMessage)="sendMessage($event)">
+  </app-user-input> 
+    <!-- <div class="input-area">
         <input type="text" 
         id="inputText" 
         placeholder="Type your message here..." 
@@ -46,7 +55,7 @@
           <div class="spinner" *ngIf="isSending"></div>
           <span *ngIf="!isSending">Send</span>
         </button>
-      </div>
+      </div> -->
 
      <button (click)="abrirModal()" id="uploadButton" class="button">Add DB Config</button>
 
