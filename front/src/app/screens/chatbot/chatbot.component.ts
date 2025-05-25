@@ -148,7 +148,7 @@ export class ChatbotComponent implements OnInit {
   sendMessage(messageFromChild?: string): void {
     const messageText = messageFromChild || this.message || this.currentMessage;
 
-    if (!messageText.trim()) return;
+  if (!messageText.trim() || !this.selectedCollection) return;
 
     this.isSending = true;
 
@@ -166,10 +166,10 @@ export class ChatbotComponent implements OnInit {
     // Add bot typing indicator
     const botMessageIndex = this.messages.length;
     this.messages.push({ text: '', isUser: false, isTyping: true });
-
+    
     this.config = {
       userInput: messageText,
-      conversation: "aaaa",
+      conversation: this.selectedCollection,
       modelName: this.selectedModel.name,
       image: false,
     };
