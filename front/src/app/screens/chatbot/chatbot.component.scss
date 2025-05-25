@@ -161,7 +161,7 @@ body {
   margin-top: 11px;
   border: 1px solid #504f4f;
   background-color: #504f4f;
-  height: 85vh;
+  height: 90vh;
 
   &::before,
       &::after {
@@ -257,4 +257,9 @@ body.modal-open {
   justify-content: center;
 
   font-size: 20px; /* Ajusta esto según sea necesario para el tamaño del texto */
+}
+.user-input{
+    height: 10vh;
+    margin-bottom: 1px;
+
 }
