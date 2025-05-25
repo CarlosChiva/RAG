@@ -15,9 +15,9 @@ body {
 
 }
 // -------------------------------- sidebar ---------------------------------------
-.sidebar_container{
+.sidebar{
   background: linear-gradient(to right,#333, #504f4f);
-
+  
   ::ng-deep{
 
 
@@ -259,7 +259,8 @@ body.modal-open {
   font-size: 20px; /* Ajusta esto según sea necesario para el tamaño del texto */
 }
 .user-input{
-    height: 10vh;
+    height: 5vh;
     margin-bottom: 1px;
+    margin-bottom: 1vh;
 
 }

@@ -2,7 +2,6 @@
 <div class="container">
 
   <app-models-list (modelSelected)="onModelSelected($event)"class="fixed-models-list"></app-models-list>
-  <div class ="sidebar_container">
     <app-sidebar class="sidebar"
       [title]="'Collecitons'"
       [sidebarCollapsed]="sidebarCollapsed" 
@@ -28,7 +27,6 @@
 
     </div>
     </app-sidebar>
-  </div>
   <!-- <div class="sidebar" [class.collapsed]="sidebarCollapsed" id="sidebar"> -->
   <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
 
