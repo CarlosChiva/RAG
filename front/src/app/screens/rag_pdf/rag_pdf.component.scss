@@ -15,7 +15,7 @@ body {
 
 }
 // -------------------------------- sidebar ---------------------------------------
-.sidebar_container{
+.sidebar{
   background: linear-gradient(to right,#333, #504f4f);
 
   ::ng-deep{
@@ -111,7 +111,7 @@ body {
   margin-top: 11px;
   border: 1px solid #504f4f;
   background-color: #504f4f;
-  height: 85vh;
+  height: 90vh;
 
   &::before,
       &::after {

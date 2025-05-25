@@ -18,10 +18,8 @@ body {
 .sidebar{
   background: linear-gradient(to right,#333, #504f4f);
   
-  ::ng-deep{
-
-
-   
+   ::ng-deep{
+  
     .sidebar ul {
       list-style-type: none;
       padding: 0;

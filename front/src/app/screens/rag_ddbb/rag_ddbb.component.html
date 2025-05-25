@@ -1,6 +1,5 @@
 <!-- rag-ddbb.component.html -->
 <div class="container">
-  <div class ="sidebar_container">
   <app-sidebar class="sidebar"
     [title]="'ddbb'"
     [sidebarCollapsed]="sidebarCollapsed" 
@@ -22,7 +21,7 @@
       <app-button-container></app-button-container>
     </div>
   </app-sidebar>
-  </div>
+  
   
   <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button>
 
@@ -33,6 +32,7 @@
       <app-chat-output id="chat-output" [messages]="messages" [showTables]="true"></app-chat-output>
     </div>
     <app-user-input
+    class="user-input"
     [placeholder]="'Type your message here...'"
     [isSending]="isSending"
     [message]="currentMessage"

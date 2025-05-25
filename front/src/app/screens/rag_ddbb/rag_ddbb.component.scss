@@ -14,7 +14,7 @@ body {
   background-color: #01257D;
 
 }
-.sidebar_container{
+.sidebar{
   background: linear-gradient(to right,#031d5e, #01257D);
 
   ::ng-deep{
@@ -109,7 +109,7 @@ body {
   margin-top: 11px;
   border: 1px solid transparent;
   background-color: transparent;
-  height: 85vh;
+  height: 90vh;
 
   &::before,
       &::after {
@@ -228,4 +228,10 @@ body {
 /* Deshabilitar scroll y clicks en el fondo */
 body.modal-open {
   overflow: hidden;
+}
+.user-input{
+    height: 5vh;
+    margin-bottom: 1px;
+    margin-bottom: 1vh;
+
 }
