@@ -1,12 +1,14 @@
-
 <!-- sidebar-item.component.html -->
-<li [class.selected]="isSelected" 
+<li [class.selected]="isSelected"
     class="collection-item"
     (click)="onSelect()">
-  {{ getDisplayValue() }}
-  <button 
-      class="edit-button" 
-      (click)="onEdit($event)">...</button>
-  <button class="delete-button" 
+  <span *ngIf="!editing">{{ getDisplayValue() }}</span>
+  <input *ngIf="editing" [(ngModel)]="newCollectionName" (blur)="saveEdit()" />
+  <button
+      class="edit-button"
+      (click)="toggleEdit($event)">
+    {{ editing ? 'Save' : '...' }}
+  </button>
+  <button class="delete-button"
           (click)="onDelete($event)">-</button>
 </li>

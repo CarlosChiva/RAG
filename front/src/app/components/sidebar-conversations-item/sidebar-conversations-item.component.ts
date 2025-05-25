@@ -1,29 +1,31 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-
 import { CommonModule } from '@angular/common'; // Añade esta importación
-import {ModelsService} from '../../services/models.service';  
+import { FormsModule } from '@angular/forms';  // Importa FormsModule para ngModel
+import { ModelsService } from '../../services/models.service';
+
 @Component({
   selector: 'app-sidebar-conversations-item',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],  // Añade FormsModule aquí
   templateUrl: './sidebar-conversations-item.component.html',
-  styleUrl: './sidebar-conversations-item.component.scss'
+  styleUrls: ['./sidebar-conversations-item.component.scss']
 })
 export class SidebarItemComponent {
   @Input() collection : string | null= null;
   @Input() isSelected: boolean = false;
   @Input() displayField: string = '';
 
-  
   @Output() selectItem = new EventEmitter<any>();
   @Output() deleteItem = new EventEmitter<any>();
   @Output() itemDeleted = new EventEmitter<any>();
   @Output() conversationLoaded = new EventEmitter<any[]>();
 
-  constructor(private modelsService:ModelsService){}
-  
+  editing: boolean = false;
+  newCollectionName: string = '';
+
+  constructor(private modelsService: ModelsService) {}
+
   getDisplayValue(): string {
     if (!this.collection) return '';
-    
     // Si es un objeto DbConfig
     return this.collection;
   }
@@ -57,9 +59,37 @@ export class SidebarItemComponent {
         alert('Error deleting configuration');
       }
    });
-
   }
-  onEdit(event :Event): void {
-      event.stopPropagation();
+
+  toggleEdit(event: Event): void {
+    event.stopPropagation();
+    if (this.editing) {
+      // Si ya está en modo edición, guarda los cambios
+      this.saveEdit();
+    } else {
+      // Entra en modo edición
+      this.newCollectionName = this.collection || '';
+      this.editing = true;
+    }
+  }
+
+  saveEdit(): void {
+    if (this.newCollectionName && this.newCollectionName !== this.collection) {
+      this.modelsService.updateChatName(this.collection as string, this.newCollectionName).subscribe({
+        next: () => {
+          console.log('Collection renamed:', this.newCollectionName);
+          alert('Collection renamed successfully');
+          // Actualiza el nombre de la colección
+          this.collection = this.newCollectionName;
+        },
+        error: (error) => {
+          console.error('Error renaming collection:', error);
+          alert('Error renaming collection');
+        }
+      });
+    }
+
+    // Sale del modo edición
+    this.editing = false;
   }
 }

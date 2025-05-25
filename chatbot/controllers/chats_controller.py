@@ -53,3 +53,10 @@ async def get_chat_conversation(credentials,chat_name)->list[dict[str,list[str]]
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
     return data[credentials][chat_name]
+
+async def update_name_chat(old_name,new_name,credendials):
+    with open (PATH_CONVERSATIONS,"r") as f:
+        data=json.load(f)
+    data[credendials][new_name]=data[credendials].pop(old_name)
+    with open (PATH_CONVERSATIONS,"w") as f:
+        json.dump(data,f)

@@ -59,3 +59,14 @@ async def query(chatName:str,credentials  = Depends(credentials_controllers.veri
     result = await controllers.get_conversation(credentials,chatName)
     logging.info(f"result: {result}")
     return {"collections_name":result}
+class ChatItem(BaseModel):
+    oldChatName: str
+    newChatName: str
+
+@router.post("/update-chat-name")
+async def update_chat_name(chat_item: ChatItem, credentials=Depends(credentials_controllers.verify_jws)):
+    try:
+        await controllers.update_chat_name(chat_item.oldChatName, chat_item.newChatName, credentials)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating chat name: {str(e)}")

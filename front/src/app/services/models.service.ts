@@ -75,4 +75,10 @@ export class ModelsService {
       params: { chatName: chatNAme }
     });
   }
+  updateChatName(oldChatName: string, newChatName: string): Observable<any> {
+    const options = {
+      headers: this.getHeaders()
+    };
+    return this.http.post(`${this.apiUrl}/update-chat-name`, { oldChatName, newChatName }, options);
+  }
 }
