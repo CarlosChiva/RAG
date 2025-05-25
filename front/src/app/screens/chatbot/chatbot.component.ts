@@ -14,6 +14,8 @@ import {ButtonContainerComponent} from '../../components/button-container/button
 import {ModelsListComponent} from '../../components/models-list/models-list.component';
 import {Config} from '../../interfaces/config.interface';
 import { ModelItem } from '../../interfaces/models.inferface';
+import {UserInputComponent} from '../../components/user-input/user-input.component';
+
 interface UserMessage {
   user: string;
 }
@@ -26,7 +28,7 @@ type ConversationMessage = UserMessage | BotMessage;
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent,ModelsListComponent],
+  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent,ModelsListComponent,UserInputComponent],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss']
 })
@@ -52,7 +54,8 @@ export class ChatbotComponent implements OnInit {
 
   selectedCollection: string | null = null;
   message: string = '';
-  
+  currentMessage: string = '';
+
   //messages: Message[] = [];
   isSending: boolean = false;
   mostrarModal: boolean = false;
@@ -131,13 +134,14 @@ export class ChatbotComponent implements OnInit {
   }
 
 
-  sendMessage(): void {
-    const messageText = this.message.trim();
-    
-    // if (!messageText || !this.selectedCollection) {
-    //   alert('Please enter a message and select a collection.');
-    //   return;
-    // }
+  onMessageChange(message: string): void {
+    this.currentMessage = message;
+  }
+  sendMessage(messageFromChild?: string): void {
+     // Usar el mensaje del hijo si viene, sino usar this.message (compatibilidad)
+    const messageText = messageFromChild || this.message || this.currentMessage;
+    const trimmedMessage = messageText.trim();
+
     
     this.isSending = true;
     
@@ -147,8 +151,9 @@ export class ChatbotComponent implements OnInit {
       isUser: true
     });
     
-    // Limpiar el input
-    this.message = '';
+   this.message = '';
+    this.currentMessage = '';
+
     
     this.scrollChatToBottom();
     
@@ -182,7 +187,6 @@ export class ChatbotComponent implements OnInit {
         };
       },
       complete: () => {
-        this.isSending = false;
       }
     });
   
@@ -241,6 +245,8 @@ typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): v
         text: safeHtml,
         isTyping: false
       };
+      this.isSending = false;
+
     }
   };
   
