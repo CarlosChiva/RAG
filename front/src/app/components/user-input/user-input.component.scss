@@ -1,16 +1,18 @@
 .input-area {
   display: flex;
   background-color: transparent;
-  border: 1px solid transparent;
-  border-radius: 10px;
+  border: 1px solid #ddd;
+  border-radius: 50px;
   align-items: center;
+  background-color: #f8f9fa;
+
 }
 
 .input-text {
   flex-grow: 1;
   padding: 15px;
+  border: 1px solid transparent;
   border-radius: 10px;
-  border: 1px solid #ddd;
   outline: none;
   font-size: 14px;
 }
@@ -21,7 +23,7 @@
 }
 
 .input-text:disabled {
-  background-color: #f8f9fa;
+  background-color: transparent;
   cursor: not-allowed;
 }
 
