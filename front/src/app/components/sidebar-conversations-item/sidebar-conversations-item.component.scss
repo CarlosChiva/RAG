@@ -28,3 +28,23 @@
   .delete-button:hover {
     background-color: #ff4a4a;
   }
+  .edit-button {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    //padding: 5px ; 
+    background-color: #034b23; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 10px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar el cursor cuando esté sobre el botón */
+    height: fit-content;
+    width: fit-content;
+    position: absolute; /* Mantener el posicionamiento absoluto */
+    right: 40px; 
+    top: 50%; /* Centrar verticalmente dentro del contenedor */
+    transform: translateY(-50%); /* Ajuste final del centrado vertical */
+  }
+  .edit-button:hover {
+    background-color: #02381a;
+  }

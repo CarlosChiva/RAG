@@ -29,15 +29,15 @@
       <div class="chat-output">
         <app-chat-output id="chat-output" [messages]="messages" [showTables]="false"></app-chat-output>
       </div>
-        <app-user-input
-    [placeholder]="'Type your message here...'"
-    [isSending]="isSending"
-    [message]="currentMessage"
-    [disabled]="!selectedCollection"
-    [sendButtonText]="'Send'"
-    (messageChange)="onMessageChange($event)"
-    (sendMessage)="sendMessage($event)">
-  </app-user-input> 
+      <app-user-input
+        [placeholder]="'Type your message here...'"
+        [isSending]="isSending"
+        [message]="currentMessage"
+        [disabled]="!selectedCollection"
+        [sendButtonText]="'Send'"
+        (messageChange)="onMessageChange($event)"
+        (sendMessage)="sendMessage($event)">
+      </app-user-input> 
 
      <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
 

@@ -4,6 +4,9 @@
     class="collection-item"
     (click)="onSelect()">
   {{ getDisplayValue() }}
+  <button 
+      class="edit-button" 
+      (click)="onEdit($event)">...</button>
   <button class="delete-button" 
           (click)="onDelete($event)">-</button>
 </li>

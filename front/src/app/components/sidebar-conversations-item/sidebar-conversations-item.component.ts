@@ -59,6 +59,7 @@ export class SidebarItemComponent {
    });
 
   }
-
-
+  onEdit(event :Event): void {
+      event.stopPropagation();
+  }
 }

@@ -41,22 +41,6 @@
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)">
   </app-user-input> 
-    <!-- <div class="input-area">
-        <input type="text" 
-        id="inputText" 
-        placeholder="Type your message here..." 
-        [value]="message"
-        (input)="message = $any($event.target).value" 
-        (keydown.enter)="sendMessage(); $event.preventDefault()"
-        #inputText>
-        <button id="sendButton" 
-                (click)="sendMessage()" 
-                [disabled]="isSending">
-          <div class="spinner" *ngIf="isSending"></div>
-          <span *ngIf="!isSending">Send</span>
-        </button>
-      </div> -->
-
      <button (click)="abrirModal()" id="uploadButton" class="button">Add DB Config</button>
 
      <!-- Ventana Emergente -->
