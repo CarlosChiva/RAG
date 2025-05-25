@@ -1,279 +1,240 @@
 // pdf.component.ts
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { ModelsService } from '../../services/models.service';
-import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component'; // Importar componente
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
-import {marked, use } from 'marked';
-import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
-import {SidebarComponent} from '../../components/sidebar/sidebar.component';
-import {SidebarItemComponent} from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
-import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
-import {ModelsListComponent} from '../../components/models-list/models-list.component';
-import {Config} from '../../interfaces/config.interface';
-import { ModelItem } from '../../interfaces/models.inferface';
-import {UserInputComponent} from '../../components/user-input/user-input.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+import { marked } from 'marked';
+import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component';
+import { ChatOutputComponent } from '../../components/chat-output/chat-output.component';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarItemComponent } from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
+import { ButtonContainerComponent } from '../../components/button-container/button-container.component';
+import { ModelsListComponent } from '../../components/models-list/models-list.component';
+import { UserInputComponent } from '../../components/user-input/user-input.component';
+
+import { Config } from '../../interfaces/config.interface';
+import { ModelItem } from '../../interfaces/models.inferface';
+
+import { ModelsService } from '../../services/models.service';
+
+// Interfaces for message types
 interface UserMessage {
   user: string;
 }
-
 interface BotMessage {
   bot: string;
 }
+
 type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule,UploadComponent,ChatOutputComponent,SidebarComponent,SidebarItemComponent,ButtonContainerComponent,ModelsListComponent,UserInputComponent],
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    FormsModule,
+    ChatOutputComponent,
+    SidebarComponent,
+    SidebarItemComponent,
+    ButtonContainerComponent,
+    ModelsListComponent,
+    UserInputComponent,
+    UploadComponent
+  ],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss']
 })
-// Define interfaces para tus tipos de mensajes
-
-// Tipo unión para cualquier tipo de mensaje
-
 export class ChatbotComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
+
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
   @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
   @ViewChild(ModelsListComponent) modelsListComponent!: ModelsListComponent;
-  selectedModel:ModelItem={
-    name: '',
-    size: ''
-  }
-  
+
+  selectedModel: ModelItem = { name: '', size: '' };
+
+  // Application state
   sidebarCollapsed = false;
   collections: string[] = [];
   collection: any[] = [];
-
   selectedCollection: string | null = null;
   message: string = '';
   currentMessage: string = '';
-
-  //messages: Message[] = [];
   isSending: boolean = false;
   mostrarModal: boolean = false;
-  // Añade esta interfaz y la propiedad messages
+
+  // Messages
   messages: {
-    text: string|Promise<String>|SafeHtml;
+    text: string | Promise<string> | SafeHtml;
     isUser: boolean;
     isTyping?: boolean;
   }[] = [];
 
-  config:Config={
-
-        conversation: '',
-        modelName: '',
-        userInput: '',
-        image: false
-  }
+  config: Config = {
+    conversation: '',
+    modelName: '',
+    userInput: '',
+    image: false,
+  };
 
   constructor(
     private ModelsService: ModelsService,
-    private sanitizer:DomSanitizer,
+    private sanitizer: DomSanitizer,
+  ) {}
 
-  ) { }
+  // Modal methods
   abrirModal() {
     this.mostrarModal = true;
-    document.body.classList.add('modal-open'); // Bloquea el fondo
+    document.body.classList.add('modal-open');
   }
 
   cerrarModal() {
     this.mostrarModal = false;
     document.body.classList.remove('modal-open');
     this.ngOnInit();
-}
+  }
+
   ngOnInit(): void {
     this.loadCollections();
   }
+
+  // Sidebar methods
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
     this.sidebarComponent.toggleSidebar();
   }
 
   onModelSelected(model: ModelItem): void {
-  this.selectedModel = model as ModelItem;
-
+    this.selectedModel = model as ModelItem;
   }
+
   loadCollections(): void {
     this.ModelsService.getChats().subscribe({
-      next: (data: {collections_name: string[]}) => {
-        console.log("chat·", data);
-        console.log("chat·", data.collections_name);
+      next: (data: { collections_name: string[] }) => {
+        console.log("chat:", data);
         this.collections = data.collections_name.flatMap(item => Object.keys(item));
-        
       },
-      error: (error: any) => console.error('Error fetching collections:', error)
+      error: (error) => console.error('Error fetching collections:', error)
     });
   }
 
+  // Conversation methods
   renderConversation(conversation: any[]): void {
-    this.messages=[]
-    conversation.forEach((message) => {
-      if ('user' in message) {
-        this.messages.push({ text: message.user, isUser: true });
-      } else if ('bot' in message) {
-        this.messages.push({ text: this.markdownRender(marked(message.bot)), isUser: false });
-      }
-    });
-  
+    this.messages = conversation.map((message) => ({
+      text: ('user' in message) ? message.user : this.markdownRender(marked(message.bot)),
+      isUser: 'user' in message,
+    }));
+
     this.scrollChatToBottom();
   }
-  selectCollection(collection:string){
-    this.selectedCollection=collection;
-  }
-  deleteCollection(collectionName: string): void {
-   // event.stopPropagation(); // Prevent triggering selectCollection
-    this.loadCollections();
+
+  selectCollection(collection: string) {
+    this.selectedCollection = collection;
   }
 
+  deleteCollection(collectionName: string): void {
+    this.loadCollections();
+  }
 
   onMessageChange(message: string): void {
     this.currentMessage = message;
   }
-  sendMessage(messageFromChild?: string): void {
-     // Usar el mensaje del hijo si viene, sino usar this.message (compatibilidad)
-    const messageText = messageFromChild || this.message || this.currentMessage;
-    const trimmedMessage = messageText.trim();
 
-    
+  sendMessage(messageFromChild?: string): void {
+    const messageText = messageFromChild || this.message || this.currentMessage;
+
+    if (!messageText.trim()) return;
+
     this.isSending = true;
-    
-    // Añadir mensaje del usuario
+
+    // Add user message
     this.messages.push({
       text: messageText,
       isUser: true
     });
-    
-   this.message = '';
+
+    this.message = '';
     this.currentMessage = '';
 
-    
     this.scrollChatToBottom();
-    
-    // Añadir mensaje del bot con estado "typing"
-    const botMessageIndex = this.messages.length;
-    this.messages.push({
-      text: '',
-      isUser: false,
-      isTyping: true
-    });
 
-    this.config={
+    // Add bot typing indicator
+    const botMessageIndex = this.messages.length;
+    this.messages.push({ text: '', isUser: false, isTyping: true });
+
+    this.config = {
       userInput: messageText,
-       conversation: "aaaa",
-        modelName: this.selectedModel.name,
-        image:false
-      }; 
+      conversation: "aaaa",
+      modelName: this.selectedModel.name,
+      image: false,
+    };
+
     console.log(this.config);
     this.ModelsService.query(this.config).subscribe({
-      next: (data: string) => {
-        // Iniciar animación de escritura
-        console.log("data recived",data);
-        this.typeTextInMessage(botMessageIndex, data);
+      next: (data) => this.typeTextInMessage(botMessageIndex, data),
+      error: () => {
+        this.messages[botMessageIndex] = { text: 'Error: Could not get response', isUser: false };
       },
-      error: (error: any) => {
-        console.error('Error sending message:', error);
-        // Actualizar mensaje con error
-        this.messages[botMessageIndex] = {
-          text: 'Error: Could not get response',
-          isUser: false
-        };
-      },
-      complete: () => {
-      }
+      complete: () => {}
     });
-  
-      
-    // this.ModelsService.sendMessage(messageText, this.selectedCollection).subscribe({
-    //   next: (data: string) => {
-    //     // Iniciar animación de escritura
-    //     this.typeTextInMessage(botMessageIndex, data);
-    //   },
-    //   error: (error: any) => {
-    //     console.error('Error sending message:', error);
-    //     // Actualizar mensaje con error
-    //     this.messages[botMessageIndex] = {
-    //       text: 'Error: Could not get response',
-    //       isUser: false
-    //     };
-    //   },
-    //   complete: () => {
-    //     this.isSending = false;
-    //   }
-    // });
   }
-  markdownRender(message:string | Promise<String>){
-    return this.sanitizer.bypassSecurityTrustHtml(message as string);
-       
-  }
-typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
-  let index = 0;
-  const message = this.messages[messageIndex];
-  
-  const addNextChar = () => {
-    if (index < fullText.length) {
-      // Actualizar el texto letra por letra
-      const markdownText=marked(fullText.substring(0, index + 1))
-      const messageRenderized= this.markdownRender(markdownText)
-      this.messages[messageIndex] = {
-        ...message,
-        text: messageRenderized,
-        isTyping: true
-      };
-      
-      index++;
-      setTimeout(addNextChar, speed);
-      
-      // // Hacer scroll hacia abajo mientras se escribe
-      // if (this.chatOutputComponent) {
-      //   this.chatOutputComponent.scrollToBottom();
-      // }
-    } else {
-      const markdownText = marked(fullText);
-      const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-      
-      // Finalizar la animación
-      this.messages[messageIndex] = {
-        ...message,
-        text: safeHtml,
-        isTyping: false
-      };
-      this.isSending = false;
 
-    }
-  };
-  
-  addNextChar();
-}
-  
+  markdownRender(message: string | Promise<string>): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(message as string);
+  }
+
+  typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
+    let index = 0;
+    const message = this.messages[messageIndex];
+
+    const addNextChar = () => {
+      if (index < fullText.length) {
+        // Update text character by character
+        const markdownText = marked(fullText.substring(0, index + 1));
+        const renderedMessage = this.markdownRender(markdownText);
+
+        this.messages[messageIndex] = { ...message, text: renderedMessage, isTyping: true };
+        index++;
+        setTimeout(addNextChar, speed);
+      } else {
+        // End typing animation
+        const markdownText = marked(fullText);
+        const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+
+        this.messages[messageIndex] = { ...message, text: safeHtml, isTyping: false };
+        this.isSending = false;
+      }
+    };
+
+    addNextChar();
+  }
+
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.sendMessage();
     }
   }
+
   private scrollChatToBottom(): void {
     setTimeout(() => {
-     if (this.chatOutputComponent) {
+      if (this.chatOutputComponent) {
         this.chatOutputComponent.scrollToBottom();
       }
     });
   }
-  createChat(event:Event): void {
-    this.ModelsService.createChat("New_chat").subscribe({
-      next: (data: {collections_name: any}) => {
-        console.log("chat·", data);
-        console.log("chat·", data.collections_name);
-      },
-      error: (error: any) => console.error('Error fetching collections:', error)
-    })
-        this.loadCollections();
 
+  createChat(event: Event): void {
+    this.ModelsService.createChat("New_chat").subscribe({
+      next: () => { },
+      error: (error) => console.error('Error fetching collections:', error)
+    });
+
+    this.loadCollections();
   }
-};
+ 
+}
