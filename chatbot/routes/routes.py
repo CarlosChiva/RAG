@@ -51,14 +51,15 @@ async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers
                         )-> dict:
 
     result = await controllers.remove_chat(chatName.chatName,credentials)
+    await controllers.remove_conversation(chatName.chatName,credentials)
     return {"Response":result}
 @router.get("/get-conversation")
 async def query(chatName:str,credentials  = Depends(credentials_controllers.verify_jws)
-                        )-> dict[str,list[dict]]:
+                        )-> list[dict[str,str]]:
 
     result = await controllers.get_conversation(credentials,chatName)
     logging.info(f"result: {result}")
-    return {"collections_name":result}
+    return result
 class ChatItem(BaseModel):
     oldChatName: str
     newChatName: str

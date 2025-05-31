@@ -48,17 +48,21 @@ async def new_conversation(credentials,new_chat_name)->str:
         json.dump(data,f)  
     return f"new chat {new_chat_name} created successfully"      
 
-async def remove_conversation(chat_name,credentials)-> str:
-  # Leer los datos existentes
-    with open (PATH_CONVERSATIONS,"r") as f:
-        data=json.load(f)
-   
-    if chat_name not in data[credentials]:
-        data[credentials][chat_name] = []
-        # Guardar los cambios
+async def remove_conversation(chat_name, credentials) -> str:
+    # Read existing data
+    with open(PATH_CONVERSATIONS, "r") as f:
+        data = json.load(f)
+
+    # Check if chat exists in user's conversations and delete it
+    if chat_name in data[credentials]:
+        del data[credentials][chat_name]
+
+        # Save changes back to file
         with open(PATH_CONVERSATIONS, "w") as f:
             json.dump(data, f)
-    return data[credentials][chat_name]
+        return f"Conversation '{chat_name}' deleted successfully."
+
+    return f"Conversation '{chat_name}' not found."
 async def get_user_conversation(credentials: str, chat_name: str) :
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:
