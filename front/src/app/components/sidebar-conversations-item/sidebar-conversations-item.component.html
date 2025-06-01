@@ -1,9 +1,10 @@
 <!-- sidebar-item.component.html -->
 <li [class.selected]="isSelected"
+    [ngClass]="{'editing': editing}"
     class="collection-item"
     (click)="onSelect()">
   <span *ngIf="!editing">{{ getDisplayValue() }}</span>
-  <input *ngIf="editing" [(ngModel)]="newCollectionName" (blur)="saveEdit()" />
+  <input class="editing "*ngIf="editing" [(ngModel)]="newCollectionName" (blur)="saveEdit()" />
   <button
       class="edit-button"
       (click)="toggleEdit($event)">

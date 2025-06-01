@@ -85,7 +85,7 @@ async def remove_conversation(collection_name,credentials)->None:
         data=json.load(f)
    
     if collection_name not in data[credentials]:
-        data[credentials][collection_name] = []
+        del data[credentials][collection_name]
         # Guardar los cambios
     with open(PATH_CONVERSATIONS, "w") as f:
         json.dump(data, f)

@@ -48,3 +48,14 @@
   .edit-button:hover {
     background-color: #02381a;
   }
+.editing {
+  background-color: transparent;
+  border: transparent;
+  border-radius: 50px;
+
+}
+
+.editing input {
+  border: none; /* Hide the border of the input element */
+  outline: none; /* Remove the default focus outline */
+}

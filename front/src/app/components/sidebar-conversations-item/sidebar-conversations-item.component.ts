@@ -74,6 +74,8 @@ export class SidebarItemComponent {
   }
 
   saveEdit(): void {
+    this.editing = false;
+
     if (this.newCollectionName && this.newCollectionName !== this.collection) {
       this.modelsService.updateChatName(this.collection as string, this.newCollectionName).subscribe({
         next: () => {
