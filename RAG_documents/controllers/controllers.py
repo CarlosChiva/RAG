@@ -77,16 +77,17 @@ async def get_conversation(collection_name,credentials)->list[dict[str,str]]:
         with open(PATH_CONVERSATIONS, "w") as f:
             json.dump(data, f)
     return data[credentials][collection_name]
-
+import logging
+logging.basicConfig(level=logging.INFO)
 async def remove_conversation(collection_name,credentials)->None:
     
     # Leer los datos existentes
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
-   
-    if collection_name not in data[credentials]:
+    
+
+    if collection_name in data[credentials]:
         del data[credentials][collection_name]
         # Guardar los cambios
     with open(PATH_CONVERSATIONS, "w") as f:
         json.dump(data, f)
-    return data[credentials][collection_name]

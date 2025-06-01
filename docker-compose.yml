@@ -30,25 +30,25 @@ services:
     links:
       - db  
 
-  # rag_documents:
-  #   build: ./RAG_documents
-  #   ports:
-  #     - "8000:8000"
-  #   env_file: 
-  #     - "./RAG_documents/.env"
-  #   network_mode: host
-  #   volumes:
-  #     - RAG_documents:/app/PersistDirectory
-  #     - conversations:/app/conversations
-  # rag_ddbb:
-  #   build: ./RAG_ddbb
-  #   ports:
-  #     - "8002:8002"
-  #   env_file: 
-  #     - "./RAG_ddbb/.env"
-  #   network_mode: host
-  #   volumes:
-  #     - rag_ddbb:/app/configs_folder
+  rag_documents:
+    build: ./RAG_documents
+    ports:
+      - "8000:8000"
+    env_file: 
+      - "./RAG_documents/.env"
+    network_mode: host
+    volumes:
+      - RAG_documents:/app/PersistDirectory
+      - conversations:/app/conversations
+  rag_ddbb:
+    build: ./RAG_ddbb
+    ports:
+      - "8002:8002"
+    env_file: 
+      - "./RAG_ddbb/.env"
+    network_mode: host
+    volumes:
+      - rag_ddbb:/app/configs_folder
   chatbot:
     build: ./chatbot
     volumes:
