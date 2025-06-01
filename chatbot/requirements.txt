@@ -37,9 +37,6 @@ PyJWT==2.9.0
 python-dotenv==1.0.1
 python-ulid==3.0.0
 PyYAML==6.0.2
-redis==5.3.0
-redis-cli==1.0.1
-redisvl==0.5.2
 requests==2.32.3
 requests-toolbelt==1.0.0
 setuptools==75.8.0
