@@ -10,6 +10,9 @@
     align-items: center; /* Asegurar alineación vertical */
     width: 100%; /* Usar el ancho total del sidebar */
     box-sizing: border-box;
+    height: 5vh;
+    margin-bottom: 1px;
+    margin-bottom: 1vh;
   }
   .logout-btn, .main-btn {
     background-color: #007bff;
