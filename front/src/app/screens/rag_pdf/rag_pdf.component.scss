@@ -90,14 +90,15 @@ body {
   border: none;
   border-radius: 20px;
   cursor: pointer;
-  height: 40px;
   display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
   align-items: center; /* Centra verticalmente el texto dentro del botón */
   justify-content: center; /* Centra horizontalmente el texto dentro del botón */
-  font-size: 12px; /* Ajusta el tamaño de fuente si es necesario */
   text-align: center; /* Asegura que el texto esté centrado */
   text-decoration: none;
   z-index: 100;
+  height: 5vh;
+  width: 10vh;
+  font-size: clamp(1px, 1vw, 2vh); /* Ajusta el tamaño de fuente según el tamaño del botón */
 
 }
 #uploadButton:hover {
