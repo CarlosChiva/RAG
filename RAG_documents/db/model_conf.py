@@ -1,4 +1,4 @@
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 import os
 from dotenv import load_dotenv
 
@@ -16,9 +16,9 @@ class RagModel:
             model_name = os.getenv("MODEL")
             if model_name is None:
                 raise ValueError("The environment variable 'MODEL' is not set.")
-            self.model = Ollama(model=model_name, temperature=0)
+            self.model = OllamaLLM(model=model_name, temperature=0)
 
-    def get_model(self)-> Ollama:
+    def get_model(self)-> OllamaLLM:
         return self.model
 
 

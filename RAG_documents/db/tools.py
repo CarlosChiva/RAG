@@ -1,7 +1,7 @@
 from http.client import HTTPException
 from fastapi import UploadFile
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
 import os
 from langchain.schema import Document
 import io
