@@ -229,7 +229,18 @@ export class ChatbotComponent implements OnInit {
   }
 
   createChat(event: Event): void {
-    this.ModelsService.createChat("New_chat").subscribe({
+  let nameChat = "New_chat";
+  let counter = 1;
+    console.log("this.collections:",this.collections)
+
+  // Check if the default name exists and increment the counter until a unique name is found
+  while (this.collections.includes(nameChat)) {
+    console.log("this.collections:",this.collections)
+    nameChat = `New_chat_${counter}`;
+    counter++;
+  }
+
+    this.ModelsService.createChat(nameChat).subscribe({
       next: () => { },
       error: (error) => console.error('Error fetching collections:', error)
     });
