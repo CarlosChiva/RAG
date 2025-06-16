@@ -16,11 +16,7 @@ body {
 }
 .sidebar{
   background: linear-gradient(to right,#031d5e, #01257D);
-    width: 15vw; /* 15% del viewport width - independiente del zoom */
-    min-width: 15vw;
-    max-width: 15vw;
-    height: 100vh;
-    transition: all 0.3s ease;
+ 
 
   ::ng-deep{
     .sidebar ul {
