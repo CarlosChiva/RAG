@@ -80,8 +80,8 @@ body {
 #uploadButton{
   position: absolute;
   margin: 10px;
-  top: 15px; /* Ajusta la distancia desde el borde superior */
-  right: 15px; /* Ajusta la distancia desde el borde derecho */
+  top: 8px; /* Ajusta la distancia desde el borde superior */
+  right: 8px; /* Ajusta la distancia desde el borde derecho */
   padding: 0 20px; /* Añade más padding horizontal para acomodar el texto */
   background-color: #007bff;
   color: white;
@@ -94,9 +94,9 @@ body {
   text-align: center; /* Asegura que el texto esté centrado */
   text-decoration: none;
   z-index: 100;
-  height: 7vh;
-  width: 12vh;
-  font-size: clamp(1px, 1vw, 1.5vh); /* Ajusta el tamaño de fuente según el tamaño del botón */
+  height: 5vh;
+  width: 10vh;
+  font-size: clamp(0.5px, 0.8vw, 1.1vh); /* Ajusta el tamaño de fuente según el tamaño del botón */
 
 }
 #uploadButton:hover {
