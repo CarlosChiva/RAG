@@ -80,5 +80,5 @@ http://localhost:5000
  
 ---
 
-![Image to Docker compose and llama](images/compose.png)
+![Image to Docker compose and llama](images/compose2.png)
 
