@@ -121,11 +121,10 @@ export class PdfComponent implements OnInit {
   onMessageChange(message: string): void {
     this.currentMessage = message;
   }
-  sendMessage(messageFromChild?: string): void {
+sendMessage(messageFromChild?: string): void {
     // Usar el mensaje del hijo si viene, sino usar this.message (compatibilidad)
     const messageText = messageFromChild || this.message || this.currentMessage;
     const trimmedMessage = messageText.trim();
-
     if (!messageText || !this.selectedCollection) {
       alert('Please enter a message and select a collection.');
       return;
@@ -152,11 +151,37 @@ export class PdfComponent implements OnInit {
       isTyping: true
     });
     
+    // Variable para acumular el mensaje completo
+    let accumulatedText = '';
+    
     this.collectionsService.sendMessage(trimmedMessage, this.selectedCollection).subscribe({
       next: (data: string) => {
-
-        // Iniciar animación de escritura
-        this.typeTextInMessage(botMessageIndex, data);
+        // Si recibimos un mensaje especial de finalización, terminamos
+        if (data === '__END__') {
+          // Finalizar el mensaje actual
+          const markdownText = marked(accumulatedText);
+          const safeHtml = this.markdownRender(markdownText);
+          
+          this.messages[botMessageIndex] = {
+            text: safeHtml,
+            isUser: false,
+            isTyping: false
+          };
+          this.isSending = false;
+          return;
+        }
+        // Acumular el texto recibido
+        accumulatedText += data;
+        
+        // Actualizar el mensaje con el texto acumulado (sin animación)
+        const markdownText = marked(accumulatedText);
+        const safeHtml = this.markdownRender(markdownText);
+        
+        this.messages[botMessageIndex] = {
+          text: safeHtml,
+          isUser: false,
+          isTyping: true
+        };
       },
       error: (error: any) => {
         console.error('Error sending message:', error);
@@ -165,56 +190,67 @@ export class PdfComponent implements OnInit {
           text: 'Error: Could not get response',
           isUser: false
         };
-
+        this.isSending = false;
       },
       complete: () => {
+        // Finalizar el mensaje cuando se complete la conexión
+        if (accumulatedText) {
+          const markdownText = marked(accumulatedText);
+          const safeHtml = this.markdownRender(markdownText);
+          
+          this.messages[botMessageIndex] = {
+            text: safeHtml,
+            isUser: false,
+            isTyping: false
+          };
+        } else {
+          this.messages[botMessageIndex] = {
+            text: 'No response received',
+            isUser: false,
+            isTyping: false
+          };
+        }
+        this.isSending = false;
       }
     });
   }
-  markdownRender(message:string | Promise<String>){
-    return this.sanitizer.bypassSecurityTrustHtml(message as string);
-       
-  }
-typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
-  let index = 0;
-  const message = this.messages[messageIndex];
-  
-  const addNextChar = () => {
-    if (index < fullText.length) {
-      // Actualizar el texto letra por letra
-      const markdownText=marked(fullText.substring(0, index + 1))
-      const messageRenderized= this.markdownRender(markdownText)
-      this.messages[messageIndex] = {
-        ...message,
-        text: messageRenderized,
-        isTyping: true
-      };
-      
-      index++;
-      setTimeout(addNextChar, speed);
-      
-      // // Hacer scroll hacia abajo mientras se escribe
-      // if (this.chatOutputComponent) {
-      //   this.chatOutputComponent.scrollToBottom();
-      // }
-    } else {
-      const markdownText = marked(fullText);
-      const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-      
-      // Finalizar la animación
-      this.messages[messageIndex] = {
-        ...message,
-        text: safeHtml,
-        isTyping: false
-      };
-            this.isSending = false;
 
-    }
-  };
-  
-  addNextChar();
-}
-  
+  markdownRender(message: string | Promise<String>) {
+    return this.sanitizer.bypassSecurityTrustHtml(message as string);
+  }
+
+  // Eliminar la función typeTextInMessage ya que no la necesitamos más
+  // typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
+  //   let index = 0;
+  //   const message = this.messages[messageIndex];
+  //   
+  //   const addNextChar = () => {
+  //     if (index < fullText.length) {
+  //       const markdownText = marked(fullText.substring(0, index + 1))
+  //       const messageRenderized = this.markdownRender(markdownText)
+  //       this.messages[messageIndex] = {
+  //         ...message,
+  //         text: messageRenderized,
+  //         isTyping: true
+  //       };
+  //       
+  //       index++;
+  //       setTimeout(addNextChar, speed);
+  //     } else {
+  //       const markdownText = marked(fullText);
+  //       const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+  //       
+  //       this.messages[messageIndex] = {
+  //         ...message,
+  //         text: safeHtml,
+  //         isTyping: false
+  //       };
+  //       this.isSending = false;
+  //     }
+  //   };
+  //   
+  //   addNextChar();
+  // }  
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.sendMessage();

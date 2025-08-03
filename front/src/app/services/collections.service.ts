@@ -10,6 +10,7 @@ import {ConversationMessage} from '../interfaces/conversations.interface'; // De
 })
 export class CollectionsService {
   private apiUrl = 'http://localhost:8000';
+  private apiUrlWs = 'ws://localhost:8000';
 
   constructor(private http: HttpClient) { }
 
@@ -45,12 +46,47 @@ export class CollectionsService {
       input: message,
       collection_name: collectionName
     });
-    
-    return this.http.get<string>(`${this.apiUrl}/llm-response?${params.toString()}`, {
-      headers: this.getHeaders(),
-      responseType: 'json' as any
+    const token= this.getHeaders();
+    const wsUrl=`${this.apiUrlWs}/llm-response?${params.toString()}`
+    return new Observable(observer => {
+      try {
+        // Crear conexión WebSocket
+        const ws = new WebSocket(wsUrl);
+        
+        ws.onopen = () => {
+          console.log('WebSocket connected');
+          
+          // Enviar el token como parte del mensaje inicial
+          const initialMessage = {
+            input: message,
+            collection_name: collectionName,
+            auth: this.getHeaders().get('Authorization') // Devuelve: "Bearer token_value"
+  // Token en el mensaje
+          };
+          
+          ws.send(JSON.stringify(initialMessage));
+        };
+        ws.onmessage = (event) => {
+          // Recibir cada token por separado y emitirlo
+          observer.next(event.data as string);
+        };
+        
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          observer.error(error);
+        };
+        
+        ws.onclose = () => {
+          console.log('WebSocket closed');
+          observer.complete();
+        };
+        
+      } catch (error) {
+        observer.error(error);
+      }
     });
-  }
+  };
+
   uploadFiles(files: FileList, collectionName: string): Observable<any> {
     const formData = new FormData();
     

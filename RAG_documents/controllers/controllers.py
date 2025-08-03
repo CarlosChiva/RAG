@@ -44,7 +44,7 @@ async def querier(question:str,collection_name:str,credentials:str,websocket)->s
             logging.info(f"Yo sabiaaaaa  response---{answer_text}")
             full_response += answer_text
             await websocket.send_text(answer_text)
-                
+    await websocket.send_text("__END__")            
     await add_conversation(collection_name,credentials,question,full_response)
             
 

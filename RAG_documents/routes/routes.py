@@ -37,7 +37,7 @@ async def llm_response_websocket(websocket: WebSocket):
             # Verificar credenciales (puedes reutilizar tu función existente)
             # Verificar credenciales
             try:
-                credentials = await credentials_controllers.verify_jws(websocket.headers.get("Authorization"))
+                credentials = await credentials_controllers.verify_jws(message_data.get("auth"))
             except HTTPException as e:
                 # Enviar error al cliente
                 error_response = {
