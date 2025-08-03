@@ -22,7 +22,7 @@ async def remove_collections(collection_name,credentials)-> dict[str,str]:
     cli=await get_chroma_client(credentials)
     return await remove_collection_db(collection_name,cli)
   
-async def querier(question:str,collection_name:str,credentials:str)->str:
+async def querier(question:str,collection_name:str,credentials:str,websocket)->str:
 
     model=RagModel().get_model()
 
@@ -30,11 +30,23 @@ async def querier(question:str,collection_name:str,credentials:str)->str:
     vectorstore=await get_vectorstore(cli,collection_name)
     chain= await get_chain(model=model,vector_store=vectorstore)
     chat= await get_conversation(collection_name,credentials)
-    
-    response=chain.invoke({"input":question,"chat_history":chat})
-    await add_conversation(collection_name,credentials,question,response['answer'])
-    
-    return response['answer']
+    full_response=""
+
+    async for response in chain.astream({"input":question,"chat_history":chat}):
+        logging.info(f"response---{type(response)}")
+        logging.info(f"response---{response}")
+     
+
+        if not  'answer' in response.keys():
+            continue
+        else:
+            answer_text = response['answer']
+            logging.info(f"Yo sabiaaaaa  response---{answer_text}")
+            full_response += answer_text
+            await websocket.send_text(answer_text)
+                
+    await add_conversation(collection_name,credentials,question,full_response)
+            
 
 async def add_conversation(collection_name,
                            credentials,

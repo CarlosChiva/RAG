@@ -3,7 +3,7 @@ from controllers import controllers
 from controllers import credentials_controllers
 from pydantic import BaseModel
 import logging
-
+logging.basicConfig(level=logging.INFO)
 router = APIRouter()
 class User(BaseModel):
     username: str
@@ -13,7 +13,6 @@ class User(BaseModel):
 async def log_in(username: str, password: str):
 
     password_hashed = await credentials_controllers.generar_hash(password)
-
     result = await controllers.check_user(user_name=username, password=password_hashed)
     if not result:
         raise HTTPException(status_code=401, detail="User not found")
