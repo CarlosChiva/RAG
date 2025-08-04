@@ -61,7 +61,6 @@ export class CollectionsService {
             input: message,
             collection_name: collectionName,
             auth: this.getHeaders().get('Authorization') // Devuelve: "Bearer token_value"
-  // Token en el mensaje
           };
           
           ws.send(JSON.stringify(initialMessage));

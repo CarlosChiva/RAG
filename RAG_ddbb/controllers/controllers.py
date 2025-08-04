@@ -5,13 +5,13 @@ from model.rag_model import RagModel,DataBase
 import os
 from config import Config
 import json
-async def querier(question:str,conf:Config):
+async def querier(question:str,conf:Config,websocket):
 
     database=DataBase(conf).get_database()
     engine=DataBase(conf).get_engine()
-    result, table=RagModel(database,engine).query(question)
+    await RagModel(database,engine).query(question,websocket)
 
-    return result, table
+ 
 
 async def get_configurations(user):
     print("Enter to get_configurations    ", user)

@@ -190,8 +190,10 @@ export class RagDdbbComponent implements OnInit {
 
     this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
       next: (data: Object) => {
+        console.log(data);
         var message = JSON.stringify(data);
         var dataParse = JSON.parse(message);
+
         const resultText = dataParse.result;
 
         if (typeof dataParse.table === 'string') {

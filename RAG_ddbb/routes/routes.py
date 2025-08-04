@@ -1,4 +1,6 @@
 #from tempfile import NamedTemporaryFile
+from http.client import HTTPException
+import json
 from fastapi import *
 from controllers import controllers
 from controllers import credentials_controllers
@@ -6,6 +8,7 @@ import tempfile
 import os
 from pydantic import BaseModel
 from config import Config
+from fastapi import WebSocket, WebSocketDisconnect
 
 router = APIRouter()
 class User(BaseModel):
@@ -13,19 +16,53 @@ class User(BaseModel):
     password: str
 class CollectionRequest(BaseModel):
     collection_name: str
+active_connections = {}
+import logging
+logging.basicConfig(level=logging.INFO) 
 #-------------------------Principal routes-----------------------
-@router.post("/question")
-async def llm_response(input: str,
-                        database_conf:Config,
-                        credentials  = Depends(credentials_controllers.verify_jws)
+@router.websocket("/question")
+async def llm_response(
+                        websocket:WebSocket,
                         ):
+       # Aceptar conexión
+    await websocket.accept()
     
-    result, table = await controllers.querier(question=input,conf=database_conf)
+    # Registrar conexión
+    connection_id = str(id(websocket))
+    active_connections[connection_id] = websocket
+    
+    try:
+        while True:
+            # Recibir mensaje del cliente
+            message_data = await websocket.receive_json()
 
-    if "error" in result:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result["error"])
-    print(result, table)
-    return {"result":result,"table":table}
+            try:
+                await credentials_controllers.verify_jws(message_data.get("auth"))
+
+            except HTTPException as e:
+                # Enviar error al cliente
+                error_response = {
+                    "type": "error",
+                    "message": e.detail,
+                    "status_code": e.status_code
+                }
+                await websocket.send_text(json.dumps(error_response))
+                continue  # Continuar esperando más mensajes
+            try:
+                input=message_data.get("question")
+                logging.info(f"Data recived: {message_data.get('config')}")
+                database_conf=Config(**message_data.get("config"))
+            except Exception as e:
+                raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
+            try:
+
+                await controllers.querier(question=input,conf=database_conf,websocket=websocket)
+            except Exception as e:
+                raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    except Exception as e:
+        raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 
 @router.get("/get-list-configurations")

@@ -124,21 +124,29 @@ class RagModel:
         | self.model
         | StrOutputParser()
         )
-    def query(self,query):
-        
+    async def query(self,query,websocket):
+        import logging
+        logging.basicConfig(level=logging.INFO)
         try:
-
-            result=self.model_full_response.invoke({"question":query})
+            logging.info(query)
+            for result in self.model_full_response.stream({"question":query}):
+                logging.info(result)
+                await websocket.send_json({"response":result})
+            
             otro=self.get_chain_extract_query().invoke({"question":query})
             with self.engine.connect() as connection:
                 
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
+            await websocket.send_json({"table":table})
+            await websocket.send_json({"end":"__END__"})
+            
         except Exception as e:
-            result=self.model.invoke([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
+            for result in self.model.stream([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
                                        Return a message explaining to user that him question was not found in database.
                                        Don't comment anything else.
-                                       Return your message in markdown format."""),("human",query)]).content
-            table={}
-
-        return result, table
+                                       Return your message in markdown format."""),("human",query)]):
+                
+                await websocket.send_json({"response":result})
+            await websocket.send_json({"table":[f"Not found {e}"]})
+            await websocket.send_json({"end":"__END__"})
