@@ -189,23 +189,35 @@ export class RagDdbbComponent implements OnInit {
     this.messages.push({ text: '', isUser: false, isTyping: true });
 
     this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
-      next: (data: Object) => {
-        console.log(data);
-        var message = JSON.stringify(data);
-        var dataParse = JSON.parse(message);
-
-        const resultText = dataParse.result;
-
-        if (typeof dataParse.table === 'string') {
-          this.tableData = JSON.parse(dataParse.table);
-        } else {
-          this.tableData = dataParse.table;
+      next: (event: any) => {
+        if (event.response){
+          console.log(event.response);
+        }        
+        if (event.table){
+          console.log(event.table);
         }
+        
+      //   if (dataParse === 'end') {
+      //     // Finalizar el mensaje actual
+      //     return;
+      //   }
+    
 
-        console.log('Datos parseados:', this.tableData);
+      //   const resultText = dataParse.response;
 
-        this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
-      },
+      //   if (typeof dataParse.response === 'string') {
+      //     console.log(dataParse.response);
+      //     this.tableData = JSON.parse(dataParse.table);
+      //   } else {
+      //     this.tableData = dataParse.table;
+      //   }
+
+      //   console.log('Datos parseados:', this.tableData);
+
+      //   this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
+
+    }
+      ,
       error: (error: any) => {
         console.error('Error sending message:', error);
         this.messages[botMessageIndex] = { text: 'Error: Could not get response', isUser: false };

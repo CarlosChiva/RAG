@@ -53,16 +53,15 @@ async def llm_response(
                 logging.info(f"Data recived: {message_data.get('config')}")
                 database_conf=Config(**message_data.get("config"))
             except Exception as e:
-                raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
+                await websocket.send_text(str(e))
             try:
 
                 await controllers.querier(question=input,conf=database_conf,websocket=websocket)
             except Exception as e:
-                raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
-
+                await websocket.send_text(str(e))
     except Exception as e:
-        raise HTTPException(status_code=e.HTTP_400_BAD_REQUEST, detail=str(e))
-
+            await websocket.send_text(str(e))
+            await websocket.close()
 
 
 @router.get("/get-list-configurations")

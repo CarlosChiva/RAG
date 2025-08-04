@@ -21,10 +21,14 @@ import {DbConfig} from '../interfaces/db-conf.interface';
           headers: this.getHeaders()
         });
       }
-    question(message: string, collection: DbConfig): Observable<string> {
+
+    // El tipo de retorno ahora puede ser 'any' porque vamos a devolver
+    // objetos parseados, no siempre strings.
+    question(message: string, collection: DbConfig): Observable<any> { // <<< CAMBIO 1: Observable<any>
         
       const token= this.getHeaders();
       const wsUrl=`${this.apiUrlWs}/question`
+      
       return new Observable(observer => {
         try {
           // Crear conexión WebSocket
@@ -37,14 +41,31 @@ import {DbConfig} from '../interfaces/db-conf.interface';
             const initialMessage = {
               question: message,
               config: collection,
-              auth: this.getHeaders().get('Authorization') // Devuelve: "Bearer token_value"
+              auth: this.getHeaders().get('Authorization')
             };
             
             ws.send(JSON.stringify(initialMessage));
           };
-          ws.onmessage = (event) => {
-            // Recibir cada token por separado y emitirlo
-            observer.next(event as any);
+
+          ws.onmessage = (event: MessageEvent) => { // <<< CAMBIO 2: Añadir tipo MessageEvent
+            
+            // --- INICIO DE LA MODIFICACIÓN CLAVE ---
+            try {
+              // Extraemos el string del evento
+              const jsonDataString = event.data;
+              
+              // Parseamos el string a un objeto JavaScript
+              const parsedData = JSON.parse(jsonDataString);
+
+              // Emitimos el objeto ya parseado al componente suscriptor
+              observer.next(parsedData); 
+              
+            } catch (error) {
+              // Si el mensaje no es JSON (ej. un string de control como '__END__'),
+              // lo emitimos tal cual.
+              observer.next(event.data);
+            }
+            // --- FIN DE LA MODIFICACIÓN CLAVE ---
           };
           
           ws.onerror = (error) => {
@@ -57,12 +78,22 @@ import {DbConfig} from '../interfaces/db-conf.interface';
             observer.complete();
           };
           
+          // <<< CAMBIO 3: Añadir una función de limpieza para cerrar el socket
+          // Esta función se ejecutará cuando el componente se desuscriba.
+          return () => {
+            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+                console.log('Closing WebSocket due to unsubscription.');
+                ws.close();
+            }
+          };
+
         } catch (error) {
           observer.error(error);
+          // Ensure a value is always returned
+          return;
         }
       });
     };
-
       
     addConfig(config: DbConfig): Observable<{configs: DbConfig}> {
       return this.http.post<{ configs: DbConfig }>(`${this.apiUrl}/add_configuration`, config, {

@@ -131,14 +131,14 @@ class RagModel:
             logging.info(query)
             for result in self.model_full_response.stream({"question":query}):
                 logging.info(result)
-                await websocket.send_json({"response":result})
+                await websocket.send_json({"response":result.content})
             
             otro=self.get_chain_extract_query().invoke({"question":query})
             with self.engine.connect() as connection:
                 
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
-            await websocket.send_json({"table":table})
+            await websocket.send_json({"table":table.content})
             await websocket.send_json({"end":"__END__"})
             
         except Exception as e:
@@ -147,6 +147,6 @@ class RagModel:
                                        Don't comment anything else.
                                        Return your message in markdown format."""),("human",query)]):
                 
-                await websocket.send_json({"response":result})
+                await websocket.send_json({"response":result.content})
             await websocket.send_json({"table":[f"Not found {e}"]})
             await websocket.send_json({"end":"__END__"})
