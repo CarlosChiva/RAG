@@ -187,14 +187,29 @@ export class RagDdbbComponent implements OnInit {
     // Añadir mensaje del bot con estado "typing"
     const botMessageIndex = this.messages.length;
     this.messages.push({ text: '', isUser: false, isTyping: true });
+    let accumulatedText = '';
 
     this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
       next: (event: any) => {
-        if (event.response){
-          console.log(event.response);
-        }        
+   
+         if (event.response) {
+        // O, si solo envía el token nuevo:
+          accumulatedText += event.response;
+
+          const markdownText = marked(accumulatedText);
+          const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+
+          this.messages[botMessageIndex] = {
+            ...this.messages[botMessageIndex],
+            text: safeHtml,
+            isTyping: true
+          };
+
+          // Scroll automático
+          setTimeout(() => this.scrollChatToBottom(), 0);
+        }
         if (event.table){
-          console.log(event.table);
+          console.log(`Table = ${event.table}`);
         }
         
       //   if (dataParse === 'end') {
