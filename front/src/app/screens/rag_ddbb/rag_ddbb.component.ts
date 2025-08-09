@@ -73,8 +73,9 @@ export class RagDdbbComponent implements OnInit {
     database_path: ''
   };
 
-  configList: DbConfig[] = [];
+ configList: DbConfig[] = [];
   selectedConfig: DbConfig = this.getEmptyConfig();
+  hasValidConfig: boolean = false;
   tableData: any[] = [];
 
   message: string = '';
@@ -97,7 +98,13 @@ export class RagDdbbComponent implements OnInit {
 
   // Modal methods
   abrirModal(config?: DbConfig) {
-    this.selectedConfig = config ? { ...config } : this.getEmptyConfig();
+    if (config) {
+      this.selectedConfig = { ...config };
+      this.hasValidConfig = true;
+    } else {
+      this.selectedConfig = this.getEmptyConfig();
+      this.hasValidConfig = false;
+    }
     this.mostrarModal = true;
     document.body.classList.add('modal-open');
   }
@@ -144,6 +151,7 @@ export class RagDdbbComponent implements OnInit {
 
   onSelectItem(config: DbConfig): void {
     this.selectedConfig = config;
+     this.hasValidConfig = true; 
   }
 
   handleConnectionError(errorMessage: string): void {
@@ -162,133 +170,112 @@ export class RagDdbbComponent implements OnInit {
     this.currentMessage = message;
   }
 
-  // chat.component.ts (o el archivo que contenga sendMessage)
-// chat.component.ts
 sendMessage(messageFromChild?: string): void {
-  const messageText = messageFromChild || this.message || this.currentMessage;
+    const messageText = messageFromChild || this.message || this.currentMessage;
+   // Verificar que hay mensaje
+    if (!messageText.trim()) {
+      alert('Please enter a message.');
+      return;
+    }
 
-  if (!messageText.trim() || !this.selectedConfig) {
-    alert('Please enter a message and select a collection.');
-    return;
-  }
+    // Verificar que hay configuración válida seleccionada
+    if (!this.hasValidConfig) {
+      alert('Please select a configuration first.');
+      return;
+    }
 
-  this.isSending = true;
 
-  /* 1. Agregar mensaje del usuario */
-  this.messages.push({ text: messageText, isUser: true });
 
-  /* 2. Limpiar el input y hacer scroll */
-  this.message = '';
-  this.currentMessage = '';
-  this.scrollChatToBottom();
+    this.isSending = true;
 
-  /* 3. Añadir “bot message” con estado typing */
-  const botIdx = this.messages.length;
-  this.messages.push({ text: '', isUser: false, isTyping: true });
+    /* 1. Agregar mensaje del usuario */
+    this.messages.push({ text: messageText, isUser: true });
 
-  let accumulatedText = '';
+    /* 2. Limpiar el input y hacer scroll */
+    this.message = '';
+    this.currentMessage = '';
+    this.scrollChatToBottom();
 
-  /* 4. Suscribirse al servicio WebSocket */
-  this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
-    next: (event: any) => {
-      // event puede ser {response: …}, {table: …} o {end: …}
-      console.log('Response from API:', event);
+    /* 3. Añadir “bot message” con estado typing */
+    const botIdx = this.messages.length;
+    this.messages.push({ text: '', isUser: false, isTyping: true });
 
-      /* ---- 4.1. Respuesta de texto ---- */
-      if (event.response) {
-        accumulatedText += event.response;
-        const html = this.sanitizer.bypassSecurityTrustHtml(
-          marked(accumulatedText) as string
-        );
-        this.messages[botIdx] = {
-          ...this.messages[botIdx],
-          text: html,
-          isTyping: true
-        };
-        setTimeout(() => this.scrollChatToBottom(), 0);
-        return;
-      }
+    let accumulatedText = '';
 
-      /* ---- 4.2. Tabla (JSON) ---- */
-      if (event.table) {
-        try {
-          this.tableData = typeof event.table === 'string'
-            ? JSON.parse(event.table)
-            : event.table;
-        } catch (_) {
-          this.tableData = []; // fallback en caso de parsear mal
+    /* 4. Suscribirse al servicio WebSocket */
+    this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
+      next: (event: any) => {
+        // event puede ser {response: …}, {table: …} o {end: …}
+        console.log('Response from API:', event);
+
+        /* ---- 4.1. Respuesta de texto ---- */
+        if (event.response) {
+          accumulatedText += event.response;
+          const html = this.sanitizer.bypassSecurityTrustHtml(
+            marked(accumulatedText) as string
+          );
+          this.messages[botIdx] = {
+            ...this.messages[botIdx],
+            text: html,
+            isTyping: true
+          };
+          setTimeout(() => this.scrollChatToBottom(), 0);
+          return;
         }
 
-        const html = this.sanitizer.bypassSecurityTrustHtml(
-          marked(accumulatedText) as string
-        );
-        this.messages[botIdx] = {
-          ...this.messages[botIdx],
-          text: html,
-          isTyping: false,
-          tableData: this.tableData
-        };
-        return;
-      }
+        /* ---- 4.2. Tabla (JSON) ---- */
+        if (event.table) {
+          try {
+            this.tableData = typeof event.table === 'string'
+              ? JSON.parse(event.table)
+              : event.table;
+          } catch (_) {
+            this.tableData = []; // fallback en caso de parsear mal
+          }
 
-      /* ---- 4.3. Error (JSON) ---- */
-      if (event.error) {
+          const html = this.sanitizer.bypassSecurityTrustHtml(
+            marked(accumulatedText) as string
+          );
+          this.messages[botIdx] = {
+            ...this.messages[botIdx],
+            text: html,
+            isTyping: false,
+            tableData: this.tableData
+          };
+          return;
+        }
+        if (event.end){
+          console.log('Received __END__ – closing socket');            
+        }
+
+        /* ---- 4.3. Error (JSON) ---- */
+        if (event.error) {
+          this.messages[botIdx] = {
+            text: `Error: ${event.error}`,
+            isUser: false
+          };
+          return;
+        }
+      },
+
+      complete: () => {
+        /* ---------- 5. Cierre automático ya está manejado por el servicio ----------
+          Solo limpiamos el estado del UI. ------------------------------------- */
+        this.isSending = false;
+        console.log('WebSocket stream completed');
+      },
+
+      error: (err: any) => {
+        console.error('Error sending message:', err);
         this.messages[botIdx] = {
-          text: `Error: ${event.error}`,
+          text: 'Error: Could not get response',
           isUser: false
         };
-        return;
-      }
-    },
-
-    complete: () => {
-      /* ---------- 5. Cierre automático ya está manejado por el servicio ----------
-         Solo limpiamos el estado del UI. ------------------------------------- */
-      this.isSending = false;
-      console.log('WebSocket stream completed');
-    },
-
-    error: (err: any) => {
-      console.error('Error sending message:', err);
-      this.messages[botIdx] = {
-        text: 'Error: Could not get response',
-        isUser: false
-      };
-      this.isSending = false;
-    }
-  });
-}
-  typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
-    let index = 0;
-    const message = this.messages[messageIndex];
-
-    const addNextChar = () => {
-      if (index < fullText.length) {
-        // Actualizar el texto letra por letra
-        const markdownText = marked(fullText.substring(0, index + 1));
-        const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-        this.messages[messageIndex] = { ...message, text: safeHtml, isTyping: true };
-
-        index++;
-        setTimeout(addNextChar, speed);
-
-        // Hacer scroll hacia abajo mientras se escribe
-        if (this.chatOutput) {
-          this.chatOutput.nativeElement.scrollTop = this.chatOutput.nativeElement.scrollHeight;
-        }
-      } else {
-        const markdownText = marked(fullText);
-        const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-
-        // Finalizar la animación
-        this.messages[messageIndex] = { ...message, text: safeHtml, isTyping: false, tableData: this.tableData };
         this.isSending = false;
       }
-    };
-
-    addNextChar();
+    });
   }
-
+  
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.sendMessage();

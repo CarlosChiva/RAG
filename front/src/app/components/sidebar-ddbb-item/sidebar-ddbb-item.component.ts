@@ -50,6 +50,7 @@ export class SidebarItemComponent {
               alert("No se pudo conectar a la base de datos.");
               // Opcionalmente, puedes emitir un evento de error
               this.connectionError.emit("No se pudo conectar a la base de datos.");
+              this.selectItem.emit(null);
             }
           },
           error: (error) => {

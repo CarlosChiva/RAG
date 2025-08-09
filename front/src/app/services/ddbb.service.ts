@@ -68,7 +68,6 @@ export class DdbbServices {
 
           /* ---- 1. Mensaje de “fin” ---- */
           if (data.end && data.end === '__END__') {
-            console.log('Received __END__ – closing socket');
             observer.complete();          // Completa el observable
             this.currentWs!.close();       // Cierra la conexión
             return;
@@ -107,22 +106,6 @@ export class DdbbServices {
       };
     });
   }
-  /**
-   * Método expuesto que permite cerrar manualmente la conexión activa
-   * que se creó con `question()`. Útil cuando el componente ya ha recibido
-   * toda la información y quiere cerrar explícitamente.
-   */
-  // closeQuestionWebSocket(): void {
-  //   if (
-  //     this.currentWs &&
-  //     (this.currentWs.readyState === WebSocket.OPEN ||
-  //       this.currentWs.readyState === WebSocket.CONNECTING)
-  //   ) {
-  //     console.log('Manual close of the WebSocket.');
-  //     this.currentWs.close();
-  //     this.socketClosed$.next();
-  //   }
-  // }
 
   /* ---------- Otros endpoints ---------- */
   addConfig(config: DbConfig): Observable<{ configs: DbConfig }> {

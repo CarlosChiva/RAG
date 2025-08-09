@@ -69,9 +69,11 @@ class SQLQueryParser(StrOutputParser):
         return match.group(1) if match else text.strip()
 
 import pandas as pd
+import pymysql
+
 class RagModel:
     def __init__(self,db,engine):
-        self.model = ChatOllama(model=os.getenv("SQL_MODEL"), temperature=0)
+        self.model = ChatOllama(model=os.getenv("SQL_MODEL"), temperature=0,streaming=True)
         #self.prompt = hub.pull("rlm/text-to-sql")
         self.db=db
         self.model_chain_query=self.get_chain_extract_query()
@@ -129,13 +131,13 @@ class RagModel:
         logging.basicConfig(level=logging.INFO)
         try:
             logging.info(query)
-            # await self.response(query,websocket)
             async for result in self.model_full_response.astream({"question":query}):
                 logging.info(result)
                 await websocket.send_json({"response":result})
 
             otro = self.get_chain_extract_query().invoke({"question":query})
             logging.info(f"query {otro}")
+            
 
             with self.engine.connect() as connection:
                 logging.info(f"connection  {connection}")
@@ -144,15 +146,13 @@ class RagModel:
                 table=pd.read_sql(otro,connection).to_json()
                 logging.info(f"Table result: {table}")
                 await websocket.send_json({"table":table})
-           # await websocket.send_json({"end":"__END__"})
-            
         except Exception as e:
             logging.info(f"Exception for: {e}")
-            for result in self.model.stream([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
+            result = self.model.invoke([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
                                        Return a message explaining to user that him question was not found in database.
                                        Don't comment anything else.
-                                       Return your message in markdown format."""),("human",query)]):
-                
-                await websocket.send_json({"response":result})
-            await websocket.send_json({"table":{"error":f"Not found {e}"}})
+                                       Return your message in markdown format."""),("human",query)])
+            logging.info(result)
+            await websocket.send_json({"response":result.content})
+            await websocket.send_json({"table":{"error":""}})
             await websocket.send_json({"end":"__END__"})
