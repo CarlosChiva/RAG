@@ -162,106 +162,102 @@ export class RagDdbbComponent implements OnInit {
     this.currentMessage = message;
   }
 
-  sendMessage(messageFromChild?: string): void {
-    const messageText = messageFromChild || this.message || this.currentMessage;
+  // chat.component.ts (o el archivo que contenga sendMessage)
+// chat.component.ts
+sendMessage(messageFromChild?: string): void {
+  const messageText = messageFromChild || this.message || this.currentMessage;
 
-    if (!messageText.trim() || !this.selectedConfig) {
-      alert('Please enter a message and select a collection.');
-      return;
-    }
-
-    this.isSending = true;
-
-    // Añadir mensaje del usuario
-    this.messages.push({
-      text: messageText,
-      isUser: true
-    });
-
-    // Limpiar el input
-    this.message = '';
-    this.currentMessage = '';
-
-    this.scrollChatToBottom();
-
-    // Añadir mensaje del bot con estado "typing"
-    const botMessageIndex = this.messages.length;
-    this.messages.push({ text: '', isUser: false, isTyping: true });
-    let accumulatedText = '';
-
-    this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
-      next: (event: any) => {
-          console.log('Response from API:', event);
-         if (event.response) {
-        // O, si solo envía el token nuevo:
-          accumulatedText += event.response;
-
-          const markdownText = marked(accumulatedText);
-          const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-
-          this.messages[botMessageIndex] = {
-            ...this.messages[botMessageIndex],
-            text: safeHtml,
-            isTyping: true
-          };
-
-          // Scroll automático
-          setTimeout(() => this.scrollChatToBottom(), 0);
-        }
-        if (event.table){
-          var message = JSON.stringify(event);
-          var dataParse = JSON.parse(message);
-  
-          if (typeof dataParse.table === 'string') {
-            this.tableData = JSON.parse(dataParse.table);
-          } else {
-            this.tableData = dataParse.table;
-          }
-          console.log(this.tableData);
-
-          // const table=event.table.toString();
-          // accumulatedText += table;
-          const markdownText = marked(accumulatedText);
-          const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-
-          this.messages[botMessageIndex] = {
-            ...this.messages[botMessageIndex],
-            text: safeHtml,
-            isTyping: false,
-            tableData: this.tableData
-
-          };
-
-        }
-        
-      //   if (dataParse === 'end') {
-      //     // Finalizar el mensaje actual
-      //     return;
-      //   }
-    
-
-      //   const resultText = dataParse.response;
-
-      //   if (typeof dataParse.response === 'string') {
-      //     console.log(dataParse.response);
-      //     this.tableData = JSON.parse(dataParse.table);
-      //   } else {
-      //     this.tableData = dataParse.table;
-      //   }
-
-      //   console.log('Datos parseados:', this.tableData);
-
-      //   this.typeTextInMessage(botMessageIndex, resultText); // 20 es la velocidad de escritura en milisegundos
-
-    }
-      ,
-      error: (error: any) => {
-        console.error('Error sending message:', error);
-        this.messages[botMessageIndex] = { text: 'Error: Could not get response', isUser: false };
-      }
-    });
+  if (!messageText.trim() || !this.selectedConfig) {
+    alert('Please enter a message and select a collection.');
+    return;
   }
 
+  this.isSending = true;
+
+  /* 1. Agregar mensaje del usuario */
+  this.messages.push({ text: messageText, isUser: true });
+
+  /* 2. Limpiar el input y hacer scroll */
+  this.message = '';
+  this.currentMessage = '';
+  this.scrollChatToBottom();
+
+  /* 3. Añadir “bot message” con estado typing */
+  const botIdx = this.messages.length;
+  this.messages.push({ text: '', isUser: false, isTyping: true });
+
+  let accumulatedText = '';
+
+  /* 4. Suscribirse al servicio WebSocket */
+  this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
+    next: (event: any) => {
+      // event puede ser {response: …}, {table: …} o {end: …}
+      console.log('Response from API:', event);
+
+      /* ---- 4.1. Respuesta de texto ---- */
+      if (event.response) {
+        accumulatedText += event.response;
+        const html = this.sanitizer.bypassSecurityTrustHtml(
+          marked(accumulatedText) as string
+        );
+        this.messages[botIdx] = {
+          ...this.messages[botIdx],
+          text: html,
+          isTyping: true
+        };
+        setTimeout(() => this.scrollChatToBottom(), 0);
+        return;
+      }
+
+      /* ---- 4.2. Tabla (JSON) ---- */
+      if (event.table) {
+        try {
+          this.tableData = typeof event.table === 'string'
+            ? JSON.parse(event.table)
+            : event.table;
+        } catch (_) {
+          this.tableData = []; // fallback en caso de parsear mal
+        }
+
+        const html = this.sanitizer.bypassSecurityTrustHtml(
+          marked(accumulatedText) as string
+        );
+        this.messages[botIdx] = {
+          ...this.messages[botIdx],
+          text: html,
+          isTyping: false,
+          tableData: this.tableData
+        };
+        return;
+      }
+
+      /* ---- 4.3. Error (JSON) ---- */
+      if (event.error) {
+        this.messages[botIdx] = {
+          text: `Error: ${event.error}`,
+          isUser: false
+        };
+        return;
+      }
+    },
+
+    complete: () => {
+      /* ---------- 5. Cierre automático ya está manejado por el servicio ----------
+         Solo limpiamos el estado del UI. ------------------------------------- */
+      this.isSending = false;
+      console.log('WebSocket stream completed');
+    },
+
+    error: (err: any) => {
+      console.error('Error sending message:', err);
+      this.messages[botIdx] = {
+        text: 'Error: Could not get response',
+        isUser: false
+      };
+      this.isSending = false;
+    }
+  });
+}
   typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
     let index = 0;
     const message = this.messages[messageIndex];

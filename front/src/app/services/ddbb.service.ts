@@ -1,113 +1,149 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import {DbConfig} from '../interfaces/db-conf.interface';
+import { Observable, Subject } from 'rxjs';
+import { DbConfig } from '../interfaces/db-conf.interface';
+
 @Injectable({
-    providedIn: 'root'
-  })
-  export class DdbbServices {
-    private apiUrl = 'http://localhost:8002';
-    private apiUrlWs = 'ws://localhost:8002';
-  
-    constructor(private http: HttpClient) { }
-    private getHeaders(): HttpHeaders {
-        return new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        });
-      }
-    getConfigs(): Observable<DbConfig[]> { // mirar los tipos de datos
-        return this.http.get<DbConfig[]>(`${this.apiUrl}/get-list-configurations`, {
-          headers: this.getHeaders()
-        });
+  providedIn: 'root',
+})
+export class DdbbServices {
+  private apiUrl = 'http://localhost:8002';
+  private apiUrlWs = 'ws://localhost:8002';
+
+  // <‑‑ NEW: we keep a reference to the current socket
+  private currentWs?: WebSocket;
+  // <‑‑ NEW: subject that components can subscribe to in order to be notified when the socket closes
+  private socketClosed$ = new Subject<void>();
+
+  constructor(private http: HttpClient) {}
+
+  /* ---------- Helpers ---------- */
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+    });
+  }
+
+  /* ---------- API ---------- */
+  getConfigs(): Observable<DbConfig[]> {
+    return this.http.get<DbConfig[]>(`${this.apiUrl}/get-list-configurations`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  /* ---------- WebSocket ---------- */
+  /**
+   * Abre una conexión WebSocket y devuelve un Observable con los datos que llegan.
+   * Cuando el servidor envíe el mensaje de cierre (ej.: "__END__") la conexión se cierra automáticamente.
+   */
+// ddbb.services.ts
+  question(message: string, collection: DbConfig): Observable<any> {
+    const wsUrl = `${this.apiUrlWs}/question`;
+
+    // guardamos la referencia para cerrar manualmente si fuera necesario
+    this.currentWs = new WebSocket(wsUrl);
+
+    return new Observable((observer) => {
+      if (!this.currentWs) {
+        observer.error('WebSocket not available');
+        return;
       }
 
-    // El tipo de retorno ahora puede ser 'any' porque vamos a devolver
-    // objetos parseados, no siempre strings.
-    question(message: string, collection: DbConfig): Observable<any> { // <<< CAMBIO 1: Observable<any>
-        
-      const token= this.getHeaders();
-      const wsUrl=`${this.apiUrlWs}/question`
-      
-      return new Observable(observer => {
+      // ---------- onopen ----------
+      this.currentWs.onopen = () => {
+        console.log('WebSocket connected');
+        const initMsg = {
+          question: message,
+          config: collection,
+          auth: this.getHeaders().get('Authorization')
+        };
+        this.currentWs!.send(JSON.stringify(initMsg));
+      };
+
+      // ---------- onmessage ----------
+      this.currentWs.onmessage = (event: MessageEvent) => {
         try {
-          // Crear conexión WebSocket
-          const ws = new WebSocket(wsUrl);
-          
-          ws.onopen = () => {
-            console.log('WebSocket connected');
-            
-            // Enviar el token como parte del mensaje inicial
-            const initialMessage = {
-              question: message,
-              config: collection,
-              auth: this.getHeaders().get('Authorization')
-            };
-            
-            ws.send(JSON.stringify(initialMessage));
-          };
+          const data = JSON.parse(event.data);
 
-          ws.onmessage = (event: MessageEvent) => { // <<< CAMBIO 2: Añadir tipo MessageEvent
-            
-            // --- INICIO DE LA MODIFICACIÓN CLAVE ---
-            try {
-              // Extraemos el string del evento
-              const jsonDataString = event.data;
-              
-              // Parseamos el string a un objeto JavaScript
-              const parsedData = JSON.parse(jsonDataString);
+          /* ---- 1. Mensaje de “fin” ---- */
+          if (data.end && data.end === '__END__') {
+            console.log('Received __END__ – closing socket');
+            observer.complete();          // Completa el observable
+            this.currentWs!.close();       // Cierra la conexión
+            return;
+          }
 
-              // Emitimos el objeto ya parseado al componente suscriptor
-              observer.next(parsedData); 
-              
-            } catch (error) {
-              // Si el mensaje no es JSON (ej. un string de control como '__END__'),
-              // lo emitimos tal cual.
-              observer.next(event.data);
-            }
-            // --- FIN DE LA MODIFICACIÓN CLAVE ---
-          };
-          
-          ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            observer.error(error);
-          };
-          
-          ws.onclose = () => {
-            console.log('WebSocket closed');
-            observer.complete();
-          };
-          
-          // <<< CAMBIO 3: Añadir una función de limpieza para cerrar el socket
-          // Esta función se ejecutará cuando el componente se desuscriba.
-          return () => {
-            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-                console.log('Closing WebSocket due to unsubscription.');
-                ws.close();
-            }
-          };
-
-        } catch (error) {
-          observer.error(error);
-          // Ensure a value is always returned
-          return;
+          /* ---- 2. Mensaje de respuesta regular ---- */
+          observer.next(data);           // Envío al suscriptor
+        } catch (e) {
+          // Si no era JSON (por ejemplo un error de texto plano)
+          observer.next(event.data);
         }
-      });
-    };
-      
-    addConfig(config: DbConfig): Observable<{configs: DbConfig}> {
-      return this.http.post<{ configs: DbConfig }>(`${this.apiUrl}/add_configuration`, config, {
-        headers: this.getHeaders()
-      });
+      };
+
+      // ---------- onerror ----------
+      this.currentWs.onerror = (err) => {
+        console.error('WebSocket error:', err);
+        observer.error(err);
+      };
+
+      // ---------- onclose ----------
+      this.currentWs.onclose = () => {
+        console.log('WebSocket closed');
+        observer.complete();
+      };
+
+      // ---------- cleanup ----------
+      return () => {
+        if (
+          this.currentWs &&
+          (this.currentWs.readyState === WebSocket.OPEN ||
+            this.currentWs.readyState === WebSocket.CONNECTING)
+        ) {
+          console.log('Closing WebSocket due to unsubscription.');
+          this.currentWs.close();
+        }
+      };
+    });
+  }
+  /**
+   * Método expuesto que permite cerrar manualmente la conexión activa
+   * que se creó con `question()`. Útil cuando el componente ya ha recibido
+   * toda la información y quiere cerrar explícitamente.
+   */
+  // closeQuestionWebSocket(): void {
+  //   if (
+  //     this.currentWs &&
+  //     (this.currentWs.readyState === WebSocket.OPEN ||
+  //       this.currentWs.readyState === WebSocket.CONNECTING)
+  //   ) {
+  //     console.log('Manual close of the WebSocket.');
+  //     this.currentWs.close();
+  //     this.socketClosed$.next();
+  //   }
+  // }
+
+  /* ---------- Otros endpoints ---------- */
+  addConfig(config: DbConfig): Observable<{ configs: DbConfig }> {
+    return this.http.post<{ configs: DbConfig }>(
+      `${this.apiUrl}/add_configuration`,
+      config,
+      {
+        headers: this.getHeaders(),
       }
-    removeConfig(config: DbConfig): Observable<DbConfig> {
-        return this.http.delete<DbConfig>(`${this.apiUrl}/remove-configuration`, {
-          headers: this.getHeaders(),
-          body: config
-        });
-      }
-    tryConnection(config: DbConfig): Observable<boolean> {
-      const params = new HttpParams()
+    );
+  }
+
+  removeConfig(config: DbConfig): Observable<DbConfig> {
+    return this.http.delete<DbConfig>(`${this.apiUrl}/remove-configuration`, {
+      headers: this.getHeaders(),
+      body: config,
+    });
+  }
+
+  tryConnection(config: DbConfig): Observable<boolean> {
+    const params = new HttpParams()
       .set('connection_name', config.connection_name)
       .set('type_db', config.type_db)
       .set('user', config.user)
@@ -115,11 +151,19 @@ import {DbConfig} from '../interfaces/db-conf.interface';
       .set('host', config.host)
       .set('port', config.port)
       .set('database_name', config.database_name);
-  
-        return this.http.get<boolean>(`${this.apiUrl}/try-connection`, {
-          headers: this.getHeaders(),
-          params:params
-        });
-      }
 
-}  
+    return this.http.get<boolean>(`${this.apiUrl}/try-connection`, {
+      headers: this.getHeaders(),
+      params,
+    });
+  }
+
+  /* ---------- Notificaciones opcionales ---------- */
+  /**
+   * Devuelve un Observable que emite cada vez que la conexión WebSocket
+   * se cierra (ya sea automáticamente o manualmente).
+   */
+  onSocketClosed$(): Observable<void> {
+    return this.socketClosed$.asObservable();
+  }
+}
