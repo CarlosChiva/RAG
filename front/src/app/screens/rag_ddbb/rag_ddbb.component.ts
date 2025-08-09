@@ -191,7 +191,7 @@ export class RagDdbbComponent implements OnInit {
 
     this.configsService.question(messageText.trim(), this.selectedConfig!).subscribe({
       next: (event: any) => {
-   
+          console.log('Response from API:', event);
          if (event.response) {
         // O, si solo envía el token nuevo:
           accumulatedText += event.response;
@@ -209,7 +209,29 @@ export class RagDdbbComponent implements OnInit {
           setTimeout(() => this.scrollChatToBottom(), 0);
         }
         if (event.table){
-          console.log(`Table = ${event.table}`);
+          var message = JSON.stringify(event);
+          var dataParse = JSON.parse(message);
+  
+          if (typeof dataParse.table === 'string') {
+            this.tableData = JSON.parse(dataParse.table);
+          } else {
+            this.tableData = dataParse.table;
+          }
+          console.log(this.tableData);
+
+          // const table=event.table.toString();
+          // accumulatedText += table;
+          const markdownText = marked(accumulatedText);
+          const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+
+          this.messages[botMessageIndex] = {
+            ...this.messages[botMessageIndex],
+            text: safeHtml,
+            isTyping: false,
+            tableData: this.tableData
+
+          };
+
         }
         
       //   if (dataParse === 'end') {

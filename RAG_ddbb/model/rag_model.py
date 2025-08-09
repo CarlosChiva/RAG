@@ -129,24 +129,30 @@ class RagModel:
         logging.basicConfig(level=logging.INFO)
         try:
             logging.info(query)
-            for result in self.model_full_response.stream({"question":query}):
+            # await self.response(query,websocket)
+            async for result in self.model_full_response.astream({"question":query}):
                 logging.info(result)
-                await websocket.send_json({"response":result.content})
-            
-            otro=self.get_chain_extract_query().invoke({"question":query})
+                await websocket.send_json({"response":result})
+
+            otro = self.get_chain_extract_query().invoke({"question":query})
+            logging.info(f"query {otro}")
+
             with self.engine.connect() as connection:
+                logging.info(f"connection  {connection}")
                 
                 print(pd.read_sql(otro,connection).to_json())
                 table=pd.read_sql(otro,connection).to_json()
-            await websocket.send_json({"table":table.content})
-            await websocket.send_json({"end":"__END__"})
+                logging.info(f"Table result: {table}")
+                await websocket.send_json({"table":table})
+           # await websocket.send_json({"end":"__END__"})
             
         except Exception as e:
+            logging.info(f"Exception for: {e}")
             for result in self.model.stream([("system","""You are a chatbot who give apologize because the question of human input hasn't been found in database which these question were asked.
                                        Return a message explaining to user that him question was not found in database.
                                        Don't comment anything else.
                                        Return your message in markdown format."""),("human",query)]):
                 
-                await websocket.send_json({"response":result.content})
-            await websocket.send_json({"table":[f"Not found {e}"]})
+                await websocket.send_json({"response":result})
+            await websocket.send_json({"table":{"error":f"Not found {e}"}})
             await websocket.send_json({"end":"__END__"})
