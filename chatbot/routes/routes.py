@@ -17,9 +17,9 @@ async def query(config:Config,credentials  = Depends(credentials_controllers.ver
                         ):
 
     result = await controllers.query(credentials,config)
-    logging.info(f"i: {result.content}")
+    # logging.info(f"i: {result.content}")
 
-    return result.content
+    # return result.content
 
 
 @router.get("/get_ollama_models")

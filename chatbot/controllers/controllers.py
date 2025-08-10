@@ -20,12 +20,18 @@ async def query(credentials,conf:Config):
     if hasattr(conf, "__dict__"):
         config["configurable"].update(conf.__dict__)
     input_messages = [HumanMessage(conf.userInput)]
-    for i in await graph.ainvoke({"messages": input_messages}, config, stream_mode="updates"):
-        logging.info(f"event---{i}")
+    fullText=""
+    async for event , metadata in graph.astream({"messages": input_messages}, config, stream_mode="messages"):
+        logging.info(f"metadata---{metadata}")
+        if metadata.get('langgraph_node')== 'chatbot':
+            logging.info(f"chatbot captured---{event.content}")
+            fullText+=event.content
+        logging.info(f"event---{event}")
+        #logging.info(f"metadata---{metadata}")
         
-        last = i
-    logging.info(f"last---{last}")
-    return last['chatbot']["messages"]
+        last = event
+    logging.info(f"last---{fullText}")
+    # return last['chatbot']["messages"]
     # async for i in graph.ainvoke({"messages":input_messages},
     #                       config,
     #                       stream_mode="updates"):

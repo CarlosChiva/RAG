@@ -58,7 +58,7 @@ async def chatbot_node(state:MessagesState,config:Config):
     #                        response.content}""")
     model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
     response=model.invoke(state["messages"])
-
+    #logging.info(f"response---{next(response)}")
     await add_conversation(chat_name=config["configurable"]['conversation'],
                            credentials=config["configurable"]['thread_id'],
                            user_input=state["messages"][-1].content,
