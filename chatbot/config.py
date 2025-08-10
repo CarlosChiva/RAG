@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from pydantic import BaseModel
 
 class Config(BaseModel):
+    credentials:str
     conversation:str
     modelName:str
     userInput:str

@@ -1,4 +1,6 @@
 #from tempfile import NamedTemporaryFile
+from http.client import HTTPException
+import json
 from fastapi import *
 from controllers import controllers
 from controllers import credentials_controllers
@@ -8,15 +10,78 @@ from pydantic import BaseModel
 from config import Config
 import logging
 logging.basicConfig(level=logging.INFO)
+from fastapi import WebSocket, WebSocketDisconnect
 
 router = APIRouter()    
 class ChatItem(BaseModel):
     chatName: str
 @router.post("/query")
-async def query(config:Config,credentials  = Depends(credentials_controllers.verify_jws)
+async def query(websocket: WebSocket,
+                #config:Config,credentials  = Depends(credentials_controllers.verify_jws)
                         ):
 
-    result = await controllers.query(credentials,config)
+    await websocket.accept()
+    
+    # Registrar conexión
+    connection_id = str(id(websocket))
+    
+    try:
+        while True:
+            try:
+                # Recibir mensaje del cliente
+                message_data = await websocket.receive_json()
+                message_data=Config(**message_data)
+                logging.info(f"Data recived: {message_data}")
+
+                try:
+                    message_data.credentials =await credentials_controllers.verify_jws(message_data.credentials)
+
+                except HTTPException as e:
+                    # Enviar error al cliente
+                    error_response = {
+                        "type": "error",
+                        "message": e.detail,
+                        "status_code": e.status_code
+                    }
+                    await websocket.send_text(json.dumps(error_response))
+                    continue  # Continuar esperando más mensajes
+
+                try:
+
+                    logging.info(f"Data recived: {message_data.get('config')}")
+                   
+                except Exception as e:
+                    if websocket.client_state.CONNECTED:
+                        await websocket.send_text(str(e))
+                    continue
+                try:
+
+                    await controllers.query(message_data,websocket)
+                    
+                except Exception as e:
+                        if websocket.client_state.CONNECTED:
+                            await websocket.send_text(str(e))
+                        
+            except WebSocketDisconnect:
+                # Cliente desconectado normalmente
+                logging.info(f"Client disconnected: {connection_id}")
+                break
+                
+    except Exception as e:
+        # Solo enviar error si la conexión sigue activa
+        try:
+            if websocket.client_state.CONNECTED:
+                await websocket.send_text(str(e))
+                await websocket.close()
+        except:
+            # Si falla al enviar, simplemente logear
+            logging.error(f"Failed to send error message: {e}")
+    
+    finally:
+        # Limpiar conexión del registro
+        logging.info(f"Connection {connection_id} cleaned up")
+
+
     # logging.info(f"i: {result.content}")
 
     # return result.content

@@ -7,12 +7,22 @@ from langchain_core.messages import HumanMessage
 from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_user_conversation,update_name_chat
 import logging
 active_users=[]
-async def query(credentials,conf:Config):
+def catch_event(event_metadata:dict):
+    match event_metadata.get('langgraph_node'):
+        case 'chatbot':
+            return "chatbot"
+        case 'orquestator':
+            return "processing_ response"
+        case 'image_generator':
+            return "generating_image"
+        case _ :
+            return "Error"
+async def query(conf:Config,websocket):
     #invoke grafo(input,conf_id_conversation,configuracion_modelo)
 
     config = {
         "configurable": {
-            "thread_id": str(credentials),
+            "thread_id": str(conf.credentials),
         }
     }
     
@@ -20,9 +30,24 @@ async def query(credentials,conf:Config):
     if hasattr(conf, "__dict__"):
         config["configurable"].update(conf.__dict__)
     input_messages = [HumanMessage(conf.userInput)]
-    fullText=""
+    event_=""
     async for event , metadata in graph.astream({"messages": input_messages}, config, stream_mode="messages"):
         logging.info(f"metadata---{metadata}")
+        event_caught= catch_event(metadata)
+        if not event_caught=='chatbot':
+            await websocket.send_json({"event":event.content})            
+        else:
+            if event_ != event_caught:
+                await websocket.send_json({"event":event_})
+                event_=event_caught
+            else:
+                continue
+            
+
+# websocket.send_json({"event":event.content})
+
+
+
         if metadata.get('langgraph_node')== 'chatbot':
             logging.info(f"chatbot captured---{event.content}")
             fullText+=event.content
