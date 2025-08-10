@@ -42,20 +42,20 @@ async def query(conf:Config,websocket):
                 event_=event_caught
             else:
                 continue
-            
+    await websocket.send_json({"end":"__END__"})
 
 # websocket.send_json({"event":event.content})
 
 
 
-        if metadata.get('langgraph_node')== 'chatbot':
-            logging.info(f"chatbot captured---{event.content}")
-            fullText+=event.content
-        logging.info(f"event---{event}")
-        #logging.info(f"metadata---{metadata}")
+    #     if metadata.get('langgraph_node')== 'chatbot':
+    #         logging.info(f"chatbot captured---{event.content}")
+    #         fullText+=event.content
+    #     logging.info(f"event---{event}")
+    #     #logging.info(f"metadata---{metadata}")
         
-        last = event
-    logging.info(f"last---{fullText}")
+    #     last = event
+    # logging.info(f"last---{fullText}")
     # return last['chatbot']["messages"]
     # async for i in graph.ainvoke({"messages":input_messages},
     #                       config,
