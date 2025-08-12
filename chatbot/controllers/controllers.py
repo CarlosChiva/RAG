@@ -25,6 +25,7 @@ async def query(conf:Config,websocket):
             "thread_id": str(conf.credentials),
         }
     }
+    logging.info(f"mjjjjjjjjj---{conf.__dict__}")
     
     # Add any configuration from conf if needed
     if hasattr(conf, "__dict__"):
@@ -35,6 +36,8 @@ async def query(conf:Config,websocket):
         logging.info(f"metadata---{metadata}")
         event_caught= catch_event(metadata)
         if not event_caught=='chatbot':
+            logging.info(f"event_metadata---{metadata}")
+            logging.info(f"event_message---{event.content}")
             await websocket.send_json({"event":event.content})            
         else:
             if event_ != event_caught:

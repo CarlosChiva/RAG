@@ -76,6 +76,7 @@ export class ChatbotComponent implements OnInit {
   }[] = [];
 
   config: Config = {
+    credentials: '',
     conversation: '',
     modelName: '',
     userInput: '',
@@ -168,6 +169,7 @@ export class ChatbotComponent implements OnInit {
     this.messages.push({ text: '', isUser: false, isTyping: true });
     
     this.config = {
+      credentials: '',
       userInput: messageText,
       conversation: this.selectedCollection,
       modelName: this.selectedModel.name,

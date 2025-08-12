@@ -15,8 +15,8 @@ from fastapi import WebSocket, WebSocketDisconnect
 router = APIRouter()    
 class ChatItem(BaseModel):
     chatName: str
-@router.post("/query")
-async def query(websocket: WebSocket,
+@router.websocket("/query")
+async def query(websocket: WebSocket
                 #config:Config,credentials  = Depends(credentials_controllers.verify_jws)
                         ):
 
@@ -30,14 +30,17 @@ async def query(websocket: WebSocket,
             try:
                 # Recibir mensaje del cliente
                 message_data = await websocket.receive_json()
-                message_data=Config(**message_data)
                 logging.info(f"Data recived: {message_data}")
+
+                message_data=Config(**message_data)
+                logging.info(f"Data recived: {message_data.credentials}")
 
                 try:
                     message_data.credentials =await credentials_controllers.verify_jws(message_data.credentials)
 
                 except HTTPException as e:
                     # Enviar error al cliente
+                    logging.info(f"Error credential: {e}")
                     error_response = {
                         "type": "error",
                         "message": e.detail,
@@ -48,9 +51,10 @@ async def query(websocket: WebSocket,
 
                 try:
 
-                    logging.info(f"Data recived: {message_data.get('config')}")
+                    logging.info(f"Data recived: {message_data}")
                    
                 except Exception as e:
+                    logging.info(f"Error credential: {e}")
                     if websocket.client_state.CONNECTED:
                         await websocket.send_text(str(e))
                     continue
@@ -59,8 +63,9 @@ async def query(websocket: WebSocket,
                     await controllers.query(message_data,websocket)
                     
                 except Exception as e:
-                        if websocket.client_state.CONNECTED:
-                            await websocket.send_text(str(e))
+                    logging.info(f"Error in query: {e}")
+                    if websocket.client_state.CONNECTED:
+                        await websocket.send_text(str(e))
                         
             except WebSocketDisconnect:
                 # Cliente desconectado normalmente

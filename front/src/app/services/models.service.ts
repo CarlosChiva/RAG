@@ -21,13 +21,19 @@ export class ModelsService {
   getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
     });
   }
   // Nueva función para hacer una query
   query(config: Config): Observable<any> {
     const wsUrl = `${this.apiUrlWs}/query`;
-
+  var configuration = {
+      credentials: this.getHeaders().get('Authorization'),
+      userInput: config.userInput,
+      conversation: config.conversation,
+      modelName: config.modelName,
+      image: config.image,
+    };
     // guardamos la referencia para cerrar manualmente si fuera necesario
     this.currentWs = new WebSocket(wsUrl);
     return new Observable((observer) => {
@@ -38,7 +44,7 @@ export class ModelsService {
       // ---------- onopen ----------
       this.currentWs.onopen = () => {
        
-        this.currentWs!.send(JSON.stringify(config));
+        this.currentWs!.send(JSON.stringify(configuration));
       };
 
       // ---------- onmessage ----------
