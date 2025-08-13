@@ -57,13 +57,50 @@ async def chatbot_node(state:MessagesState,config:Config):
     #                        state["messages"][-1],
     #                        response.content}""")
     model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
-    response=model.invoke(state["messages"])
-    #logging.info(f"response---{next(response)}")
-    await add_conversation(chat_name=config["configurable"]['conversation'],
-                           credentials=config["configurable"]['thread_id'],
-                           user_input=state["messages"][-1].content,
-                           bot_output=response.content)
-    return {"messages":response}
+    websocket = config["configurable"].get("websocket")
+    full_response = ""
+    thinking=False
+    async for chunk in model.astream(state["messages"]):
+            if hasattr(chunk, 'content') and chunk.content:
+                full_response += chunk.content
+                
+                # Enviar cada token por websocket si está disponible
+                if websocket:
+                    if chunk.content=="<think>":
+                        thinking=True
+                        continue
+                    elif chunk.content=="</think>":
+                        thinking=False
+                        continue
+                    if thinking:
+                        await websocket.send_json({
+                            "token": chunk.content,
+                            "event": "thinking",
+                            
+                        })
+                    else:
+
+                        try:
+                            await websocket.send_json({
+                                "token": chunk.content,
+                                "event": "response"
+                            })
+                        except Exception as e:
+                            logging.error(f"Error sending websocket message: {e}")
+       # Crear mensaje de respuesta completo
+    response_message = AIMessage(content=full_response)
+    
+    # Guardar conversación
+    await add_conversation(
+        chat_name=config["configurable"]['conversation'],
+        credentials=config["configurable"]['thread_id'],
+        user_input=state["messages"][-1].content,
+        bot_output=full_response
+    )
+    await websocket.send_json({"end":"__END__"})
+    
+
+    return {"messages": [response_message]}
 async def image_generator(state:MessagesState,config):
     image_prompt=state["messages"][-1]["text"]
 

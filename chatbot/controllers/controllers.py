@@ -8,7 +8,7 @@ from controllers.chats_controller import new_conversation,get_chats_list, remove
 import logging
 active_users=[]
 def catch_event(event_metadata:dict):
-    match event_metadata.get('langgraph_node'):
+    match event_metadata['langgraph_node']:
         case 'chatbot':
             return "chatbot"
         case 'orquestator':
@@ -23,9 +23,9 @@ async def query(conf:Config,websocket):
     config = {
         "configurable": {
             "thread_id": str(conf.credentials),
+            "websocket":websocket
         }
     }
-    logging.info(f"mjjjjjjjjj---{conf.__dict__}")
     
     # Add any configuration from conf if needed
     if hasattr(conf, "__dict__"):
@@ -36,12 +36,10 @@ async def query(conf:Config,websocket):
         logging.info(f"metadata---{metadata}")
         event_caught= catch_event(metadata)
         if not event_caught=='chatbot':
-            logging.info(f"event_metadata---{metadata}")
-            logging.info(f"event_message---{event.content}")
-            await websocket.send_json({"event":event.content})            
+            pass
         else:
             if event_ != event_caught:
-                await websocket.send_json({"event":event_})
+                await websocket.send_json({"event":event_caught})
                 event_=event_caught
             else:
                 continue
