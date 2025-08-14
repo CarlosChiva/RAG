@@ -1,6 +1,7 @@
-// chat-output-chatbot.component.ts - Versión completa
 import { Component, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 
 export interface ChatMessage {
   text: string | Promise<string> | any; // SafeHtml from DomSanitizer
@@ -11,8 +12,8 @@ export interface ChatMessage {
   showThinking?: boolean;
   thinkingTokens?: string[];
   responseText?: string | any; // SafeHtml from DomSanitizer
-    eventHistory?: string[];  // AÑADIR ESTA LÍNEA
-  currentEvent?: string;    // AÑADIR ESTA LÍNEA (opcional, por si la usas después)
+  eventHistory?: string[];
+  currentEvent?: string;
 }
 
 @Component({
@@ -26,6 +27,8 @@ export class ChatOutputChatbotComponent implements AfterViewChecked {
   @Input() messages: ChatMessage[] = [];
   @Input() showTables: boolean = false; // Por compatibilidad con el template padre
   @ViewChild('chatOutput') chatOutput!: ElementRef;
+
+  constructor(private sanitizer: DomSanitizer) {}
 
   ngAfterViewChecked() {
     this.scrollToBottom();
@@ -60,5 +63,18 @@ export class ChatOutputChatbotComponent implements AfterViewChecked {
   // Método auxiliar para contar tokens de thinking
   getThinkingTokensCount(message: ChatMessage): number {
     return message.thinkingTokens ? message.thinkingTokens.length : 0;
+  }
+
+  // Método para obtener el texto del thinking con markdown
+  getThinkingText(message: ChatMessage): SafeHtml {
+    if (!message.thinkingTokens || message.thinkingTokens.length === 0) {
+      return '';
+    }
+    // Unir todos los tokens en un solo string
+    const thinkingText = message.thinkingTokens.join('');
+    // Convertir markdown a HTML
+    const htmlText = marked(thinkingText) as string;
+    // Sanitizar el HTML
+    return this.sanitizer.bypassSecurityTrustHtml(htmlText);
   }
 }

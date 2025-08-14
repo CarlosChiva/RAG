@@ -194,3 +194,75 @@
 #chat-output-chatbot::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
+.thinking-content {
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-left: 3px solid #ddd;
+  margin: 10px 0;
+  border-radius: 4px;
+  
+  .thinking-text {
+    color: #666;
+    font-style: italic;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    
+    // Estilos para elementos markdown dentro del thinking
+    p {
+      margin: 0.5em 0;
+    }
+    
+    code {
+      background-color: #e8e8e8;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    
+    pre {
+      background-color: #e8e8e8;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  }
+}
+
+.thinking-toggle-btn {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  color: #666;
+  margin-left: 10px;
+  
+  &:hover {
+    background-color: #f0f0f0;
+  }
+  
+  &.expanded {
+    background-color: #e8e8e8;
+  }
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+  
+  .event-main {
+    flex: 1;
+  }
+  
+  .event-progress {
+    display: block;
+    color: #888;
+    font-size: 0.85em;
+    margin-top: 2px;
+  }
+}

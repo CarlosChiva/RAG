@@ -28,9 +28,7 @@
     <!-- Contenido desplegable del thinking -->
     <div *ngIf="msg.showThinking && hasThinkingTokens(msg)" 
          class="thinking-content">
-      <div class="thinking-tokens">
-        <span *ngFor="let token of msg.thinkingTokens" class="thinking-token">{{ token }}</span>
-      </div>
+      <div class="thinking-text" [innerHTML]="getThinkingText(msg)"></div>
     </div>
 
     <!-- Contenido principal del mensaje -->
