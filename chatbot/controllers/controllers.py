@@ -44,7 +44,7 @@ async def query(conf:Config,websocket):
             else:
                 continue
     await websocket.send_json({"end":"__END__"})
-
+    await websocket.close()
 # websocket.send_json({"event":event.content})
 
 

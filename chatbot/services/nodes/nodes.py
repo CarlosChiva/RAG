@@ -97,7 +97,6 @@ async def chatbot_node(state:MessagesState,config:Config):
         user_input=state["messages"][-1].content,
         bot_output=full_response
     )
-    await websocket.send_json({"end":"__END__"})
     
 
     return {"messages": [response_message]}

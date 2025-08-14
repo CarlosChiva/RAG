@@ -1,0 +1,15 @@
+<!-- chat-output.component.html -->
+<div id="chat-output-chatbot" #chatOutput-chatbot>
+    <div *ngFor="let msg of messages" 
+         [class.message]="true"
+         [class.user-message]="msg.isUser"
+         [class.bot-message]="!msg.isUser"
+         [class.typing]="msg.isTyping">
+      <div [innerHTML]="msg.text"></div>
+      <div *ngIf="msg.isTyping" class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
