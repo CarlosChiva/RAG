@@ -28,14 +28,17 @@ def load_messages_state_from_file(file_path: str,first_user_input:str) -> Messag
 
 active_users=[]
 async def orquestator(state:MessagesState,config:Config):
-    
+    websocket = config["configurable"].get("websocket")
+    await websocket.send_json({
+        "event": "Routing..."
+    })
     if config["configurable"]['thread_id'] not in active_users:
         conversation = await get_user_conversation( config["configurable"]['thread_id'],config["configurable"]['conversation'])
         messages_loaded=[]
         for message in conversation:
             logging.info(f"message---{message}"   )
             if "bot" in message:
-                messages_loaded.append(AIMessage(content=message["bot"]))  # ✅ Use the actual value
+                messages_loaded.append(AIMessage(content=message["bot"]))
             elif "user" in message:
                 messages_loaded.append(HumanMessage(content=message["user"]))
         active_users.append(config["configurable"]['thread_id'])
@@ -74,16 +77,18 @@ async def chatbot_node(state:MessagesState,config:Config):
                         continue
                     if thinking:
                         await websocket.send_json({
+                            "event": "response",
+                            "step":"thinking",
                             "token": chunk.content,
-                            "event": "thinking",
                             
                         })
                     else:
 
                         try:
                             await websocket.send_json({
-                                "token": chunk.content,
-                                "event": "response"
+                                "event": "response",
+                                "step":"response",
+                                "response":chunk.content                                
                             })
                         except Exception as e:
                             logging.error(f"Error sending websocket message: {e}")

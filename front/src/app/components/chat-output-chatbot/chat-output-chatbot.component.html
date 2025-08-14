@@ -1,15 +1,54 @@
-<!-- chat-output.component.html -->
-<div id="chat-output-chatbot" #chatOutput-chatbot>
-    <div *ngFor="let msg of messages" 
-         [class.message]="true"
-         [class.user-message]="msg.isUser"
-         [class.bot-message]="!msg.isUser"
-         [class.typing]="msg.isTyping">
-      <div [innerHTML]="msg.text"></div>
-      <div *ngIf="msg.isTyping" class="typing-indicator">
-        <span></span>
-        <span></span>
-        <span></span>
+<!-- chat-output-chatbot.component.html -->
+<div id="chat-output-chatbot" #chatOutput>
+  <div *ngFor="let msg of messages; let i = index" 
+       [class.message]="true"
+       [class.user-message]="msg.isUser"
+       [class.bot-message]="!msg.isUser"
+       [class.typing]="msg.isTyping">
+
+    <!-- Header del evento con progreso -->
+    <div class="event-header" *ngIf="msg.eventHeader && !msg.isUser">
+      <div class="event-main">
+        <strong>{{ msg.eventHeader }}</strong>
+        <!-- Mostrar progreso de eventos si existe historial -->
+        <small *ngIf="msg.eventHistory && msg.eventHistory.length > 1" class="event-progress">
+          Progress: {{ msg.eventHistory.slice(-3).join(' → ') }}
+        </small>
+      </div>
+      
+      <!-- Botón para desplegar thinking si hay tokens -->
+      <button *ngIf="hasThinkingTokens(msg)" 
+              class="thinking-toggle-btn"
+              (click)="toggleThinking(i)"
+              [class.expanded]="msg.showThinking">
+        {{ msg.showThinking ? '▼' : '▶' }} Thinking ({{ getThinkingTokensCount(msg) }} tokens)
+      </button>
+    </div>
+
+    <!-- Contenido desplegable del thinking -->
+    <div *ngIf="msg.showThinking && hasThinkingTokens(msg)" 
+         class="thinking-content">
+      <div class="thinking-tokens">
+        <span *ngFor="let token of msg.thinkingTokens" class="thinking-token">{{ token }}</span>
       </div>
     </div>
+
+    <!-- Contenido principal del mensaje -->
+    <div class="message-content" *ngIf="!msg.isUser">
+      <div *ngIf="msg.responseText" [innerHTML]="msg.responseText"></div>
+      <div *ngIf="msg.text && !msg.responseText" [innerHTML]="msg.text"></div>
+    </div>
+
+    <!-- Mensaje de usuario -->
+    <div class="message-content" *ngIf="msg.isUser">
+      <div [innerHTML]="msg.text"></div>
+    </div>
+
+    <!-- Indicador de typing -->
+    <div *ngIf="msg.isTyping" class="typing-indicator">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
   </div>
+</div>

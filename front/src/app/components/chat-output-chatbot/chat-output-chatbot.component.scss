@@ -1,106 +1,196 @@
-pre, code, table {
-    max-width: 100%;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  
-  img {
-    max-width: 100%;
-    height: auto;
-  }
-  
-  table {
-    display: block; // Hace que las tablas se comporten como bloques
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  p {
-    margin: 0.5em 0;
-    width: 100%;
-  }
-  
-  ul, ol {
-    padding-left: 20px;
-    width: 100%;
-  }
- #chat-output-chatbot {
-    flex-grow: 1;
-    overflow-y: auto;
-    height: 100%;
-    border: 1px solid transparent;
-    padding: 10px;
-    background-color: transparent;
+/* chat-output-chatbot.component.scss */
 
-
-
-  /* Estilo general para los mensajes */
-  .message {
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
-    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
-    clear: both;
-    max-width: 80%; /* Limitar el ancho máximo al 80% del contenedor para evitar desbordes */
-    margin-bottom: 17px;
-  }
-
-  /* Mensajes del usuario alineados a la derecha */
-  .user-message {
-    background-color: #28a745;
-    float: right;
-    text-align: right;
+.message {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  max-width: 80%;
+  word-wrap: break-word;
+  
+  &.user-message {
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
     margin-left: auto;
   }
-
-  /* Mensajes del bot alineados a la izquierda */
-  .bot-message {
-    background-color: #377cc7;
-    float: left;
-    text-align: left;
+  
+  &.bot-message {
+    align-self: flex-start;
+    background-color: #f8f9fa;
+    color: #333;
     margin-right: auto;
-    display: inline-block; /* Cambiar a inline-block para que el ancho se ajuste al contenido */
-    word-wrap: break-word; /* Ajustar el contenido para que no se desborde */
-
+    border: 1px solid #e9ecef;
   }
+}
 
-  .typing-indicator {
+.event-header {
+  background-color: #e3f2fd;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 6px;
+  border-left: 4px solid #2196f3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .event-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  strong {
+    color: #1976d2;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+  .event-progress {
+    color: #666;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    font-style: italic;
+  }
+}
+
+.thinking-toggle-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #1976d2;
+  }
+  
+  &.expanded {
+    background-color: #1976d2;
+  }
+}
+
+.thinking-content {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.thinking-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.thinking-token {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: #555;
+  display: inline-block;
+  
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.message-content {
+  padding: 0.5rem 0;
+  line-height: 1.5;
+  
+  /* Estilos para contenido markdown */
+  p {
+    margin: 0 0 0.5rem 0;
+  }
+  
+  code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  
+  pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+  
+  blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 1rem;
+    margin: 0.5rem 0;
+    color: #666;
+  }
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #999;
     display: inline-block;
-    margin-left: 5px;
+    margin-right: 5px;
+    animation: typing 1.4s infinite ease-in-out;
     
-    span {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background-color: #ffffff79;
-      border-radius: 50%;
-      margin: 0 2px;
-      animation: bounce 1.4s infinite ease-in-out;
-      
-      &:nth-child(1) {
-        animation-delay: 0s;
-      }
-      
-      &:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      
-      &:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-    }
-  }
-
-@keyframes bounce {
-  0%, 80%, 100% { 
-    transform: scale(0);
-  }
-  40% { 
-    transform: scale(1.0);
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; margin-right: 0; }
   }
 }
 
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
 }
 
+#chat-output-chatbot {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+/* Scrollbar personalizada */
+#chat-output-chatbot::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chat-output-chatbot::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+#chat-output-chatbot::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+#chat-output-chatbot::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

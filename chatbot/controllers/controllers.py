@@ -33,16 +33,7 @@ async def query(conf:Config,websocket):
     input_messages = [HumanMessage(conf.userInput)]
     event_=""
     async for event , metadata in graph.astream({"messages": input_messages}, config, stream_mode="messages"):
-        logging.info(f"metadata---{metadata}")
-        event_caught= catch_event(metadata)
-        if not event_caught=='chatbot':
-            pass
-        else:
-            if event_ != event_caught:
-                await websocket.send_json({"event":event_caught})
-                event_=event_caught
-            else:
-                continue
+        pass
     await websocket.send_json({"end":"__END__"})
     await websocket.close()
 # websocket.send_json({"event":event.content})

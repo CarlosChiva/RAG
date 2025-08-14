@@ -7,7 +7,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { marked } from 'marked';
 import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component';
-import { ChatOutputComponent } from '../../components/chat-output/chat-output.component';
+import { ChatOutputChatbotComponent } from '../../components/chat-output-chatbot/chat-output-chatbot.component';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { SidebarItemComponent } from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
 import { ButtonContainerComponent } from '../../components/button-container/button-container.component';
@@ -26,7 +26,17 @@ interface UserMessage {
 interface BotMessage {
   bot: string;
 }
-
+interface ChatMessage {
+  text: string | Promise<string> | SafeHtml;
+  isUser: boolean;
+  isTyping?: boolean;
+  eventHeader?: string;
+  thinkingTokens?: string[];
+  responseText?: string | SafeHtml;
+  showThinking?: boolean;
+  eventHistory?: string[];  // NUEVO: historial de eventos
+  currentEvent?: string;    // NUEVO: evento actual
+}
 type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
@@ -36,7 +46,7 @@ type ConversationMessage = UserMessage | BotMessage;
     CommonModule,
     HttpClientModule,
     FormsModule,
-    ChatOutputComponent,
+    ChatOutputChatbotComponent,
     SidebarComponent,
     SidebarItemComponent,
     ButtonContainerComponent,
@@ -51,10 +61,12 @@ export class ChatbotComponent implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
 
-  @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
+  @ViewChild(ChatOutputChatbotComponent) chatOutputComponent!: ChatOutputChatbotComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
   @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
   @ViewChild(ModelsListComponent) modelsListComponent!: ModelsListComponent;
+  private currentBotMessageIndex: number | null = null;
+  messages: ChatMessage[] = [];
 
   selectedModel: ModelItem = { name: '', size: '' };
 
@@ -69,11 +81,11 @@ export class ChatbotComponent implements OnInit {
   mostrarModal: boolean = false;
 
   // Messages
-  messages: {
-    text: string | Promise<string> | SafeHtml;
-    isUser: boolean;
-    isTyping?: boolean;
-  }[] = [];
+  // messages: {
+  //   text: string | Promise<string> | SafeHtml;
+  //   isUser: boolean;
+  //   isTyping?: boolean;
+  // }[] = [];
 
   config: Config = {
     credentials: '',
@@ -149,7 +161,7 @@ export class ChatbotComponent implements OnInit {
   sendMessage(messageFromChild?: string): void {
     const messageText = messageFromChild || this.message || this.currentMessage;
 
-  if (!messageText.trim() || !this.selectedCollection) return;
+    if (!messageText.trim() || !this.selectedCollection) return;
 
     this.isSending = true;
 
@@ -164,9 +176,17 @@ export class ChatbotComponent implements OnInit {
 
     this.scrollChatToBottom();
 
-    // Add bot typing indicator
-    const botMessageIndex = this.messages.length;
-    this.messages.push({ text: '', isUser: false, isTyping: true });
+    // Inicializar mensaje del bot con todos los campos necesarios
+    this.currentBotMessageIndex = this.messages.length;
+    this.messages.push({
+      text: '',
+      isUser: false,
+      isTyping: true,
+      eventHeader: '',
+      thinkingTokens: [],
+      responseText: '',
+      showThinking: false
+    });
     
     this.config = {
       credentials: '',
@@ -178,12 +198,98 @@ export class ChatbotComponent implements OnInit {
 
     console.log(this.config);
     this.ModelsService.query(this.config).subscribe({
-      next: (data) => this.typeTextInMessage(botMessageIndex, data),
-      error: () => {
-        this.messages[botMessageIndex] = { text: 'Error: Could not get response', isUser: false };
+      next: (data) => this.handleWebSocketMessage(data),
+      error: (error) => {
+        if (this.currentBotMessageIndex !== null) {
+          this.messages[this.currentBotMessageIndex] = { 
+            text: 'Error: Could not get response', 
+            isUser: false,
+            isTyping: false
+          };
+        }
+        console.error('WebSocket error:', error);
       },
-      complete: () => {}
+      complete: () => {
+        if (this.currentBotMessageIndex !== null) {
+          this.messages[this.currentBotMessageIndex].isTyping = false;
+        }
+        this.isSending = false;
+        this.currentBotMessageIndex = null;
+      }
     });
+  }
+
+  handleWebSocketMessage(data: any): void {
+    if (this.currentBotMessageIndex === null) return;
+
+    const currentMessage = this.messages[this.currentBotMessageIndex];
+
+    try {
+      // Manejar diferentes tipos de eventos
+      if (data.event) {
+        switch (data.event) {
+          case 'response':
+            this.handleResponseEvent(data, currentMessage);
+            break;
+          default:
+            // Otros eventos como "Routing..." - SIEMPRE actualizar el header
+            currentMessage.eventHeader = data.event;
+            break;
+        }
+      } else {
+        // Si no tiene event, podría ser un mensaje directo de texto
+        this.appendToResponse(data, currentMessage);
+      }
+    } catch (error) {
+      console.error('Error processing WebSocket message:', error, data);
+    }
+  }
+
+  handleResponseEvent(data: any, currentMessage: ChatMessage): void {
+    if (data.step === 'thinking') {
+      // SIEMPRE actualizar header cuando está pensando
+      currentMessage.eventHeader = 'AI Thinking';
+      
+      // Añadir token al thinking
+      if (data.token) {
+        if (!currentMessage.thinkingTokens) {
+          currentMessage.thinkingTokens = [];
+        }
+        currentMessage.thinkingTokens.push(data.token);
+      }
+    } else if (data.step === 'response') {
+      // SIEMPRE actualizar header cuando está respondiendo
+      currentMessage.eventHeader = 'AI Response';
+      
+      // Añadir texto de respuesta
+      if (data.response) {
+        if (!currentMessage.responseText) {
+          currentMessage.responseText = '';
+        }
+        currentMessage.responseText += data.response;
+        
+        // Renderizar markdown si es necesario
+        if (currentMessage.responseText && typeof currentMessage.responseText === 'string') {
+          const markdownText = marked(currentMessage.responseText);
+          currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+        }
+      }
+    }
+  }
+
+  appendToResponse(data: any, currentMessage: ChatMessage): void {
+    // Manejar mensajes que no tienen estructura de evento específica
+    if (typeof data === 'string') {
+      if (!currentMessage.responseText) {
+        currentMessage.responseText = '';
+      }
+      currentMessage.responseText += data;
+      
+      if (typeof currentMessage.responseText === 'string') {
+        const markdownText = marked(currentMessage.responseText);
+        currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+      }
+    }
   }
 
   markdownRender(message: string | Promise<string>): SafeHtml {
