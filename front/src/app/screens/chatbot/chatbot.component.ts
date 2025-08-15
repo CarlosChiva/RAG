@@ -20,15 +20,7 @@ import { ChatMessage } from '../../interfaces/chat-message';
 
 import { ModelsService } from '../../services/models.service';
 
-// Interfaces for message types
-interface UserMessage {
-  user: string;
-}
-interface BotMessage {
-  bot: string;
-}
 
-type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
   selector: 'app-chatbot',
@@ -56,6 +48,7 @@ export class ChatbotComponent implements OnInit {
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
   @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
   @ViewChild(ModelsListComponent) modelsListComponent!: ModelsListComponent;
+
   private currentBotMessageIndex: number | null = null;
   messages: ChatMessage[] = [];
 
@@ -71,12 +64,6 @@ export class ChatbotComponent implements OnInit {
   isSending: boolean = false;
   mostrarModal: boolean = false;
 
-  // Messages
-  // messages: {
-  //   text: string | Promise<string> | SafeHtml;
-  //   isUser: boolean;
-  //   isTyping?: boolean;
-  // }[] = [];
 
   config: Config = {
     credentials: '',
@@ -129,14 +116,70 @@ export class ChatbotComponent implements OnInit {
 
   // Conversation methods
   renderConversation(conversation: any[]): void {
-    this.messages = conversation.map((message) => ({
-      text: ('user' in message) ? message.user : this.markdownRender(marked(message.bot)),
-      isUser: 'user' in message,
-    }));
+  // Cada elemento de conversation viene con la forma:
+  // { user: 'texto del usuario' }   o   { bot: 'texto del bot' }
+  this.messages = conversation.map((msg) => {
+    // Si el objeto tiene la propiedad `user` -> mensaje del usuario
+    if ('user' in msg) {
+      return {
+        text: msg.user,           // Texto tal cual
+        isUser: true,             // Usuario
+        // Campos que usa la UI y que se inicializan en `sendMessage`
+        isTyping: false,
+        eventHeader: '',
+        thinkingTokens: [],
+        responseText: '',
+        showThinking: false,
+      } as ChatMessage;
+    }
+    if ('bot' in msg) {
+      // Ahora sabemos con certeza que 'msg.bot' es directamente la cadena que necesitamos.
+      // Tu línea original 'const botText = msg.bot as string;' es CORRECTA.
+      const botText: string = msg.bot as string;
 
-    this.scrollChatToBottom();
-  }
+      const thinkingTokens: string[] = [];
 
+      const remainingText = botText.replace(/<think>(.*?)<\/think>/gs, (match, p1) => {
+        const text= p1.split(" ")
+        thinkingTokens.push(text); 
+        return ''; 
+      }).trim();
+      let renderedContent: SafeHtml;
+
+      renderedContent = this.markdownRender(remainingText); // Esta es la opción más probable si ya ves HTML en la salida previa.
+
+      // Para depuración, puedes imprimir los valores para verificar:
+      console.log(`Original botText:`, botText);
+      console.log(`Content after removing <think> tags:`, remainingText);
+      console.log(`Rendered responseText for display:`, renderedContent);
+      console.log(`Extracted thinking tokens:`, thinkingTokens);
+
+      return {
+        text: '',                 // Los mensajes del bot usan responseText
+        isUser: false,
+        isTyping: false,
+        eventHeader: 'AI Response',
+        thinkingTokens: thinkingTokens,   // tokens extraídos de las etiquetas <think>
+        responseText: renderedContent,    // Texto sin <think> tags, listo para mostrar
+        showThinking: true,
+      } as ChatMessage;
+    }
+
+    // Si el objeto no encaja en ninguno de los dos casos (ej. error),
+    // devolvemos un objeto vacío para no romper el array.
+    return {
+      text: '',
+      isUser: false,
+      isTyping: false,
+      eventHeader: '',
+      thinkingTokens: [],
+      responseText: '',
+      showThinking: false,
+    } as ChatMessage;
+  });
+
+  this.scrollChatToBottom();
+}
   selectCollection(collection: string) {
     this.selectedCollection = collection;
   }
@@ -259,11 +302,7 @@ export class ChatbotComponent implements OnInit {
         }
         currentMessage.responseText += data.response;
         
-        // Renderizar markdown si es necesario
-        // if (currentMessage.responseText && typeof currentMessage.responseText === 'string') {
-        //   const markdownText = marked(currentMessage.responseText);
-        //   currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-        // }
+       
       }
     }
   }
