@@ -16,6 +16,7 @@ import { UserInputComponent } from '../../components/user-input/user-input.compo
 
 import { Config } from '../../interfaces/config.interface';
 import { ModelItem } from '../../interfaces/models.inferface';
+import { ChatMessage } from '../../interfaces/chat-message';
 
 import { ModelsService } from '../../services/models.service';
 
@@ -26,17 +27,7 @@ interface UserMessage {
 interface BotMessage {
   bot: string;
 }
-interface ChatMessage {
-  text: string | Promise<string> | SafeHtml;
-  isUser: boolean;
-  isTyping?: boolean;
-  eventHeader?: string;
-  thinkingTokens?: string[];
-  responseText?: string | SafeHtml;
-  showThinking?: boolean;
-  eventHistory?: string[];  // NUEVO: historial de eventos
-  currentEvent?: string;    // NUEVO: evento actual
-}
+
 type ConversationMessage = UserMessage | BotMessage;
 
 @Component({
@@ -269,10 +260,10 @@ export class ChatbotComponent implements OnInit {
         currentMessage.responseText += data.response;
         
         // Renderizar markdown si es necesario
-        if (currentMessage.responseText && typeof currentMessage.responseText === 'string') {
-          const markdownText = marked(currentMessage.responseText);
-          currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-        }
+        // if (currentMessage.responseText && typeof currentMessage.responseText === 'string') {
+        //   const markdownText = marked(currentMessage.responseText);
+        //   currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+        // }
       }
     }
   }
