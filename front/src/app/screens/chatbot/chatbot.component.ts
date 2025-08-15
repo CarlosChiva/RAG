@@ -140,8 +140,8 @@ export class ChatbotComponent implements OnInit {
       const thinkingTokens: string[] = [];
 
       const remainingText = botText.replace(/<think>(.*?)<\/think>/gs, (match, p1) => {
-        const text= p1.split(" ")
-        thinkingTokens.push(text); 
+        
+        thinkingTokens.push(p1); 
         return ''; 
       }).trim();
       let renderedContent: SafeHtml;

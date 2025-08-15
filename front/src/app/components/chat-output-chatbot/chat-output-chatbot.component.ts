@@ -75,6 +75,7 @@ export class ChatOutputChatbotComponent implements AfterViewChecked {
     // Convertir markdown a HTML
     const htmlText = marked(thinkingText) as string;
     // Sanitizar el HTML
-    return this.sanitizer.bypassSecurityTrustHtml(htmlText);
+    return htmlText;
+    // return this.sanitizer.bypassSecurityTrustHtml(htmlText);
   }
 }

@@ -153,14 +153,15 @@ body {
 }
 /* Estilos para el área de chat */
 .chat-output{
-    position: relative;
+  position: relative;
   overflow: hidden; // clave para recortar los pseudo-elementos
 
   margin-top: 11px;
   border: 1px solid #504f4f;
   background-color: #504f4f;
-  height: 90vh;
-
+  flex-grow: 1;
+  flex-shrink: 1; 
+  flex-basis: auto; 
   &::before,
       &::after {
         content: "";

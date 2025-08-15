@@ -69,6 +69,7 @@
   
   &.expanded {
     background-color: #1976d2;
+    max-width: 80%;
   }
 }
 
@@ -170,12 +171,11 @@
 #chat-output-chatbot {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow-y: auto;
+  height: 100%; // <-- ¡Esta es la clave para el hijo! Ocupa el 100% de la altura de su padre (.chat-output).
+  overflow-y: auto; // Esto es lo que permite el scroll de los mensajes
   padding: 1rem;
-  gap: 0.5rem;
+  gap: 0.5rem; // Espacio entre mensajes
 }
-
 /* Scrollbar personalizada */
 #chat-output-chatbot::-webkit-scrollbar {
   width: 6px;
