@@ -61,9 +61,6 @@ export class ChatOutputChatbotComponent implements AfterViewChecked {
   }
 
   // Método auxiliar para contar tokens de thinking
-  getThinkingTokensCount(message: ChatMessage): number {
-    return message.thinkingTokens ? message.thinkingTokens.length : 0;
-  }
 
   // Método para obtener el texto del thinking con markdown
   getThinkingText(message: ChatMessage): SafeHtml {

@@ -6,23 +6,23 @@
        [class.bot-message]="!msg.isUser"
        [class.typing]="msg.isTyping">
 
-    <!-- Header del evento con progreso -->
     <div class="event-header" *ngIf="msg.eventHeader && !msg.isUser">
       <div class="event-main">
-        <strong>{{ msg.eventHeader }}</strong>
-        <!-- Mostrar progreso de eventos si existe historial -->
-        <small *ngIf="msg.eventHistory && msg.eventHistory.length > 1" class="event-progress">
-          Progress: {{ msg.eventHistory.slice(-3).join(' → ') }}
-        </small>
+        <div class="event-info">
+          <strong>{{ msg.eventHeader }}</strong>
+          <small *ngIf="msg.eventHistory && msg.eventHistory.length > 1" class="event-progress">
+            Progress: {{ msg.eventHistory.slice(-3).join(' → ') }}
+          </small>
+        </div>
+        
+        <!-- Botón para desplegar thinking si hay tokens -->
+        <button *ngIf="hasThinkingTokens(msg)" 
+                class="thinking-toggle-btn"
+                (click)="toggleThinking(i)"
+                [class.expanded]="msg.showThinking">
+           Thinking {{ msg.showThinking ? '▼' : '▶' }}
+        </button>
       </div>
-      
-      <!-- Botón para desplegar thinking si hay tokens -->
-      <button *ngIf="hasThinkingTokens(msg)" 
-              class="thinking-toggle-btn"
-              (click)="toggleThinking(i)"
-              [class.expanded]="msg.showThinking">
-        {{ msg.showThinking ? '▼' : '▶' }} Thinking ({{ getThinkingTokensCount(msg) }} tokens)
-      </button>
     </div>
 
     <!-- Contenido desplegable del thinking -->

@@ -1,5 +1,6 @@
 /* chat-output-chatbot.component.scss */
 
+/* Messages styles */
 .message {
   margin-bottom: 1rem;
   padding: 0.5rem;
@@ -9,38 +10,41 @@
   
   &.user-message {
     align-self: flex-end;
-    background-color: #007bff;
-    color: white;
+    background-color: #28a745;
     margin-left: auto;
   }
   
   &.bot-message {
     align-self: flex-start;
-    background-color: #f8f9fa;
-    color: #333;
+    background-color: #377cc7;
     margin-right: auto;
-    border: 1px solid #e9ecef;
+    border: 1px solid #377cc7;
   }
 }
 
+/* Event header styles */
 .event-header {
-  background-color: #e3f2fd;
+  background-color: #377cc7;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
-  border-radius: 6px;
-  border-left: 4px solid #2196f3;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border: none;
   
   .event-main {
     display: flex;
+    justify-content: space-between; // Mantiene elementos en extremos
+    align-items: center;
+    width: 100%;
+  }
+  
+  .event-info {
+    display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    flex: 1; // Permite que ocupe el espacio disponible
   }
   
   strong {
-    color: #1976d2;
+    color: whitesmoke;
     font-size: 0.9rem;
     font-weight: 600;
   }
@@ -52,57 +56,64 @@
     font-style: italic;
   }
 }
-
+/* think toggle button styles  and thinking tokens */
 .thinking-toggle-btn {
-  background-color: #2196f3;
+  background-color: transparent;
   color: white;
   border: none;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+//  border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
   transition: all 0.2s ease;
+  flex-shrink: 0; // Evita que se reduzca de tamaño
   
   &:hover {
     background-color: #1976d2;
   }
   
   &.expanded {
-    background-color: #1976d2;
+    background-color: transparent;
     max-width: 80%;
   }
 }
 
+
+
 .thinking-content {
-  background-color: #f5f5f5;
-  border: 1px solid #ddd;
+  padding: 10px 15px;
+background-color: #3274bb;
+  border-left: 3px solid #3271bb;
+  margin: 10px 0;
   border-radius: 4px;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.thinking-tokens {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.thinking-token {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 0.2rem 0.4rem;
-  font-size: 0.8rem;
-  font-family: monospace;
-  color: #555;
-  display: inline-block;
   
-  &:hover {
-    background-color: #f0f0f0;
+  .thinking-text {
+    color: whitesmoke;
+    font-style: italic;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    
+    // Estilos para elementos markdown dentro del thinking
+    p {
+      margin: 0.5em 0;
+    }
+    
+    code {
+      background-color: #e8e8e8;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    
+    pre {
+      background-color: #e8e8e8;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
   }
 }
+
 
 .message-content {
   padding: 0.5rem 0;
@@ -194,75 +205,4 @@
 #chat-output-chatbot::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
-.thinking-content {
-  padding: 10px 15px;
-  background-color: #f5f5f5;
-  border-left: 3px solid #ddd;
-  margin: 10px 0;
-  border-radius: 4px;
-  
-  .thinking-text {
-    color: #666;
-    font-style: italic;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    
-    // Estilos para elementos markdown dentro del thinking
-    p {
-      margin: 0.5em 0;
-    }
-    
-    code {
-      background-color: #e8e8e8;
-      padding: 2px 4px;
-      border-radius: 3px;
-      font-family: monospace;
-    }
-    
-    pre {
-      background-color: #e8e8e8;
-      padding: 10px;
-      border-radius: 4px;
-      overflow-x: auto;
-    }
-  }
-}
 
-.thinking-toggle-btn {
-  background: none;
-  border: 1px solid #ddd;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85em;
-  color: #666;
-  margin-left: 10px;
-  
-  &:hover {
-    background-color: #f0f0f0;
-  }
-  
-  &.expanded {
-    background-color: #e8e8e8;
-  }
-}
-
-.event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 10px;
-  
-  .event-main {
-    flex: 1;
-  }
-  
-  .event-progress {
-    display: block;
-    color: #888;
-    font-size: 0.85em;
-    margin-top: 2px;
-  }
-}
