@@ -4,7 +4,7 @@ import {DbConfig} from '../../interfaces/db-conf.interface';
 import { CommonModule } from '@angular/common'; // Añade esta importación
 
 @Component({
-  selector: 'app-sidebar-item',
+  selector: 'app-ddbb-sidebar-item',
   imports: [CommonModule],
   templateUrl: './sidebar-ddbb-item.component.html',
   styleUrl: './sidebar-ddbb-item.component.scss'

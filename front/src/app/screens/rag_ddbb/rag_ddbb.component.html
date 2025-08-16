@@ -6,7 +6,7 @@
     (toggleSidebarEvent)="toggleSidebar()">
     <div sidebarContent>
       <ul id="collections-list">
-        <app-sidebar-item 
+        <app-ddbb-sidebar-item 
         *ngFor="let config of configList"
         [item]="config"
         [isSelected]="selectedConfig === config"
@@ -16,7 +16,7 @@
         (connectionError)="handleConnectionError($event)"
         (openModal)="abrirModal($event)">
         >
-      </app-sidebar-item>
+      </app-ddbb-sidebar-item>
       </ul>    
       <app-button-container></app-button-container>
     </div>
