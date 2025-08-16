@@ -105,12 +105,12 @@ export class ModelsService {
     });
   }
 
-  getChats(): Observable<{collections_name: string[]}> {
+  getChats(): Observable<{chats: string[]}> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`
     });
     
-    return this.http.get<{collections_name: string[]}>(`${this.apiUrl}/get_chats`, { 
+    return this.http.get<{chats: string[]}>(`${this.apiUrl}/get_chats`, { 
       headers 
     });
   }

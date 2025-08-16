@@ -12,15 +12,15 @@
           class="add-button">
       +
         </button>
-        <ul id="collections-list">
+        <ul>
           <app-sidebar-conversations-item 
-            *ngFor="let collection of collections"
-            [collection]="collection"
-            [isSelected]="selectedCollection === collection"
-            [displayField]="'collection'"
-            (selectItem)="selectCollection($event)"
+            *ngFor="let chat of chats"
+            [collection]="chat"
+            [isSelected]="selectedChat === chat"
+            [displayField]="'chat'"
+            (selectItem)="selectChat($event)"
             (conversationLoaded)="renderConversation($event)"
-            (itemDeleted)="deleteCollection($event)">
+            (itemDeleted)="deleteChat($event)">
           </app-sidebar-conversations-item>
         </ul>
         <app-button-container></app-button-container>
@@ -40,7 +40,7 @@
     [placeholder]="'Type your message here...'"
     [isSending]="isSending"
     [message]="currentMessage"
-    [disabled]="!selectedCollection"
+    [disabled]="!selectedChat"
     [sendButtonText]="'Send'"
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)">

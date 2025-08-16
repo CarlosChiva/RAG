@@ -192,12 +192,12 @@ body {
   background-color: #504f4f;
   flex-grow: 1;
   transition: margin-left 0.3s;
-  position: relative; /* Necesario para el posicionamiento absoluto del botón */
+  position: relative; 
 }
 
 /* Contenedor expandido */
 .main-content.expanded {
-  margin-left: 5px; /* Reducir el margen cuando la barra lateral esté colapsada */
+  margin-left: 5px; 
 }
 
 

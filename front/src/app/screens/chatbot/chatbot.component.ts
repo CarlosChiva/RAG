@@ -56,9 +56,9 @@ export class ChatbotComponent implements OnInit {
 
   // Application state
   sidebarCollapsed = false;
-  collections: string[] = [];
-  collection: any[] = [];
-  selectedCollection: string | null = null;
+  chats: string[] = [];
+  chat: any[] = [];
+  selectedChat: string | null = null;
   message: string = '';
   currentMessage: string = '';
   isSending: boolean = false;
@@ -91,7 +91,7 @@ export class ChatbotComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadCollections();
+    this.loadChats();
   }
 
   // Sidebar methods
@@ -104,11 +104,11 @@ export class ChatbotComponent implements OnInit {
     this.selectedModel = model as ModelItem;
   }
 
-  loadCollections(): void {
+  loadChats(): void {
     this.ModelsService.getChats().subscribe({
-      next: (data: { collections_name: string[] }) => {
+      next: (data: { chats: string[] }) => {
         console.log("chat:", data);
-        this.collections = data.collections_name.flatMap(item => Object.keys(item));
+        this.chats = data.chats.flatMap(item => Object.keys(item));
       },
       error: (error) => console.error('Error fetching collections:', error)
     });
@@ -116,15 +116,12 @@ export class ChatbotComponent implements OnInit {
 
   // Conversation methods
   renderConversation(conversation: any[]): void {
-  // Cada elemento de conversation viene con la forma:
-  // { user: 'texto del usuario' }   o   { bot: 'texto del bot' }
   this.messages = conversation.map((msg) => {
-    // Si el objeto tiene la propiedad `user` -> mensaje del usuario
+
     if ('user' in msg) {
       return {
-        text: msg.user,           // Texto tal cual
-        isUser: true,             // Usuario
-        // Campos que usa la UI y que se inicializan en `sendMessage`
+        text: msg.user,           
+        isUser: true,             
         isTyping: false,
         eventHeader: '',
         thinkingTokens: [],
@@ -133,8 +130,7 @@ export class ChatbotComponent implements OnInit {
       } as ChatMessage;
     }
     if ('bot' in msg) {
-      // Ahora sabemos con certeza que 'msg.bot' es directamente la cadena que necesitamos.
-      // Tu línea original 'const botText = msg.bot as string;' es CORRECTA.
+   
       const botText: string = msg.bot as string;
 
       const thinkingTokens: string[] = [];
@@ -146,27 +142,20 @@ export class ChatbotComponent implements OnInit {
       }).trim();
       let renderedContent: SafeHtml;
 
-      renderedContent = this.markdownRender(remainingText); // Esta es la opción más probable si ya ves HTML en la salida previa.
+      renderedContent = this.markdownRender(remainingText);
 
-      // Para depuración, puedes imprimir los valores para verificar:
-      console.log(`Original botText:`, botText);
-      console.log(`Content after removing <think> tags:`, remainingText);
-      console.log(`Rendered responseText for display:`, renderedContent);
-      console.log(`Extracted thinking tokens:`, thinkingTokens);
-
+   
       return {
-        text: '',                 // Los mensajes del bot usan responseText
+        text: '',                 
         isUser: false,
         isTyping: false,
         eventHeader: 'AI Response',
-        thinkingTokens: thinkingTokens,   // tokens extraídos de las etiquetas <think>
-        responseText: renderedContent,    // Texto sin <think> tags, listo para mostrar
+        thinkingTokens: thinkingTokens,   
+        responseText: renderedContent,    
         showThinking: true,
       } as ChatMessage;
     }
 
-    // Si el objeto no encaja en ninguno de los dos casos (ej. error),
-    // devolvemos un objeto vacío para no romper el array.
     return {
       text: '',
       isUser: false,
@@ -180,12 +169,12 @@ export class ChatbotComponent implements OnInit {
 
   this.scrollChatToBottom();
 }
-  selectCollection(collection: string) {
-    this.selectedCollection = collection;
+  selectChat(chat: string) {
+    this.selectedChat = chat;
   }
 
-  deleteCollection(collectionName: string): void {
-    this.loadCollections();
+  deleteChat(collectionName: Event): void {
+    this.loadChats();
   }
 
   onMessageChange(message: string): void {
@@ -195,7 +184,7 @@ export class ChatbotComponent implements OnInit {
   sendMessage(messageFromChild?: string): void {
     const messageText = messageFromChild || this.message || this.currentMessage;
 
-    if (!messageText.trim() || !this.selectedCollection) return;
+    if (!messageText.trim() || !this.selectedChat) return;
 
     this.isSending = true;
 
@@ -225,14 +214,14 @@ export class ChatbotComponent implements OnInit {
     this.config = {
       credentials: '',
       userInput: messageText,
-      conversation: this.selectedCollection,
+      conversation: this.selectedChat,
       modelName: this.selectedModel.name,
       image: false,
     };
 
     console.log(this.config);
     this.ModelsService.query(this.config).subscribe({
-      next: (data) => this.handleWebSocketMessage(data),
+      next: (data) => this.handlChatbottMessage(data),
       error: (error) => {
         if (this.currentBotMessageIndex !== null) {
           this.messages[this.currentBotMessageIndex] = { 
@@ -253,13 +242,13 @@ export class ChatbotComponent implements OnInit {
     });
   }
 
-  handleWebSocketMessage(data: any): void {
+  handlChatbottMessage(data: any): void {
+
     if (this.currentBotMessageIndex === null) return;
 
     const currentMessage = this.messages[this.currentBotMessageIndex];
 
     try {
-      // Manejar diferentes tipos de eventos
       if (data.event) {
         switch (data.event) {
           case 'response':
@@ -326,32 +315,7 @@ export class ChatbotComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(message as string);
   }
 
-  typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
-    let index = 0;
-    const message = this.messages[messageIndex];
-
-    const addNextChar = () => {
-      if (index < fullText.length) {
-        // Update text character by character
-        const markdownText = marked(fullText.substring(0, index + 1));
-        const renderedMessage = this.markdownRender(markdownText);
-
-        this.messages[messageIndex] = { ...message, text: renderedMessage, isTyping: true };
-        index++;
-        setTimeout(addNextChar, speed);
-      } else {
-        // End typing animation
-        const markdownText = marked(fullText);
-        const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-
-        this.messages[messageIndex] = { ...message, text: safeHtml, isTyping: false };
-        this.isSending = false;
-      }
-    };
-
-    addNextChar();
-  }
-
+  
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.sendMessage();
@@ -369,11 +333,11 @@ export class ChatbotComponent implements OnInit {
   createChat(event: Event): void {
   let nameChat = "New_chat";
   let counter = 1;
-    console.log("this.collections:",this.collections)
+    console.log("this.collections:",this.chats)
 
   // Check if the default name exists and increment the counter until a unique name is found
-  while (this.collections.includes(nameChat)) {
-    console.log("this.collections:",this.collections)
+  while (this.chats.includes(nameChat)) {
+    console.log("this.collections:",this.chats)
     nameChat = `New_chat_${counter}`;
     counter++;
   }
@@ -383,7 +347,7 @@ export class ChatbotComponent implements OnInit {
       error: (error) => console.error('Error fetching collections:', error)
     });
 
-    this.loadCollections();
+    this.loadChats();
   }
  
 }

@@ -9,7 +9,7 @@ from langchain_core.messages.ai import AIMessage
 import logging
 logging.basicConfig(level=logging.INFO)
 from controllers.chats_controller import get_user_conversation, add_conversation
-# Example function to save MessagesState to a file
+
 def save_messages_state_to_file(messages_state: MessagesState, file_path: str):
     messages_state_dict = messages_state.dict()
     with open(file_path, 'w') as file:
@@ -33,55 +33,58 @@ async def orquestator(state:MessagesState,config:Config):
         "event": "Routing..."
     })
     if config["configurable"]['thread_id'] not in active_users:
-        conversation = await get_user_conversation( config["configurable"]['thread_id'],config["configurable"]['conversation'])
+        conversation = await get_user_conversation( config["configurable"]['thread_id'],
+                                                   config["configurable"]['conversation']
+                                                   )
         messages_loaded=[]
         for message in conversation:
-            logging.info(f"message---{message}"   )
+            logging.info(f"message---{message}")
             if "bot" in message:
                 messages_loaded.append(AIMessage(content=message["bot"]))
             elif "user" in message:
                 messages_loaded.append(HumanMessage(content=message["user"]))
+        
         active_users.append(config["configurable"]['thread_id'])
-        logging.info(f"not in active users:   {state}      {messages_loaded}")
+        
         messages_loaded.append(HumanMessage(content=state["messages"][-1].content))
+        
         return {"messages": messages_loaded}
 
     else:
-        conversation = state["messages"]  # Use the existing messages if the user is already active
+        conversation = state["messages"]
     
         return {"messages": conversation}
 
 async def chatbot_node(state:MessagesState,config:Config):
     logging.info(f"----------Enter chatbot node------------")
-    # logging.info(f"--state---{state}")
-    # logging.info(f"response---{response}")
-    # logging.info(f"""config---{config["configurable"]['conversation'],
-    #                        config["configurable"]['thread_id'],
-    #                        state["messages"][-1],
-    #                        response.content}""")
+
     model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
     websocket = config["configurable"].get("websocket")
     full_response = ""
     thinking=False
     async for chunk in model.astream(state["messages"]):
+            
             if hasattr(chunk, 'content') and chunk.content:
+             
                 full_response += chunk.content
                 
-                # Enviar cada token por websocket si está disponible
                 if websocket:
+                    
                     if chunk.content=="<think>":
                         thinking=True
                         continue
+                    
                     elif chunk.content=="</think>":
                         thinking=False
                         continue
+                    
                     if thinking:
                         await websocket.send_json({
                             "event": "response",
                             "step":"thinking",
-                            "token": chunk.content,
-                            
+                            "token": chunk.content,                
                         })
+
                     else:
 
                         try:
@@ -92,7 +95,7 @@ async def chatbot_node(state:MessagesState,config:Config):
                             })
                         except Exception as e:
                             logging.error(f"Error sending websocket message: {e}")
-       # Crear mensaje de respuesta completo
+  
     response_message = AIMessage(content=full_response)
     
     # Guardar conversación

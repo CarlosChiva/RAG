@@ -114,7 +114,7 @@ async def query(credentials  = Depends(credentials_controllers.verify_jws)
 
     result = await controllers.get_chats(credentials)
     logging.info(f"result: {result}")
-    return {"collections_name":result}
+    return {"chats":result}
 
 @router.post("/remove-chat")
 async def query(chatName:ChatItem,credentials  = Depends(credentials_controllers.verify_jws)
