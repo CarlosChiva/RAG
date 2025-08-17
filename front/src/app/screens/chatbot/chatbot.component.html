@@ -35,7 +35,7 @@
       <div class="chat-output">
         <app-chat-output-chatbot id="chat-output" [messages]="messages" ></app-chat-output-chatbot>
       </div>
-    <app-user-input 
+    <app-user-input-chatbot
     class="user-input"
     [placeholder]="'Type your message here...'"
     [isSending]="isSending"
@@ -44,7 +44,7 @@
     [sendButtonText]="'Send'"
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)">
-  </app-user-input> 
+  </app-user-input-chatbot> 
 
      <!-- Ventana Emergente -->
      <div class="overlay" *ngIf="mostrarModal">

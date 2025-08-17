@@ -12,7 +12,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { SidebarItemComponent } from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
 import { ButtonContainerComponent } from '../../components/button-container/button-container.component';
 import { ModelsListComponent } from '../../components/models-list/models-list.component';
-import { UserInputComponent } from '../../components/user-input/user-input.component';
+import { UserInputChatbotComponent } from '../../components/user-input-chatbot/user-input-chatbot.component';
 
 import { Config } from '../../interfaces/config.interface';
 import { ModelItem } from '../../interfaces/models.inferface';
@@ -34,7 +34,7 @@ import { ModelsService } from '../../services/models.service';
     SidebarItemComponent,
     ButtonContainerComponent,
     ModelsListComponent,
-    UserInputComponent,
+    UserInputChatbotComponent,
     UploadComponent
   ],
   templateUrl: './chatbot.component.html',
