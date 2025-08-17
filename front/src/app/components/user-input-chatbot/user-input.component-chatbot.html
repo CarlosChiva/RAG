@@ -1,0 +1,18 @@
+<div class="input-area">
+  <input 
+    type="text" 
+    class="input-text"
+    [placeholder]="placeholder"
+    [value]="message"
+    [disabled]="disabled"
+    (input)="onInputChange($event)" 
+    (keydown)="onKeyDown($event)"
+    #inputText>
+  <button 
+    class="send-button"
+    (click)="onSendMessage()" 
+    [disabled]="isSending || disabled || !message.trim()">
+    <div class="spinner" *ngIf="isSending"></div>
+    <span *ngIf="!isSending">{{ sendButtonText }}</span>
+  </button>
+</div>
