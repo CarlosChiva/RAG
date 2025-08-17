@@ -14,6 +14,7 @@ export class UserInputChatbotComponent {
   
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
+  @Output() addComfyConfig = new EventEmitter<any>();
 
   private _message: string = '';
 
@@ -31,7 +32,9 @@ export class UserInputChatbotComponent {
     const target = event.target as HTMLInputElement;
     this.message = target.value;
   }
-
+  addConfig(event: Event): void {
+  
+  }
   onSendMessage(): void {
     if (this._message.trim() && !this.isSending && !this.disabled) {
       this.sendMessage.emit(this._message);
