@@ -180,6 +180,9 @@ export class ChatbotComponent implements OnInit {
   onMessageChange(message: string): void {
     this.currentMessage = message;
   }
+  addComfyConfig(event: any): void {
+  
+  }
 
   sendMessage(messageFromChild?: string): void {
     const messageText = messageFromChild || this.message || this.currentMessage;
