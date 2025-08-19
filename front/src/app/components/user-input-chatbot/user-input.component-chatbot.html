@@ -1,10 +1,20 @@
 <div class="input-area">
-  <button 
-    id="createChatButton"
-    (click)="addConfig($event)" 
-    class="addConfigBttn">
-      +
-  </button>
+  <ng-container *ngIf="comfyConfigExists; else showAddButton">
+    <button
+      id="editConfigButton"
+      (click)="addConfig($event)"
+      class="editConfigBttn"> ⚙️
+    </button>
+  </ng-container>
+
+  <ng-template #showAddButton>
+    <button
+      id="addConfigButton"
+      (click)="addConfig($event)"
+      class="addConfigBttn">
+        +
+    </button>
+  </ng-template>
   <input 
     type="text" 
     class="input-text"

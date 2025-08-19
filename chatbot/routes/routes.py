@@ -141,3 +141,11 @@ async def update_chat_name(chat_item: ChatItem, credentials=Depends(credentials_
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating chat name: {str(e)}")
+
+@router.post("/get-configurations")
+async def update_chat_name(credentials=Depends(credentials_controllers.verify_jws)):
+    try:
+        await controllers.get_conf(credentials)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error loading configurations: {str(e)}")

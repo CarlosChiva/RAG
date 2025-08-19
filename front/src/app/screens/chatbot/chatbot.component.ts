@@ -52,8 +52,8 @@ export class ChatbotComponent implements OnInit {
   private currentBotMessageIndex: number | null = null;
   messages: ChatMessage[] = [];
 
-  selectedModel: ModelItem = { name: '', size: '' };
-
+  selectedModel: ModelItem = { name: '', size: '' };  
+  hasComfyConfig:boolean=false;
   // Application state
   sidebarCollapsed = false;
   chats: string[] = [];
@@ -92,8 +92,13 @@ export class ChatbotComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChats();
+    this.loadComfy();
   }
+  // method to load comfyui configuration
+  loadComfy() {
 
+    this.hasComfyConfig = true; 
+  }
   // Sidebar methods
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;

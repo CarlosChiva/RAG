@@ -15,6 +15,7 @@ export class UserInputChatbotComponent {
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
   @Output() addComfyConfig = new EventEmitter<any>();
+  @Input() comfyConfigExists: boolean = false;
 
   private _message: string = '';
 
@@ -33,7 +34,8 @@ export class UserInputChatbotComponent {
     this.message = target.value;
   }
   addConfig(event: Event): void {
-  
+    // Este método emite el evento hacia el padre sin importar qué botón se pulsó
+    this.addComfyConfig.emit(event);
   }
   onSendMessage(): void {
     if (this._message.trim() && !this.isSending && !this.disabled) {
