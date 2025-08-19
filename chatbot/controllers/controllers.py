@@ -4,7 +4,7 @@ from services.graph_service import graph
 from services.ollama_services import get_models
 from config import Config
 from langchain_core.messages import HumanMessage
-from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_user_conversation,update_name_chat
+from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_user_conversation,update_name_chat,get_configurations
 import logging
 active_users=[]
 def catch_event(event_metadata:dict):
@@ -73,3 +73,6 @@ async def get_conversation(credentials,chat_name)->list[dict[str,list[str]]]:
 
 async def update_chat_name(old_name,new_name,credencials):
     await update_name_chat(old_name,new_name,credencials)
+
+async def get_conf(credentials):
+    return await get_configurations(credentials)    

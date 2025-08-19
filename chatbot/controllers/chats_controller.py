@@ -7,6 +7,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 PATH_CONVERSATIONS=os.getenv("PATH_CONVERSATIONS")
+CONFIG_PATH=os.getenv("CONFIG_PATH")
 async def add_conversation(chat_name,credentials,user_input,bot_output):
     logging.info(f"----------Enter add_conversation------------")
     logging.info(f"user_input---{user_input}")
@@ -63,7 +64,7 @@ async def remove_conversation(chat_name, credentials) -> str:
         return f"Conversation '{chat_name}' deleted successfully."
 
     return f"Conversation '{chat_name}' not found."
-async def get_user_conversation(credentials: str, chat_name: str) :
+async def get_user_conversation(credentials: str, chat_name: str) -> list:
     if not os.path.exists(PATH_CONVERSATIONS):
         with open(PATH_CONVERSATIONS, "w") as f:
             json.dump({}, f)
@@ -82,9 +83,19 @@ async def get_user_conversation(credentials: str, chat_name: str) :
             json.dump(data, f)
     return data[credentials][chat_name]
 
-async def update_name_chat(old_name,new_name,credendials):
+async def update_name_chat(old_name,new_name,credendials)-> None:
     with open (PATH_CONVERSATIONS,"r") as f:
         data=json.load(f)
     data[credendials][new_name]=data[credendials].pop(old_name)
     with open (PATH_CONVERSATIONS,"w") as f:
         json.dump(data,f)
+async def get_configurations(credentials)-> dict:
+    if not os.path.exists(CONFIG_PATH):
+        users_config={}
+        users_config[credentials]={}
+        with open(CONFIG_PATH, "w") as f:
+            
+            json.dump(users_config, f)
+    with open (CONFIG_PATH,"r") as f:
+        data=json.load(f)
+    return data[credentials]
