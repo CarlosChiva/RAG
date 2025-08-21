@@ -7,13 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { CollectionsService } from '../../services/collections.service';
 
 @Component({
-  selector: 'app-upload-pdf',
+  selector: 'app-upload-Comfy',
   standalone: true,
   imports: [CommonModule, HttpClientModule,  FormsModule],
-  templateUrl: './upload_pdf.component.html',
-  styleUrls: ['./upload_pdf.component.scss']
+  templateUrl: './upload_comfy.component.html',
+  styleUrls: ['./upload_comfy.component.scss']
 })
-export class UploadComponent implements OnInit {
+export class UploadComfyComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
 
