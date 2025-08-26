@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { marked } from 'marked';
-import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component';
+import { UploadComfyComponent } from '../../components/upload_comfy_conf/upload_comfy.component';
 import { ChatOutputChatbotComponent } from '../../components/chat-output-chatbot/chat-output-chatbot.component';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { SidebarItemComponent } from '../../components/sidebar-conversations-item/sidebar-conversations-item.component';
@@ -35,7 +35,7 @@ import { ModelsService } from '../../services/models.service';
     ButtonContainerComponent,
     ModelsListComponent,
     UserInputChatbotComponent,
-    UploadComponent
+    UploadComfyComponent
   ],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss']
@@ -84,11 +84,6 @@ export class ChatbotComponent implements OnInit {
     document.body.classList.add('modal-open');
   }
 
-  cerrarModal() {
-    this.mostrarModal = false;
-    document.body.classList.remove('modal-open');
-    this.ngOnInit();
-  }
 
   ngOnInit(): void {
     this.loadChats();
@@ -96,9 +91,29 @@ export class ChatbotComponent implements OnInit {
   }
   // method to load comfyui configuration
   loadComfy() {
-
-    this.hasComfyConfig = true; 
+    
+    this.hasComfyConfig = false;
+    this.mostrarModal = false; 
   }
+
+  addComfyConfig(event: any): void {
+  //aaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+  if (!this.hasComfyConfig){
+    console.log("aaaaaaaaaaaaaaaaaa");
+    this.mostrarModal = true;
+    document.body.classList.add('modal-open'); // Bloquea el fondo
+  }else{
+    console.log("bbbbbbbbbbbbbbb");
+    //aaaaaaaaaaaa
+    }
+  }
+  cerrarModal() {
+      this.mostrarModal = false;
+      document.body.classList.remove('modal-open');
+      this.ngOnInit();
+  }
+
   // Sidebar methods
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
@@ -185,10 +200,6 @@ export class ChatbotComponent implements OnInit {
   onMessageChange(message: string): void {
     this.currentMessage = message;
   }
-  addComfyConfig(event: any): void {
-  
-  }
-
   sendMessage(messageFromChild?: string): void {
     const messageText = messageFromChild || this.message || this.currentMessage;
 
