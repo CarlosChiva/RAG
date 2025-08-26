@@ -2,14 +2,13 @@
 <div class="upload-container">
   <button class="backButton" id="backButton" (click)="cerrar()">X</button>
 
-  <h1>Send PDF</h1>
+  <h1>Send API.JSON</h1>
 
   <form (submit)="uploadFiles(); $event.preventDefault()">
     <input 
       type="file" 
       #fileInput 
-      accept=".pdf" 
-      multiple 
+      accept=".json"  
       (change)="handleFileInput($event)" 
       style="display: none;">
     
@@ -19,28 +18,17 @@
       (dragover)="onDragOver($event)" 
       (dragleave)="onDragLeave($event)" 
       (drop)="onDrop($event)">
-      {{ files && files.length ? files.length + ' file(s) selected' : 'Drag & Drop PDFs Here' }}
+      {{ file ? file.name  : 'Drag & Drop Api.json Here' }}
     </div>
     
     <div>
-      <label for="collectionSelect">Select Existing Collection:</label>
-      <select 
-        id="collectionSelect" 
-        [(ngModel)]="selectedCollection" 
-        name="collectionSelect">
-        <option value="">-- Select Collection --</option>
-        <option *ngFor="let collection of collections" [value]="collection">
-          {{ collection }}
-        </option>
-      </select>
-       Or      
-      <!-- <label for="newCollection">Or</label> -->
+      <label for="collectionSelect">Select Node of Positive Prompt:</label>
       <input 
         type="text" 
-        id="newCollection" 
-        placeholder="Enter a new collection name" 
-        [(ngModel)]="newCollection" 
-        name="newCollection">
+        id="api-json" 
+        placeholder="Enter a number of positive prompt node" 
+        [(ngModel)]="positivePromptNode" 
+        name="positivePromptNode">
     </div>
     
     <button 

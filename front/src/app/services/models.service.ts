@@ -142,4 +142,23 @@ export class ModelsService {
     };
     return this.http.post(`${this.apiUrl}/update-chat-name`, { oldChatName, newChatName }, options);
   }
+  getComfyUiConf():Observable<Object>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+    });
+    
+    return this.http.get<Object>(`${this.apiUrl}/get_comfy_conf`, { 
+      headers 
+    });
+  }
+  updateComfyUiConf(conf:Object):Observable<Object>{
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+    });
+    console.log(`config send ${conf}`);
+    
+    return this.http.post<Object>(`${this.apiUrl}/update_comfy_conf`, conf, { 
+      headers 
+    });
+  }
 }

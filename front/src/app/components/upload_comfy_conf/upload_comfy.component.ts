@@ -4,7 +4,7 @@ import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { CollectionsService } from '../../services/collections.service';
+import { ModelsService } from '../../services/models.service';
 
 @Component({
   selector: 'app-upload-Comfy',
@@ -18,14 +18,13 @@ export class UploadComfyComponent implements OnInit {
   @Output() cerrarModal = new EventEmitter<void>(); // Evento para cerrar el modal
 
   collections: string[] = [];
-  selectedCollection: string = '';
-  newCollection: string = '';
+  positivePromptNode: string = '';
   isLoading: boolean = false;
-  files: FileList | null = null;
+  file: File | null = null;
 
   constructor(
     private router: Router,
-    private collectionsService: CollectionsService
+    private modelsService: ModelsService
 
   ) {}
 
@@ -38,17 +37,8 @@ export class UploadComfyComponent implements OnInit {
       return;
     }
     
-    this.loadCollections();
   }
 
-  loadCollections(): void {
-    this.collectionsService.getCollections().subscribe({
-      next: (data) => {
-        this.collections = data.collections_name;
-      },
-      error: (error) => console.error('Error fetching collections:', error)
-    });
-  }
 
   openFileDialog(): void {
     this.fileInput.nativeElement.click();
@@ -56,25 +46,15 @@ export class UploadComfyComponent implements OnInit {
 
   handleFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
+      // Si el input contiene archivos
     if (input.files && input.files.length > 0) {
-      this.files = input.files;
+    // Tomamos el **primer** (y único) archivo
+      this.file = input.files[0];
     }
   }
 
   navigateBack(): void {
-    this.collectionsService.getCollections().subscribe({
-      next: (data) => {
-        if (data.collections_name.length === 0) {
-          alert('No collections found');
-          this.router.navigate(['/menu']);
-        } else {
-          this.router.navigate(['/pdf']);
-        }
-      },
-      error: (error) => {
-        console.error('Error fetching collections:', error);
-      }
-    });
+  
   }
 
   onDragOver(event: DragEvent): void {
@@ -97,37 +77,71 @@ export class UploadComfyComponent implements OnInit {
     
     const dropzone = event.currentTarget as HTMLElement;
     dropzone.classList.remove('dragover');
-    
-    if (event.dataTransfer?.files) {
-      this.files = event.dataTransfer.files;
+    const fileList = event.dataTransfer?.files;
+
+    if (fileList && fileList.length > 0) {
+      this.file = fileList[0];
     }
   }
 
   uploadFiles(): void {
-    if (!this.files || this.files.length === 0) {
+    if (!this.file ) {
       alert('Please select a file.');
       return;
     }
 
-    if (!this.selectedCollection && !this.newCollection) {
+    if (!this.positivePromptNode) {
       alert('Please select an existing collection or create a new one.');
       return;
     }
+    let combinedConfig: any = null;
+    let newComfyuiConf: any = { positive_prompt_node: this.positivePromptNode };
 
-    // Definir correctamente la variable collectionName
-    const collectionToUse = this.selectedCollection || this.newCollection;
        
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        // ---- 2️⃣  Parsear el contenido JSON ----
+        const fileContent = reader.result as string;
+        const parsed = JSON.parse(fileContent);
+
+        // ---- 3️⃣  Extraer la sección “comfyuiConf” ----
+        // Si el JSON ya viene sin ese wrapper, usamos `parsed` directamente.
+        const inner = parsed.comfyuiConf ?? parsed;
+
+        // ---- 4️⃣  Fusionar con newComfyuiConf ----
+        combinedConfig = { ...inner, ...newComfyuiConf };
+
+        // --------- 5️⃣  Hacer lo que necesites con la configuración ----------
+        console.log('Configuración combinada:', combinedConfig);
+        // Por ejemplo, guardarla en un servicio, enviarla a un API, etc.
+      } catch (err) {
+        console.error(err);
+        alert('El archivo no es un JSON válido o tiene un formato inesperado.');
+      } finally {
+        this.isLoading = false;
+      }
+    };
+
+    reader.onerror = () => {
+      console.error('Error al leer el archivo.');
+      alert('Error al leer el archivo.');
+      this.isLoading = false;
+    };
+
+    // ---- 6️⃣  Iniciar la lectura como texto ----
+    reader.readAsText(this.file);
+  
+
+
+
+
     this.isLoading = true;
     
-    this.collectionsService.uploadFiles(this.files, collectionToUse).subscribe({
+    this.modelsService.updateComfyUiConf(combinedConfig).subscribe({
       next: (response: any) => {
         alert('Files uploaded successfully!');
-        this.files = null;
-        this.selectedCollection = '';
-        this.newCollection = '';
-        if (this.fileInput.nativeElement) {
-          this.fileInput.nativeElement.value = '';
-        }
       },
       error: (error) => {
         alert(error.error?.error || 'Error uploading files.');
