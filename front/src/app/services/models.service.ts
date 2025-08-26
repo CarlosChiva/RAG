@@ -142,6 +142,7 @@ export class ModelsService {
     };
     return this.http.post(`${this.apiUrl}/update-chat-name`, { oldChatName, newChatName }, options);
   }
+  
   getComfyUiConf():Observable<Object>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`
@@ -153,7 +154,8 @@ export class ModelsService {
   }
   updateComfyUiConf(conf:Object):Observable<Object>{
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${window.localStorage.getItem('token')}`
+      'Authorization': `Bearer ${window.localStorage.getItem('token')}`,
+      'Content-Type': 'application/json', 
     });
     console.log(`config send ${conf}`);
     
