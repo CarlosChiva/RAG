@@ -91,9 +91,21 @@ export class ChatbotComponent implements OnInit {
   }
   // method to load comfyui configuration
   loadComfy() {
-    
-    this.hasComfyConfig = false;
-    this.mostrarModal = false; 
+    this.ModelsService.getComfyUiConf().subscribe({
+      next: (data: any) => {
+        const isEmptyObject = !data || Object.keys(data).length === 0;
+        if (isEmptyObject) {
+
+          console.log("No se encontraron datos",data);
+          this.hasComfyConfig = false;
+        }else{
+          console.log("Se encontraron datos",data);
+          this.hasComfyConfig= true
+
+        }
+      },
+      error: (error) => console.error('Error fetching collections:', error)
+    })
   }
 
   addComfyConfig(event: any): void {
@@ -105,6 +117,7 @@ export class ChatbotComponent implements OnInit {
     document.body.classList.add('modal-open'); // Bloquea el fondo
   }else{
     console.log("bbbbbbbbbbbbbbb");
+    this.mostrarModal = false;
     //aaaaaaaaaaaa
     }
   }

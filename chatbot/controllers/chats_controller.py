@@ -8,6 +8,8 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 PATH_CONVERSATIONS=os.getenv("PATH_CONVERSATIONS")
 CONFIG_PATH=os.getenv("CONFIG_PATH")
+CONFIGS_PATH=os.getenv("PATH_CONFIGS")
+
 async def add_conversation(chat_name,credentials,user_input,bot_output):
     logging.info(f"----------Enter add_conversation------------")
     logging.info(f"user_input---{user_input}")
@@ -99,3 +101,41 @@ async def get_configurations(credentials)-> dict:
     with open (CONFIG_PATH,"r") as f:
         data=json.load(f)
     return data[credentials]
+
+
+
+
+
+
+
+async def get_comfy_conf(credentials)-> dict:
+    if not os.path.exists(CONFIGS_PATH):
+        users_config={}
+        users_config[credentials]={}
+        with open(CONFIGS_PATH, "w") as f:
+            json.dump(users_config, f)
+            return {}
+    with open (CONFIGS_PATH,"r") as f:
+        data=json.load(f)
+    return data[credentials]
+
+
+
+async def save_comfy_conf(comfyui_conf,credendials):
+    logging.info("saving....")
+    try:
+        if not os.path.exists(CONFIGS_PATH):
+            with open(CONFIGS_PATH, "w", encoding="utf-8") as f:
+                json.dump({}, f, indent=2)
+
+        logging.info(comfyui_conf)
+        with open (CONFIGS_PATH,"r") as f:
+            data=json.load(f)
+
+        logging.info(data)
+        data[credendials]=comfyui_conf
+        with open (CONFIGS_PATH,"w") as f:
+            json.dump(data,f)
+    except Exception as e:
+        logging.error(f"Error saving configurations: {str(e)}")
+    return True

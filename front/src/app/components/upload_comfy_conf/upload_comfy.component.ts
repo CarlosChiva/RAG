@@ -84,73 +84,58 @@ export class UploadComfyComponent implements OnInit {
     }
   }
 
-  uploadFiles(): void {
-    if (!this.file ) {
-      alert('Please select a file.');
-      return;
-    }
-
-    if (!this.positivePromptNode) {
-      alert('Please select an existing collection or create a new one.');
-      return;
-    }
-    let combinedConfig: any = null;
-    let newComfyuiConf: any = { positive_prompt_node: this.positivePromptNode };
-
-       
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      try {
-        // ---- 2️⃣  Parsear el contenido JSON ----
-        const fileContent = reader.result as string;
-        const parsed = JSON.parse(fileContent);
-
-        // ---- 3️⃣  Extraer la sección “comfyuiConf” ----
-        // Si el JSON ya viene sin ese wrapper, usamos `parsed` directamente.
-        const inner = parsed.comfyuiConf ?? parsed;
-
-        // ---- 4️⃣  Fusionar con newComfyuiConf ----
-        combinedConfig = { ...inner, ...newComfyuiConf };
-
-        // --------- 5️⃣  Hacer lo que necesites con la configuración ----------
-        console.log('Configuración combinada:', combinedConfig);
-        // Por ejemplo, guardarla en un servicio, enviarla a un API, etc.
-      } catch (err) {
-        console.error(err);
-        alert('El archivo no es un JSON válido o tiene un formato inesperado.');
-      } finally {
-        this.isLoading = false;
-      }
-    };
-
-    reader.onerror = () => {
-      console.error('Error al leer el archivo.');
-      alert('Error al leer el archivo.');
-      this.isLoading = false;
-    };
-
-    // ---- 6️⃣  Iniciar la lectura como texto ----
-    reader.readAsText(this.file);
-  
-
-
-
-
-    this.isLoading = true;
-    
-    this.modelsService.updateComfyUiConf(combinedConfig).subscribe({
-      next: (response: any) => {
-        alert('Files uploaded successfully!');
-      },
-      error: (error) => {
-        alert(error.error?.error || 'Error uploading files.');
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
+uploadFiles(): void {
+  if (!this.file) {
+    alert('Please select a file.');
+    return;
   }
+  if (!this.positivePromptNode) {
+    alert('Please select an existing collection or create a new one.');
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const fileContent = reader.result as string;
+      const parsed = JSON.parse(fileContent);
+
+      // Si el JSON ya no tiene la clave 'comfyuiConf', usamos el objeto completo
+      const inner = parsed.comfyuiConf ?? parsed;
+
+      // Fusionamos con el nodo positivo
+      const combinedConfig = {
+        api_json: inner,
+        positive_prompt_node: this.positivePromptNode,
+      };
+
+      console.log('Configuración combinada:', combinedConfig);
+
+      // Ahora sí enviamos la configuración
+      this.isLoading = true;
+      this.modelsService.updateComfyUiConf(combinedConfig).subscribe({
+        next: (_) => alert('Files uploaded successfully!'),
+        error: (err) => alert(err.error?.error || 'Error uploading files.'),
+        complete: () => this.isLoading = false,
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert('El archivo no es un JSON válido o tiene un formato inesperado.');
+      this.isLoading = false;
+    }
+  };
+
+  reader.onerror = () => {
+    console.error('Error al leer el archivo.');
+    alert('Error al leer el archivo.');
+    this.isLoading = false;
+  };
+
+  // Inicia la lectura
+  reader.readAsText(this.file);
+}
   cerrar() {
     this.cerrarModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
