@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 @Component({
   selector: 'app-user-input-chatbot',
@@ -16,6 +16,8 @@ export class UserInputChatbotComponent {
   @Output() sendMessage = new EventEmitter<string>();
   @Output() addComfyConfig = new EventEmitter<any>();
   @Input() comfyConfigExists: boolean = false;
+  dropdownDirection: 'up' | 'down' = 'down';
+  selectedOption: string | null = null;
 
   private _message: string = '';
 
@@ -47,6 +49,69 @@ export class UserInputChatbotComponent {
     if (event.key === 'Enter') {
       event.preventDefault();
       this.onSendMessage();
+    }
+  }
+
+    // Nuevas propiedades que necesitas agregar
+  isToolSelected: boolean = false;
+  isDropdownOpen: boolean = false;
+
+
+    // Nuevos métodos que necesitas agregar
+  toggleImageSelection(): void {
+    this.isToolSelected = !this.isToolSelected;
+    
+    // Aquí puedes agregar tu lógica cuando se selecciona/deselecciona
+    if (this.isToolSelected) {
+      console.log('Image seleccionado');
+      // Tu lógica para cuando está seleccionado
+    } else {
+      console.log('Image deseleccionado');
+      // Tu lógica para cuando está deseleccionado
+    }
+  }
+
+  // Método para toggle del dropdown
+  toggleDropdown(): void {
+this.isDropdownOpen = !this.isDropdownOpen;
+  
+  if (this.isDropdownOpen) {
+    // Detectar si hay espacio suficiente abajo
+    setTimeout(() => {
+      const button = document.getElementById('dropdownButton');
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const menuHeight = 120; // Altura estimada del menú (ajustar según necesites)
+        
+        this.dropdownDirection = spaceBelow >= menuHeight ? 'down' : 'up';
+      }
+    }, 0);
+  }  }
+
+  // Método para seleccionar una opción del dropdown
+  selectOption(option: string): void {
+    this.selectedOption = option;
+    this.isDropdownOpen = false; // Cerrar el dropdown después de seleccionar
+    
+    console.log('Opción seleccionada:', option);
+    if (option === 'image') {
+      
+      this.toggleImageSelection();
+    }
+    else if (option === 'config') {
+      
+    }
+    // Aquí puedes agregar tu lógica para manejar la opción seleccionada
+  }
+
+  // Opcional: Cerrar dropdown si se hace clic fuera del componente
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-container')) {
+      this.isDropdownOpen = false;
     }
   }
 }

@@ -1,20 +1,59 @@
 <div class="input-area">
-  <ng-container *ngIf="comfyConfigExists; else showAddButton">
-    <button
-      id="editConfigButton"
-      (click)="addConfig($event)"
-      class="editConfigBttn"> ⚙️
-    </button>
-  </ng-container>
+<ng-container *ngIf="comfyConfigExists; else showAddButton">
+  <div class="button-group">
+    <!-- Botón con dropdown -->
+    <div class="dropdown-container">
+      <button
+        id="dropdownButton"
+        (click)="toggleDropdown()"
+        class="dropdownBttn"
+        [class.active]="isDropdownOpen">
+        ▼
+      </button>
+            
+      <ul *ngIf="isDropdownOpen" 
+          class="dropdown-menu" 
+          [class.dropdown-up]="dropdownDirection === 'up'"
+          [class.dropdown-down]="dropdownDirection === 'down'">
+        <li (click)="selectOption('opcion1')">Opción 1</li>
+        <li (click)="selectOption('opcion2')">Opción 2</li>
+        <li (click)="selectOption('opcion3')">Opción 3</li>
+      </ul>
+    </div>
 
-  <ng-template #showAddButton>
+    <!-- Botón Image toggleable -->
     <button
-      id="addConfigButton"
-      (click)="addConfig($event)"
-      class="addConfigBttn">
-        +
+      id="imageToggleButton"
+      (click)="toggleImageSelection()"
+      class="imageToggleBttn"
+      [class.selected]="isToolSelected">
+      {{ ToolSelected }}
     </button>
-  </ng-template>
+    
+  </div>
+</ng-container>
+
+<ng-template #showAddButton>
+  <div class="dropdown-container">
+    <button
+      id="dropdownButton"
+      (click)="toggleDropdown()"
+      class="dropdownBttn"
+      [class.active]="isDropdownOpen">
+      ▼
+    </button>
+            
+    <ul *ngIf="isDropdownOpen" 
+        class="dropdown-menu" 
+        [class.dropdown-up]="dropdownDirection === 'up'"
+        [class.dropdown-down]="dropdownDirection === 'down'">
+      <li (click)="selectOption('image')">Image</li>
+      <li (click)="selectOption('mcp')">MCP</li>
+
+    </ul>
+  </div>
+</ng-template>
+
   <input 
     type="text" 
     class="input-text"
