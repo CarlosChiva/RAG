@@ -94,15 +94,6 @@ this.isDropdownOpen = !this.isDropdownOpen;
   selectOption(option: string): void {
     this.selectedOption = option;
     this.isDropdownOpen = false; // Cerrar el dropdown después de seleccionar
-    
-    console.log('Opción seleccionada:', option);
-    if (option === 'image') {
-      
-      this.toggleImageSelection();
-    }
-    else if (option === 'config') {
-      
-    }
     // Aquí puedes agregar tu lógica para manejar la opción seleccionada
   }
 
