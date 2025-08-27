@@ -1,5 +1,5 @@
 <div class="input-area">
-<ng-container *ngIf="comfyConfigExists; else showAddButton">
+<ng-container *ngIf="toolExists; else showAddButton">
   <div class="button-group">
     <!-- Botón con dropdown -->
     <div class="dropdown-container">
@@ -15,9 +15,8 @@
           class="dropdown-menu" 
           [class.dropdown-up]="dropdownDirection === 'up'"
           [class.dropdown-down]="dropdownDirection === 'down'">
-        <li (click)="selectOption('opcion1')">Opción 1</li>
-        <li (click)="selectOption('opcion2')">Opción 2</li>
-        <li (click)="selectOption('opcion3')">Opción 3</li>
+        <li (click)="selectOption('image')">Image</li>
+        <li (click)="selectOption('mcp')">MCP</li>
       </ul>
     </div>
 
@@ -27,7 +26,7 @@
       (click)="toggleImageSelection()"
       class="imageToggleBttn"
       [class.selected]="isToolSelected">
-      {{ ToolSelected }}
+      {{ toolSelected }}
     </button>
     
   </div>
