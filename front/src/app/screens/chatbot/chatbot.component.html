@@ -43,7 +43,7 @@
     [disabled]="!selectedChat"
     [sendButtonText]="'Send'"
 
-    [comfyConfigExists]="hasComfyConfig"
+    [toolExists]="hasComfyConfig"
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)"
     (addComfyConfig)="addComfyConfig($event)">

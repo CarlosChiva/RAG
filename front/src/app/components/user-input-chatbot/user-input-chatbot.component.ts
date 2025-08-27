@@ -15,10 +15,10 @@ export class UserInputChatbotComponent {
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
   @Output() addComfyConfig = new EventEmitter<any>();
-  @Input() comfyConfigExists: boolean = false;
+  @Input() toolExists: boolean = false;
   dropdownDirection: 'up' | 'down' = 'down';
-  selectedOption: string | null = null;
-
+  toolSelected: string | null = null;
+  hasComfyConfig: boolean = false;
   private _message: string = '';
 
   @Input() 
@@ -73,7 +73,7 @@ export class UserInputChatbotComponent {
 
   // Método para toggle del dropdown
   toggleDropdown(): void {
-this.isDropdownOpen = !this.isDropdownOpen;
+  this.isDropdownOpen = !this.isDropdownOpen;
   
   if (this.isDropdownOpen) {
     // Detectar si hay espacio suficiente abajo
@@ -92,7 +92,7 @@ this.isDropdownOpen = !this.isDropdownOpen;
 
   // Método para seleccionar una opción del dropdown
   selectOption(option: string): void {
-    this.selectedOption = option;
+    this.toolSelected = option;
     this.isDropdownOpen = false; // Cerrar el dropdown después de seleccionar
     // Aquí puedes agregar tu lógica para manejar la opción seleccionada
   }

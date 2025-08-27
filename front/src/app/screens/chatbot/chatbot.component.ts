@@ -63,6 +63,7 @@ export class ChatbotComponent implements OnInit {
   currentMessage: string = '';
   isSending: boolean = false;
   mostrarModal: boolean = false;
+  rawText:string="";
 
 
   config: Config = {
@@ -270,6 +271,7 @@ export class ChatbotComponent implements OnInit {
         }
         this.isSending = false;
         this.currentBotMessageIndex = null;
+        this.rawText = '';
       }
     });
   }
@@ -321,7 +323,8 @@ export class ChatbotComponent implements OnInit {
         if (!currentMessage.responseText) {
           currentMessage.responseText = '';
         }
-        currentMessage.responseText += data.response;
+         this.rawText+= data.response
+        currentMessage.responseText =this.sanitizer.bypassSecurityTrustHtml(marked(this.rawText)as string); 
         
        
       }
@@ -338,7 +341,7 @@ export class ChatbotComponent implements OnInit {
       
       if (typeof currentMessage.responseText === 'string') {
         const markdownText = marked(currentMessage.responseText);
-        currentMessage.responseText = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
+        currentMessage.responseText += this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
       }
     }
   }

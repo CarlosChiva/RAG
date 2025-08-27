@@ -6,7 +6,7 @@ export interface ChatMessage {
   isTyping?: boolean;
   eventHeader?: string;
   thinkingTokens?: string[];
-  responseText?: string | SafeHtml;
+  responseText?:  SafeHtml;
   showThinking?: boolean;
   eventHistory?: string[];  // NUEVO: historial de eventos
   currentEvent?: string;    // NUEVO: evento actual
