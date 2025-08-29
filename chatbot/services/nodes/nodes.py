@@ -1,3 +1,4 @@
+from urllib import request
 from langchain_ollama import ChatOllama
 from langgraph.graph import  MessagesState
 
@@ -108,10 +109,31 @@ async def chatbot_node(state:MessagesState,config:Config):
     
 
     return {"messages": [response_message]}
+
+import json
+from urllib import request
+
+def queue_prompt(prompt):
+    p = {"prompt": prompt}
+
+
+    data = json.dumps(p).encode('utf-8')
+    req =  request.Request("http://localhost:8188/prompt", data=data)
+    request.urlopen(req)
+
 async def image_generator(state:MessagesState,config):
     websocket = config["configurable"].get("websocket")
     await websocket.send_json({
         "event": "Generating image..."
     })
-    logging.info(f"image_prompt---{config} {state}")
+    logging.info(f"image_prompt---{config["configurable"]["userInput"]}    {config["configurable"]["tools"]["image_tools"]["api_json"]}  {config["configurable"]["tools"]["image_tools"]["positive_prompt_node"]}")
+
+
+    # prompt = json.loads(config["configurable"]["tools"]["image_tools"]["api_json"])
+    # #set the text prompt for our positive CLIPTextEncode
+    # prompt[str(config["configurable"]["tools"]["image_tools"]["positive_prompt_node"])]["inputs"]["text"] = config["configurable"]["userInput"]
+
+    # queue_prompt(prompt)
+
+
     pass
