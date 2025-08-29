@@ -25,7 +25,6 @@ export interface ChatMessage {
 })
 export class ChatOutputChatbotComponent implements AfterViewChecked {
   @Input() messages: ChatMessage[] = [];
-  @Input() showTables: boolean = false; // Por compatibilidad con el template padre
   @ViewChild('chatOutput') chatOutput!: ElementRef;
 
   constructor(private sanitizer: DomSanitizer) {}
@@ -72,7 +71,7 @@ export class ChatOutputChatbotComponent implements AfterViewChecked {
     // Convertir markdown a HTML
     const htmlText = marked(thinkingText) as string;
     // Sanitizar el HTML
-    return htmlText;
-    // return this.sanitizer.bypassSecurityTrustHtml(htmlText);
+    //return htmlText;
+    return this.sanitizer.bypassSecurityTrustHtml(htmlText);
   }
 }
