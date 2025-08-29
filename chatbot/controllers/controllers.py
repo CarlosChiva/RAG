@@ -4,7 +4,7 @@ from services.graph_service import graph
 from services.ollama_services import get_models
 from config import Config
 from langchain_core.messages import HumanMessage
-from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_user_conversation,update_name_chat,get_configurations,save_comfy_conf,get_comfy_conf
+from controllers.chats_controller import new_conversation,get_chats_list, remove_conversation,get_user_conversation,update_name_chat,get_configurations,save_tools_conf,get_tools_configuration
 import logging
 active_users=[]
 def catch_event(event_metadata:dict):
@@ -18,7 +18,6 @@ def catch_event(event_metadata:dict):
         case _ :
             return "Error"
 async def query(conf:Config,websocket):
-    #invoke grafo(input,conf_id_conversation,configuracion_modelo)
 
     config = {
         "configurable": {
@@ -36,24 +35,7 @@ async def query(conf:Config,websocket):
         pass
     await websocket.send_json({"end":"__END__"})
     await websocket.close()
-# websocket.send_json({"event":event.content})
 
-
-
-    #     if metadata.get('langgraph_node')== 'chatbot':
-    #         logging.info(f"chatbot captured---{event.content}")
-    #         fullText+=event.content
-    #     logging.info(f"event---{event}")
-    #     #logging.info(f"metadata---{metadata}")
-        
-    #     last = event
-    # logging.info(f"last---{fullText}")
-    # return last['chatbot']["messages"]
-    # async for i in graph.ainvoke({"messages":input_messages},
-    #                       config,
-    #                       stream_mode="updates"):
-    #     last=i
-    # return last['chatbot']["messages"]
 async def get_ollama_models():
     # from ollama service, get all models availables and return them
     return get_models()
@@ -77,8 +59,10 @@ async def update_chat_name(old_name,new_name,credencials):
 async def get_conf(credentials):
     return await get_configurations(credentials)
     
-async def update_comfy_conf(comfyui_conf,credencials):
-    logging.info("controllers")
-    return await save_comfy_conf(comfyui_conf,credencials)
-async def get_comfyui_conf(credentials):
-    return await get_comfy_conf(credentials)
+async def update_tools_conf(comfyui_conf,credencials):
+    return await save_tools_conf(comfyui_conf,credencials)
+async def get_tools_conf(credentials):
+    try:
+        return await get_tools_configuration(credentials)
+    except Exception as e:
+        logging.error(f"Error getting tools configuration: {str(e)}")

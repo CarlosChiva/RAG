@@ -1,7 +1,6 @@
 // pdf.component.ts
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -27,7 +26,6 @@ import { ModelsService } from '../../services/models.service';
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule,
     FormsModule,
     ChatOutputChatbotComponent,
     SidebarComponent,
@@ -53,7 +51,6 @@ export class ChatbotComponent implements OnInit {
   messages: ChatMessage[] = [];
 
   selectedModel: ModelItem = { name: '', size: '' };  
-  hasComfyConfig:boolean=false;
   // Application state
   sidebarCollapsed = false;
   chats: string[] = [];
@@ -63,15 +60,15 @@ export class ChatbotComponent implements OnInit {
   currentMessage: string = '';
   isSending: boolean = false;
   mostrarModal: boolean = false;
-  rawText:string="";
-
+  rawResponse:string="";
+  mcp_comfy_config:Object={};
 
   config: Config = {
     credentials: '',
     conversation: '',
     modelName: '',
     userInput: '',
-    image: false,
+    tools:{},
   };
 
   constructor(
@@ -88,40 +85,8 @@ export class ChatbotComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChats();
-    this.loadComfy();
   }
-  // method to load comfyui configuration
-  loadComfy() {
-    this.ModelsService.getComfyUiConf().subscribe({
-      next: (data: any) => {
-        const isEmptyObject = !data || Object.keys(data).length === 0;
-        if (isEmptyObject) {
-
-          console.log("No se encontraron datos",data);
-          this.hasComfyConfig = false;
-        }else{
-          console.log("Se encontraron datos",data);
-          this.hasComfyConfig= true
-
-        }
-      },
-      error: (error) => console.error('Error fetching collections:', error)
-    })
-  }
-
-  addComfyConfig(event: any): void {
-  //aaaaaaaaaaaaaaaaaaaaaaaaaaa
-
-  if (!this.hasComfyConfig){
-    console.log("aaaaaaaaaaaaaaaaaa");
-    this.mostrarModal = true;
-    document.body.classList.add('modal-open'); // Bloquea el fondo
-  }else{
-    console.log("bbbbbbbbbbbbbbb");
-    this.mostrarModal = false;
-    //aaaaaaaaaaaa
-    }
-  }
+  
   cerrarModal() {
       this.mostrarModal = false;
       document.body.classList.remove('modal-open');
@@ -249,7 +214,7 @@ export class ChatbotComponent implements OnInit {
       userInput: messageText,
       conversation: this.selectedChat,
       modelName: this.selectedModel.name,
-      image: false,
+      tools: this.mcp_comfy_config,
     };
 
     console.log(this.config);
@@ -271,7 +236,7 @@ export class ChatbotComponent implements OnInit {
         }
         this.isSending = false;
         this.currentBotMessageIndex = null;
-        this.rawText = '';
+        this.rawResponse = '';
       }
     });
   }
@@ -323,8 +288,8 @@ export class ChatbotComponent implements OnInit {
         if (!currentMessage.responseText) {
           currentMessage.responseText = '';
         }
-         this.rawText+= data.response
-        currentMessage.responseText =this.sanitizer.bypassSecurityTrustHtml(marked(this.rawText)as string); 
+         this.rawResponse+= data.response
+        currentMessage.responseText =this.sanitizer.bypassSecurityTrustHtml(marked(this.rawResponse)as string); 
         
        
       }
@@ -383,6 +348,16 @@ export class ChatbotComponent implements OnInit {
     });
 
     this.loadChats();
+  }
+  onToolConfigSelected(config: Object): void {
+    console.log('Tool configuration selected by the child:', config);
+    if(!config || Object.keys(config).length === 0){
+      console.log("No se encontraron datos",config);
+      this.mostrarModal = true;
+    }else{
+        this.mcp_comfy_config=config;
+    }
+
   }
  
 }

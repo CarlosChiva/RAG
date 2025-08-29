@@ -14,13 +14,11 @@ builder.add_node("orquestator", orquestator)
 builder.add_node("chatbot", chatbot_node)
 builder.add_node("image_generator", image_generator)
 builder.add_edge(START, "orquestator")
-builder.add_conditional_edges("orquestator",
-    lambda state,config: str(config["configurable"].get("image", False)),  # Use a lambda to return the boolean
-    {
-        "True": "image_generator",
-        "False": "chatbot"
-    }
+builder.add_conditional_edges(
+    "orquestator",
+    lambda state, config: "image_generator" if config["configurable"].get("tools") else "chatbot"
 )
+
 
 builder.add_edge("chatbot", END)
 builder.add_edge("image_generator", END)

@@ -106,15 +106,17 @@ uploadFiles(): void {
 
       // Fusionamos con el nodo positivo
       const combinedConfig = {
-        api_json: inner,
-        positive_prompt_node: this.positivePromptNode,
+        image_tools:{
+          api_json: inner,
+          positive_prompt_node: this.positivePromptNode,
+        }
       };
 
       console.log('Configuración combinada:', combinedConfig);
 
       // Ahora sí enviamos la configuración
       this.isLoading = true;
-      this.modelsService.updateComfyUiConf(combinedConfig).subscribe({
+      this.modelsService.updateToolsConf(combinedConfig).subscribe({
         next: (_) => alert('Files uploaded successfully!'),
         error: (err) => alert(err.error?.error || 'Error uploading files.'),
         complete: () => this.isLoading = false,
