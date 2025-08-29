@@ -1,0 +1,191 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: rgba(0, 0, 0, 0.5); // Oscurecer el fondo para el efecto de modal
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; // Asegura que esté sobre los demás elementos
+}
+
+/* Contenedor centrado */
+.upload-container {
+  display: grid;
+  max-width: 600px;
+  width: 100%;
+  background-color: #333;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative; // Asegura que esté en el centro del modal
+  align-items: center;
+   animation: fadeIn 0.3s ease-in-out;
+
+}
+
+/* Deshabilitar interacción con el fondo */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999; // Debajo del modal
+}
+
+
+
+/* Estilo general */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-color: #3a3a3a;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+}
+
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #f2f2f2;
+}
+
+#dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  background-color: #555;
+  color: #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#dropzone:hover, #dropzone.dragging {
+  background-color: #666;
+  color: #fff;
+}
+
+select, input[type="text"] {
+  width: calc(100% - 22px);
+  margin: 10px 0;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #666;
+  color: #fff;
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
+#uploadButton {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: #32567c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#uploadButton:hover {
+  background-color: #0056b3;
+}
+#backButton {
+  margin-top: 15px;
+  width: fit-content;
+  height: fit-content;
+  bottom: 20px;
+  padding: 10px 20px;
+  background-color: #32567c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+
+}
+
+#backButton:hover {
+  background-color: #0056b3;
+}
+
+/* Círculo de carga */
+.loader-container {
+  display: none;
+  margin-top: 20px;
+  position: relative;
+  text-align: center;
+}
+
+.circle-loader {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.circle {
+  width: 100%;
+  height: 100%;
+  border: 5px solid transparent;
+  border-top-color: #4caf50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
+
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+    
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+
+
+
+  
+

@@ -1,0 +1,52 @@
+<!-- upload.component.html -->
+<div class="upload-container">
+  <button class="backButton" id="backButton" (click)="cerrar()">X</button>
+
+  <h1>Send MCP.JSON</h1>
+
+  <form (submit)="uploadFiles(); $event.preventDefault()">
+    <input 
+      type="file" 
+      #fileInput 
+      accept=".json"  
+      (change)="handleFileInput($event)" 
+      style="display: none;">
+    
+    <div 
+      id="dropzone" 
+      (click)="openFileDialog()" 
+      (dragover)="onDragOver($event)" 
+      (dragleave)="onDragLeave($event)" 
+      (drop)="onDrop($event)">
+      {{ file ? file.name  : 'Drag & Drop Api.json Here' }}
+    </div>
+    
+    <div>
+      <label for="collectionSelect">Select Node of Positive Prompt:</label>
+      <input 
+        type="text" 
+        id="api-json" 
+        placeholder="Enter a number of positive prompt node" 
+        [(ngModel)]="positivePromptNode" 
+        name="positivePromptNode">
+    </div>
+    
+    <button 
+      type="submit" 
+      id="uploadButton" 
+      [disabled]="isLoading" 
+      [style.backgroundColor]="isLoading ? '#666' : '#32567c'"
+      [style.cursor]="isLoading ? 'not-allowed' : 'pointer'">
+      Upload
+    </button>
+
+    <!-- Círculo de carga -->
+    <div class="loader-container" [style.display]="isLoading ? 'block' : 'none'">
+      <div class="circle-loader">
+        <div class="circle"></div>
+      </div>
+    </div>
+
+  </form>
+
+</div>

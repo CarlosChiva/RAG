@@ -48,9 +48,14 @@
   </app-user-input-chatbot> 
 
      <!-- Ventana Emergente -->
-     <div class="overlay" *ngIf="mostrarModal">
+     <div class="overlay" *ngIf="mostrarImageModal">
        <div class="modal">
-         <app-upload-Comfy (cerrarModal)="cerrarModal()"></app-upload-Comfy>
+         <app-upload-Comfy (cerrarImageModal)="cerrarImageModal()"></app-upload-Comfy>
+       </div>
+     </div>
+     <div class="overlay" *ngIf="mostrarMCPModal">
+       <div class="modal">
+         <app-upload-MCP (cerrarMCPModal)="cerrarMCPModal()"></app-upload-MCP>
        </div>
      </div>
     </div>
