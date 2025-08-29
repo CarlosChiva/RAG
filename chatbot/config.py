@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Any, Dict, Literal, Optional
 from dataclasses import dataclass
 from pydantic import BaseModel
 
@@ -7,8 +7,7 @@ class Config(BaseModel):
     conversation:str
     modelName:str
     userInput:str
-    image:bool
-
+    tools: Optional[Dict[str, Any]] = None  
 
     # model_name: str
     # conversation_id: str

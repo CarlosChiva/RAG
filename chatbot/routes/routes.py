@@ -150,20 +150,20 @@ async def update_chat_name(credentials=Depends(credentials_controllers.verify_jw
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading configurations: {str(e)}")
 
-@router.post("/update_comfy_conf")
-async def update_comfy_conf(conf:dict,credentials=Depends(credentials_controllers.verify_jws)):
+@router.post("/update_tools_conf")
+async def update_tools_conf(conf:dict,credentials=Depends(credentials_controllers.verify_jws)):
     try:
         logging.info(f"conf: {conf}")
-        await controllers.update_comfy_conf(conf,credentials)
+        await controllers.update_tools_conf(conf,credentials)
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading configurations: {str(e)}")
     
-@router.get("/get_comfy_conf")
-async def get_comfy_conf(credentials=Depends(credentials_controllers.verify_jws)):
+@router.get("/get_tools_conf")
+async def get_tools_conf(credentials=Depends(credentials_controllers.verify_jws)):
     try:
         logging.info(f"s: {credentials}")
-        config =await controllers.get_comfyui_conf(credentials)
+        config =await controllers.get_tools_conf(credentials)
         return config
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error loading configurations: {str(e)}")

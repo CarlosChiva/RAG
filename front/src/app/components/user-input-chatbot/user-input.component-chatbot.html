@@ -1,5 +1,5 @@
 <div class="input-area">
-<ng-container *ngIf="toolExists; else showAddButton">
+<ng-container *ngIf="isToolSelected; else showAddButton">
   <div class="button-group">
     <!-- Botón con dropdown -->
     <div class="dropdown-container">
@@ -22,9 +22,9 @@
 
     <!-- Botón Image toggleable -->
     <button
-      id="imageToggleButton"
-      (click)="toggleImageSelection()"
-      class="imageToggleBttn"
+      id="toolToggleButton"
+      (click)="toggleToolSelected()"
+      class="toolToggleBttn"
       [class.selected]="isToolSelected">
       {{ toolSelected }}
     </button>

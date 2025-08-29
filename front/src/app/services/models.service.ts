@@ -32,7 +32,7 @@ export class ModelsService {
       userInput: config.userInput,
       conversation: config.conversation,
       modelName: config.modelName,
-      image: config.image,
+      tools: config.tools,
     };
     // guardamos la referencia para cerrar manualmente si fuera necesario
     this.currentWs = new WebSocket(wsUrl);
@@ -143,23 +143,23 @@ export class ModelsService {
     return this.http.post(`${this.apiUrl}/update-chat-name`, { oldChatName, newChatName }, options);
   }
   
-  getComfyUiConf():Observable<Object>{
+  getToolsConf():Observable<Object>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`
     });
     
-    return this.http.get<Object>(`${this.apiUrl}/get_comfy_conf`, { 
+    return this.http.get<Object>(`${this.apiUrl}/get_tools_conf`, { 
       headers 
     });
   }
-  updateComfyUiConf(conf:Object):Observable<Object>{
+  updateToolsConf(conf:Object):Observable<Object>{
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${window.localStorage.getItem('token')}`,
       'Content-Type': 'application/json', 
     });
     console.log(`config send ${conf}`);
     
-    return this.http.post<Object>(`${this.apiUrl}/update_comfy_conf`, conf, { 
+    return this.http.post<Object>(`${this.apiUrl}/update_tools_conf`, conf, { 
       headers 
     });
   }

@@ -96,8 +96,8 @@ async def get_configurations(credentials)-> dict:
         users_config={}
         users_config[credentials]={}
         with open(CONFIG_PATH, "w") as f:
-            
             json.dump(users_config, f)
+
     with open (CONFIG_PATH,"r") as f:
         data=json.load(f)
     return data[credentials]
@@ -108,32 +108,52 @@ async def get_configurations(credentials)-> dict:
 
 
 
-async def get_comfy_conf(credentials)-> dict:
-    if not os.path.exists(CONFIGS_PATH):
-        users_config={}
-        users_config[credentials]={}
-        with open(CONFIGS_PATH, "w") as f:
-            json.dump(users_config, f)
-            return {}
-    with open (CONFIGS_PATH,"r") as f:
-        data=json.load(f)
-    return data[credentials]
+async def get_tools_configuration(credentials)-> dict:
+    try:
+        if not os.path.exists(CONFIGS_PATH):
+            users_config={}
+            users_config[credentials]={}
+            with open(CONFIGS_PATH, "w") as f:
+                json.dump(users_config, f)
+                return users_config[credentials]
+    except Exception as e:
+        logging.error(f"Error getting configurations get_tools_configuration: {str(e)}")
+    try:
+        with open (CONFIGS_PATH,"r") as f:
+            data=json.load(f)
+        return data[credentials]
+    except Exception as e:
+        logging.error(f"Error getting configurations fail to read: {str(e)}")
+        return {}
 
 
-
-async def save_comfy_conf(comfyui_conf,credendials):
+async def save_tools_conf(tools_conf,credendials):
     logging.info("saving....")
     try:
         if not os.path.exists(CONFIGS_PATH):
             with open(CONFIGS_PATH, "w", encoding="utf-8") as f:
                 json.dump({}, f, indent=2)
 
-        logging.info(comfyui_conf)
+        logging.info(tools_conf)
         with open (CONFIGS_PATH,"r") as f:
             data=json.load(f)
 
         logging.info(data)
-        data[credendials]=comfyui_conf
+        if "image_tools" in tools_conf:
+
+            if data[credendials].get("image_tools"):
+                data[credendials]["image_tools"]=tools_conf
+            else:
+                data[credendials]["image_tools"]={}
+                data[credendials]["image_tools"]=tools_conf
+                
+        elif "mcp_tools" in tools_conf.keys():
+            if data[credendials].get("mcp_tools"):
+                data[credendials]["mcp_tools"]=tools_conf
+            else:
+                data[credendials]["image_tools"]={}
+                data[credendials]["image_tools"]=tools_conf
+           
         with open (CONFIGS_PATH,"w") as f:
             json.dump(data,f)
     except Exception as e:

@@ -92,7 +92,7 @@
   
 }
 
-.imageToggleBttn {
+.toolToggleBttn {
   padding: 8px 16px;
   border: none;
 
@@ -102,11 +102,11 @@
   background-color: transparent;
 }
 
-.imageToggleBttn:hover {
+.toolToggleBttn:hover {
   background-color: #036fe4;
 }
 
-.imageToggleBttn.selected {
+.toolToggleBttn.selected {
   color: white;
   background-color: #036fe4;
 }

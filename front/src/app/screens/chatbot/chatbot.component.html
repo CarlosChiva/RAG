@@ -42,11 +42,9 @@
     [message]="currentMessage"
     [disabled]="!selectedChat"
     [sendButtonText]="'Send'"
-
-    [toolExists]="hasComfyConfig"
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)"
-    (addComfyConfig)="addComfyConfig($event)">
+    (toolConfigSelected)="onToolConfigSelected($event)">
   </app-user-input-chatbot> 
 
      <!-- Ventana Emergente -->

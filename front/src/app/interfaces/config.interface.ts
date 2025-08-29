@@ -4,5 +4,5 @@ export interface Config {
     conversation: string;
     modelName: string;
     userInput: string;
-    image:boolean
+    tools:Object;
 }
