@@ -109,6 +109,9 @@ async def chatbot_node(state:MessagesState,config:Config):
 
     return {"messages": [response_message]}
 async def image_generator(state:MessagesState,config):
-    image_prompt=state["messages"][-1]["text"]
-    logging.info(f"image_prompt---{image_prompt}")
+    websocket = config["configurable"].get("websocket")
+    await websocket.send_json({
+        "event": "Generating image..."
+    })
+    logging.info(f"image_prompt---{config} {state}")
     pass

@@ -29,8 +29,8 @@ async def query(conf:Config,websocket):
     # Add any configuration from conf if needed
     if hasattr(conf, "__dict__"):
         config["configurable"].update(conf.__dict__)
-    input_messages = [HumanMessage(conf.userInput)]
-    event_=""
+
+    input_messages = [HumanMessage(str(conf.userInput))]
     async for event , metadata in graph.astream({"messages": input_messages}, config, stream_mode="messages"):
         pass
     await websocket.send_json({"end":"__END__"})

@@ -7,6 +7,6 @@ from typing import Annotated
 class Config(TypedDict):
     model: str
     conversation_id: str
-    image: bool 
+    tools: dict 
   #  path_of_image_generation_json: Optional[Literal["generation.json"]]
 
