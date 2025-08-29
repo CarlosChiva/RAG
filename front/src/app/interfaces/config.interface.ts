@@ -6,3 +6,7 @@ export interface Config {
     userInput: string;
     tools:Object;
 }
+export interface ToolConfigPayload {
+  type: 'image' | 'mcp';          
+  config: any;                    
+}

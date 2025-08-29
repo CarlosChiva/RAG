@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { marked } from 'marked';
+import { UploadMCPComponent } from '../../components/upload_mcp_conf/upload_mcp.component';
 import { UploadComfyComponent } from '../../components/upload_comfy_conf/upload_comfy.component';
 import { ChatOutputChatbotComponent } from '../../components/chat-output-chatbot/chat-output-chatbot.component';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
@@ -13,7 +14,8 @@ import { ButtonContainerComponent } from '../../components/button-container/butt
 import { ModelsListComponent } from '../../components/models-list/models-list.component';
 import { UserInputChatbotComponent } from '../../components/user-input-chatbot/user-input-chatbot.component';
 
-import { Config } from '../../interfaces/config.interface';
+import { Config,ToolConfigPayload } from '../../interfaces/config.interface';
+
 import { ModelItem } from '../../interfaces/models.inferface';
 import { ChatMessage } from '../../interfaces/chat-message';
 
@@ -33,7 +35,8 @@ import { ModelsService } from '../../services/models.service';
     ButtonContainerComponent,
     ModelsListComponent,
     UserInputChatbotComponent,
-    UploadComfyComponent
+    UploadComfyComponent,
+    UploadMCPComponent
   ],
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss']
@@ -59,7 +62,8 @@ export class ChatbotComponent implements OnInit {
   message: string = '';
   currentMessage: string = '';
   isSending: boolean = false;
-  mostrarModal: boolean = false;
+  mostrarImageModal: boolean = false;
+  mostrarMCPModal: boolean = false;
   rawResponse:string="";
   mcp_comfy_config:Object={};
 
@@ -77,8 +81,12 @@ export class ChatbotComponent implements OnInit {
   ) {}
 
   // Modal methods
-  abrirModal() {
-    this.mostrarModal = true;
+  abrirImageModal() {
+    this.mostrarImageModal = true;
+    document.body.classList.add('modal-open');
+  }
+ abrirMCPModal() {
+    this.mostrarMCPModal = true;
     document.body.classList.add('modal-open');
   }
 
@@ -87,12 +95,17 @@ export class ChatbotComponent implements OnInit {
     this.loadChats();
   }
   
-  cerrarModal() {
-      this.mostrarModal = false;
+  cerrarImageModal() {
+      this.mostrarImageModal = false;
       document.body.classList.remove('modal-open');
       this.ngOnInit();
   }
-
+cerrarMCPModal() {
+      this.mostrarMCPModal = false;
+      document.body.classList.remove('modal-open');
+      this.ngOnInit();
+  
+}
   // Sidebar methods
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
@@ -349,15 +362,41 @@ export class ChatbotComponent implements OnInit {
 
     this.loadChats();
   }
-  onToolConfigSelected(config: Object): void {
-    console.log('Tool configuration selected by the child:', config);
-    if(!config || Object.keys(config).length === 0){
-      console.log("No se encontraron datos",config);
-      this.mostrarModal = true;
-    }else{
-        this.mcp_comfy_config=config;
-    }
+  onToolConfigSelected(config: ToolConfigPayload): void {
+    const cfg = config.config;          // the value you want to test
 
+    // 1️⃣  Is it really missing?
+    const missing = !cfg;
+
+    // 2️⃣  Is it an array and empty?
+    const emptyArray = Array.isArray(cfg) && cfg.length === 0;
+
+    // 3️⃣  Is it a plain object with no own keys?
+    const emptyObject = cfg && typeof cfg === 'object' && !Array.isArray(cfg)
+                        && Object.keys(cfg).length === 0;
+
+    // 4️⃣  Combine the conditions
+    const isEmpty = missing || emptyArray || emptyObject;
+
+    console.log('payload:', config);
+    console.log('cfg:', cfg);
+    console.log('isEmpty:', isEmpty);
+
+    if (config.type === 'image') {
+      if (isEmpty) {
+        console.log('No se encontraron datos', config);
+        this.mostrarImageModal = true;
+      } else {
+        this.mcp_comfy_config = cfg;
+      }
+    } else {   // 'mcp'
+      if (isEmpty) {
+        console.log('No se encontraron datos', config);
+        this.mostrarMCPModal = true;
+      } else {
+        this.mcp_comfy_config = cfg;
+      }
+    }
   }
  
 }

@@ -7,15 +7,15 @@ import { FormsModule } from '@angular/forms';
 import { ModelsService } from '../../services/models.service';
 
 @Component({
-  selector: 'app-upload-Comfy',
+  selector: 'app-upload-MCP',
   standalone: true,
   imports: [CommonModule, HttpClientModule,  FormsModule],
-  templateUrl: './upload_comfy.component.html',
-  styleUrls: ['./upload_comfy.component.scss']
+  templateUrl: './upload_mcp.component.html',
+  styleUrls: ['./upload_mcp.component.scss']
 })
-export class UploadComfyComponent implements OnInit {
+export class UploadMCPComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @Output() cerrarImageModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  @Output() cerrarMCPModal = new EventEmitter<void>(); // Evento para cerrar el modal
 
   collections: string[] = [];
   positivePromptNode: string = '';
@@ -139,6 +139,6 @@ uploadFiles(): void {
   reader.readAsText(this.file);
 }
   cerrar() {
-    this.cerrarImageModal.emit(); // Notifica al componente padre que cierre la ventana emergente
+    this.cerrarMCPModal.emit(); // Notifica al componente padre que cierre la ventana emergente
   }
 }

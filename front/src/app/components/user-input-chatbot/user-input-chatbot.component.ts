@@ -1,7 +1,7 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { ModelsService } from '../../services/models.service';
-
+import {ToolConfigPayload } from '../../interfaces/config.interface';
 @Component({
   selector: 'app-user-input-chatbot',
   imports: [CommonModule],
@@ -17,8 +17,8 @@ export class UserInputChatbotComponent implements OnInit {
   
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
-  @Output() toolConfigSelected = new EventEmitter<any>();
-
+  @Output() toolConfigSelected = new EventEmitter<ToolConfigPayload>();
+  
   dropdownDirection: 'up' | 'down' = 'down';
   toolSelected: string | null = null;
   mcp_conf:Object={};
@@ -90,16 +90,16 @@ export class UserInputChatbotComponent implements OnInit {
 
     // Nuevos métodos que necesitas agregar
   toggleToolSelected(): void {
-    this.isToolSelected = !this.isToolSelected;
+     this.isToolSelected = !this.isToolSelected;
     
-    // Aquí puedes agregar tu lógica cuando se selecciona/deselecciona
-    if (this.isToolSelected) {
-      console.log('Image seleccionado');
-      this.toolConfigSelected.emit(this.config_selected);
-    } else  {
-      console.log('Image deseleccionado');
-      this.config_selected={};
-    }
+    // // Aquí puedes agregar tu lógica cuando se selecciona/deselecciona
+     if (this.isToolSelected) {
+       console.log('Image seleccionado');
+    //   this.toolConfigSelected.emit(this.config_selected);
+     } else  {
+       console.log('Image deseleccionado');
+       this.config_selected={};
+     }
   }
 
   // Método para toggle del dropdown
@@ -122,24 +122,27 @@ export class UserInputChatbotComponent implements OnInit {
   }  }
 
   // Método para seleccionar una opción del dropdown
-  selectOption(option: string): void {
-    this.toolSelected = option;
-    this.isDropdownOpen = false; // Cerrar el dropdown después de seleccionar
+selectOption(option: string): void {
+  this.toolSelected = option;
+  this.isDropdownOpen = false; // close the dropdown
 
-    if (option === 'image') {
-      console.log('Seleccionaste Image');
-      this.isToolSelected = true;
-      this.config_selected = this.comfyui_conf;
-      this.toolConfigSelected.emit(this.config_selected);
+  let payload: ToolConfigPayload;
 
-    } else if (option === 'mcp') {
-      console.log('Seleccionaste MCP');
-      this.config_selected = this.mcp_conf;
-      this.isToolSelected = true;
-      this.toolConfigSelected.emit(this.config_selected);
-
-    }
+  if (option === 'image') {
+    console.log('Seleccionaste Image');
+    this.isToolSelected = true;
+    payload = { type: 'image', config: this.comfyui_conf };
+  } else if (option === 'mcp') {
+    console.log('Seleccionaste MCP');
+    this.isToolSelected = true;
+    payload = { type: 'mcp', config: this.mcp_conf };
+  } else {
+    // unknown option – you could skip emission or send a default payload
+    return;
   }
+
+  this.toolConfigSelected.emit(payload);
+}
 
   // Opcional: Cerrar dropdown si se hace clic fuera del componente
   @HostListener('document:click', ['$event'])
