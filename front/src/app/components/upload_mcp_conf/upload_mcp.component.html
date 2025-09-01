@@ -1,52 +1,76 @@
-<!-- upload.component.html -->
 <div class="upload-container">
-  <button class="backButton" id="backButton" (click)="cerrar()">X</button>
+
+  <!-- Close button -->
+  <button class="backButton" id="backButton" (click)="cerrar()">✕</button>
 
   <h1>Send MCP.JSON</h1>
 
-  <form (submit)="uploadFiles(); $event.preventDefault()">
-    <input 
-      type="file" 
-      #fileInput 
-      accept=".json"  
-      (change)="handleFileInput($event)" 
-      style="display: none;">
-    
-    <div 
-      id="dropzone" 
-      (click)="openFileDialog()" 
-      (dragover)="onDragOver($event)" 
-      (dragleave)="onDragLeave($event)" 
-      (drop)="onDrop($event)">
-      {{ file ? file.name  : 'Drag & Drop Api.json Here' }}
-    </div>
-    
-    <div>
-      <label for="collectionSelect">Select Node of Positive Prompt:</label>
-      <input 
-        type="text" 
-        id="api-json" 
-        placeholder="Enter a number of positive prompt node" 
-        [(ngModel)]="positivePromptNode" 
-        name="positivePromptNode">
-    </div>
-    
-    <button 
-      type="submit" 
-      id="uploadButton" 
-      [disabled]="isLoading" 
-      [style.backgroundColor]="isLoading ? '#666' : '#32567c'"
-      [style.cursor]="isLoading ? 'not-allowed' : 'pointer'">
-      Upload
-    </button>
+  <!-- ----------  Mode toggle (checkbox)  ---------- -->
+  <div class="checkbox-wrapper">
+    <label>
+      <input
+        type="checkbox"
+        [(ngModel)]="useFile"
+        (change)="onUseFileChange()" />
+      <span>Upload file instead of typing JSON</span>
+    </label>
+  </div>
 
-    <!-- Círculo de carga -->
-    <div class="loader-container" [style.display]="isLoading ? 'block' : 'none'">
-      <div class="circle-loader">
-        <div class="circle"></div>
-      </div>
-    </div>
+  <!-- ----------  Drop zone (file mode)  ---------- -->
+  <div
+    *ngIf="useFile"
+    id="dropzone"
+    class="dropzone"
+    (click)="openFileDialog()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    <span *ngIf="file">{{ file.name }}</span>
+    <span *ngIf="!file && jsonInput">JSON text detected – click to upload</span>
+    <span *ngIf="!file && !jsonInput">Drag & Drop JSON file or click to select</span>
+  </div>
 
-  </form>
+  <!-- ----------  Hidden File Input  ---------- -->
+  <input
+    type="file"
+    #fileInput
+    accept=".json"
+    (change)="handleFileInput($event)"
+    style="display:none;">
+
+  <!-- ----------  Textarea (preview or manual)  ---------- -->
+  <div
+    *ngIf="!useFile || showPreview"
+    class="json-textarea-wrapper">
+    <label for="jsonTextarea">JSON content:</label>
+    <textarea
+      id="jsonTextarea"
+      #jsonTextarea
+      [(ngModel)]="jsonInput"
+      rows="10"
+      placeholder='{"some":"json"}'></textarea>
+  </div>
+
+
+
+  <!-- ----------  Submit button  ---------- -->
+  <button
+    type="submit"
+    id="uploadButton"
+    (click)="uploadFiles()"
+    [disabled]="isLoading"
+    [ngStyle]="{
+      backgroundColor: isLoading ? '#666' : '#32567c',
+      cursor: isLoading ? 'not-allowed' : 'pointer'
+    }">
+    Upload
+  </button>
+
+  <!-- ----------  Loader  ---------- -->
+  <div class="loader-container" *ngIf="isLoading">
+    <div class="circle-loader">
+      <div class="circle"></div>
+    </div>
+  </div>
 
 </div>
