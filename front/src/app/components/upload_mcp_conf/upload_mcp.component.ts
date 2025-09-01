@@ -1,60 +1,55 @@
-// upload.component.ts
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { Router} from '@angular/router';
+import { Component, ElementRef, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ModelsService } from '../../services/models.service';
 
 @Component({
-  selector: 'app-upload-MCP',
+  selector: 'app-upload-mcp',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,  FormsModule],
+  imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './upload_mcp.component.html',
-  styleUrls: ['./upload_mcp.component.scss']
+  styleUrls: ['./upload_mcp.component.scss'],
 })
-export class UploadMCPComponent implements OnInit {
+export class UploadMCPComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @Output() cerrarMCPModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  @ViewChild('jsonTextarea') jsonTextarea!: ElementRef<HTMLTextAreaElement>;
 
-  collections: string[] = [];
-  positivePromptNode: string = '';
-  isLoading: boolean = false;
+  @Output() cerrarMCPModal = new EventEmitter<void>();
+
+  isLoading = false;
   file: File | null = null;
+  jsonInput = '';        // holds raw JSON string (file‑loaded or manually typed)
+  useFile = true;        // mode: true = file, false = write
+  showPreview = false;   // show textarea after file is loaded
 
-  constructor(
-    private router: Router,
-    private modelsService: ModelsService
+  constructor(private router: Router, private modelsService: ModelsService) {}
 
-  ) {}
-
-  ngOnInit(): void {
-    const token = localStorage.getItem('access_token');
-    
-    if (!token) {
-      alert('Token expired. Please, sign up again');
-      this.router.navigate(['/login']);
-      return;
+  /* ----------  Toggle mode (checkbox)  ---------- */
+  onUseFileChange(): void {
+    if (!this.useFile) {
+      // user switched to “write JSON” mode – clear everything
+      this.file = null;
+      this.jsonInput = '';
+      this.showPreview = false;
+    } else {
+      // user switched to “file upload” mode – if a file is already selected, read it
+      if (this.file) this.readFile(this.file);
     }
-    
   }
 
-
+  /* ----------  File / Drag‑Drop helpers  ---------- */
   openFileDialog(): void {
     this.fileInput.nativeElement.click();
   }
 
   handleFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-      // Si el input contiene archivos
-    if (input.files && input.files.length > 0) {
-    // Tomamos el **primer** (y único) archivo
+    if (input.files && input.files.length) {
       this.file = input.files[0];
+      this.readFile(this.file);
     }
-  }
-
-  navigateBack(): void {
-  
   }
 
   onDragOver(event: DragEvent): void {
@@ -74,71 +69,77 @@ export class UploadMCPComponent implements OnInit {
   onDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    
     const dropzone = event.currentTarget as HTMLElement;
     dropzone.classList.remove('dragover');
-    const fileList = event.dataTransfer?.files;
 
-    if (fileList && fileList.length > 0) {
-      this.file = fileList[0];
+    // 1️⃣ Check if a file was dropped
+    const files = event.dataTransfer?.files;
+    if (files && files.length) {
+      this.file = files[0];
+      this.readFile(this.file);
+      return;
+    }
+
+    // 2️⃣ No file – maybe plain text was dropped
+    const text = event.dataTransfer?.getData('text/plain');
+    if (text) {
+      this.jsonInput = text.trim();
+      this.file = null;
+      this.showPreview = true;
     }
   }
 
-uploadFiles(): void {
-  if (!this.file) {
-    alert('Please select a file.');
-    return;
-  }
-  if (!this.positivePromptNode) {
-    alert('Please select an existing collection or create a new one.');
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    try {
-      const fileContent = reader.result as string;
-      const parsed = JSON.parse(fileContent);
-
-      // Si el JSON ya no tiene la clave 'comfyuiConf', usamos el objeto completo
-      const inner = parsed.comfyuiConf ?? parsed;
-
-      // Fusionamos con el nodo positivo
-      const combinedConfig = {
-        image_tools:{
-          api_json: inner,
-          positive_prompt_node: this.positivePromptNode,
-        }
-      };
-
-      console.log('Configuración combinada:', combinedConfig);
-
-      // Ahora sí enviamos la configuración
-      this.isLoading = true;
-      this.modelsService.updateToolsConf(combinedConfig).subscribe({
-        next: (_) => alert('Files uploaded successfully!'),
-        error: (err) => alert(err.error?.error || 'Error uploading files.'),
-        complete: () => this.isLoading = false,
-      });
-
-    } catch (err) {
-      console.error(err);
-      alert('El archivo no es un JSON válido o tiene un formato inesperado.');
+  /* ----------  Read file into jsonInput  ---------- */
+  private readFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        this.jsonInput = reader.result;
+        this.showPreview = true;
+      }
+    };
+    reader.onerror = () => {
+      alert('Error reading the file.');
       this.isLoading = false;
+    };
+    reader.readAsText(file);
+  }
+
+  /* ----------  Upload logic  ---------- */
+  uploadFiles(): void {
+    if (!this.jsonInput.trim()) {
+      alert('Please provide a JSON file or paste JSON text.');
+      return;
     }
-  };
 
-  reader.onerror = () => {
-    console.error('Error al leer el archivo.');
-    alert('Error al leer el archivo.');
-    this.isLoading = false;
-  };
 
-  // Inicia la lectura
-  reader.readAsText(this.file);
-}
-  cerrar() {
-    this.cerrarMCPModal.emit(); // Notifica al componente padre que cierre la ventana emergente
+
+    // Validate JSON before sending
+    let parsed: any;
+    try {
+      parsed = JSON.parse(this.jsonInput);
+    } catch (err) {
+      alert('The provided text is not valid JSON.');
+      return;
+    }
+
+    const inner = parsed.comfyuiConf ?? parsed;
+    const combinedConfig = {
+      mcp_tools: {
+        api_json: inner,
+      },
+    };
+
+    this.isLoading = true;
+    this.modelsService.updateToolsConf(combinedConfig).subscribe({
+      next: () => alert('Files uploaded successfully!'),
+      error: (err) => alert(err.error?.error || 'Error uploading files.'),
+      complete: () => (this.isLoading = false),
+    });
+  }
+
+  /* ----------  Close modal  ---------- */
+  cerrar(): void {
+    this.cerrarMCPModal.emit();
   }
 }
