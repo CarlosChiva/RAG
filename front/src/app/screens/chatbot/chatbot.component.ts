@@ -266,6 +266,9 @@ cerrarMCPModal() {
           case 'response':
             this.handleResponseEvent(data, currentMessage);
             break;
+          case 'Image generated':
+            this.handleImageEvent(data, currentMessage);
+          break;
           default:
             // Otros eventos como "Routing..." - SIEMPRE actualizar el header
             currentMessage.eventHeader = data.event;
@@ -279,7 +282,19 @@ cerrarMCPModal() {
       console.error('Error processing WebSocket message:', error, data);
     }
   }
-
+  handleImageEvent(data: any, currentMessage: ChatMessage): void {
+    if (!data.images) return;
+    const byteString = atob(data.images);
+    const array = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+      array[i] = byteString.charCodeAt(i);
+    }
+    const mime = data.format === 'png' ? 'image/png' : 'image/jpeg';
+    const blob = new Blob([array], { type: mime });
+    const url = URL.createObjectURL(blob);
+    currentMessage.imageUrl = this.sanitizer.bypassSecurityTrustUrl(url);
+    currentMessage.eventHeader = 'Image';
+  }
   handleResponseEvent(data: any, currentMessage: ChatMessage): void {
     if (data.step === 'thinking') {
       // SIEMPRE actualizar header cuando está pensando

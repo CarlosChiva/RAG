@@ -14,6 +14,9 @@ export interface ChatMessage {
   responseText?: string | any; // SafeHtml from DomSanitizer
   eventHistory?: string[];
   currentEvent?: string;
+  imageUrl?: any; 
+
+  
 }
 
 @Component({
