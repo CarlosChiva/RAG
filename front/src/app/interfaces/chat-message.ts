@@ -10,4 +10,5 @@ export interface ChatMessage {
   showThinking?: boolean;
   eventHistory?: string[];  // NUEVO: historial de eventos
   currentEvent?: string;    // NUEVO: evento actual
+  imageUrl?: any; 
 }

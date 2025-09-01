@@ -41,6 +41,11 @@
     <div class="message-content" *ngIf="msg.isUser">
       <div [innerHTML]="msg.text"></div>
     </div>
+    
+    
+    <div class="message-content" *ngIf="!msg.isUser && msg.imageUrl">
+      <img [src]="msg.imageUrl" alt="Generated image" class="generated-image"/>
+    </div>
 
     <!-- Indicador de typing -->
     <div *ngIf="msg.isTyping" class="typing-indicator">

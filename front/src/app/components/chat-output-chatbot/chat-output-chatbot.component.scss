@@ -205,4 +205,8 @@ background-color: #3274bb;
 #chat-output-chatbot::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
-
+.generated-image {
+  max-width: 100%;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
