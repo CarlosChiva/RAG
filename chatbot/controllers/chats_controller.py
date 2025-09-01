@@ -142,17 +142,17 @@ async def save_tools_conf(tools_conf,credendials):
         if "image_tools" in tools_conf:
 
             if data[credendials].get("image_tools"):
-                data[credendials]["image_tools"]=tools_conf
+                data[credendials]["image_tools"]=tools_conf["image_tools"]
             else:
                 data[credendials]["image_tools"]={}
-                data[credendials]["image_tools"]=tools_conf
+                data[credendials]["image_tools"]=tools_conf["image_tools"]
                 
-        elif "mcp_tools" in tools_conf.keys():
+        elif "mcp_tools" in tools_conf:
             if data[credendials].get("mcp_tools"):
-                data[credendials]["mcp_tools"]=tools_conf
+                data[credendials]["mcp_tools"]=tools_conf["mcp_tools"]
             else:
-                data[credendials]["image_tools"]={}
-                data[credendials]["image_tools"]=tools_conf
+                data[credendials]["mcp_tools"]={}
+                data[credendials]["mcp_tools"]=tools_conf["mcp_tools"]
            
         with open (CONFIGS_PATH,"w") as f:
             json.dump(data,f)

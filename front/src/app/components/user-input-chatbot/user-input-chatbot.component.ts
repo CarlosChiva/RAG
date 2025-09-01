@@ -34,15 +34,18 @@ export class UserInputChatbotComponent implements OnInit {
   loadComfy() {
     this.modelsService.getToolsConf().subscribe({
       next: (data: any) => {
+        console.log(data);
         const isEmptyObject = !data || Object.keys(data).length === 0;
         if (isEmptyObject){ 
           console.log("No se encontraron datos",data);
           return;
         }
-        if ('image_tools' in data) {
-          this.comfyui_conf = data.image_tools;
-        } else if ('mcp_tools' in data) {
-          this.mcp_conf = data.mcp_tools;
+        let data_json= data
+        if ('image_tools' in data_json) {
+          this.comfyui_conf = data_json.image_tools;
+        }
+        if ('mcp_tools' in data_json) {
+          this.mcp_conf = data_json.mcp_tools;
         }
         else{
           console.log("No se encontraron datos",data);
@@ -94,10 +97,10 @@ export class UserInputChatbotComponent implements OnInit {
     
     // // Aquí puedes agregar tu lógica cuando se selecciona/deselecciona
      if (this.isToolSelected) {
-       console.log('Image seleccionado');
-
+       console.log('Tool seleccionado');
+ 
      } else  {
-       console.log('Image deseleccionado');
+       console.log('Tool deseleccionado');
        let playload={
         type:null,
         config:null
@@ -131,13 +134,15 @@ selectOption(option: string): void {
   this.isDropdownOpen = false; // close the dropdown
 
   let payload: ToolConfigPayload;
+  console.log(this.comfyui_conf);
+  console.log(this.mcp_conf);
 
   if (option === 'image') {
     console.log('Seleccionaste Image');
     this.isToolSelected = true;
     payload = { type: 'image', config: this.comfyui_conf };
   } else if (option === 'mcp') {
-    console.log('Seleccionaste MCP');
+    console.log('Seleccionaste MCP',this.mcp_conf);
     this.isToolSelected = true;
     payload = { type: 'mcp', config: this.mcp_conf };
   } else {
