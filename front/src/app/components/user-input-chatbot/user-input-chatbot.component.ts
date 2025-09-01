@@ -17,7 +17,7 @@ export class UserInputChatbotComponent implements OnInit {
   
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
-  @Output() toolConfigSelected = new EventEmitter<ToolConfigPayload>();
+  @Output() toolConfigSelected = new EventEmitter<ToolConfigPayload | null>();
   
   dropdownDirection: 'up' | 'down' = 'down';
   toolSelected: string | null = null;
@@ -95,10 +95,14 @@ export class UserInputChatbotComponent implements OnInit {
     // // Aquí puedes agregar tu lógica cuando se selecciona/deselecciona
      if (this.isToolSelected) {
        console.log('Image seleccionado');
-    //   this.toolConfigSelected.emit(this.config_selected);
+
      } else  {
        console.log('Image deseleccionado');
-       this.config_selected={};
+       let playload={
+        type:null,
+        config:null
+       }
+       this.toolConfigSelected.emit(playload);
      }
   }
 

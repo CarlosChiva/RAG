@@ -1,7 +1,6 @@
 from urllib import request
 from langchain_ollama import ChatOllama
 from langgraph.graph import  MessagesState
-
 from config import Config
 import json
 from langgraph.graph.message import MessagesState,BaseMessage
@@ -9,6 +8,16 @@ from langchain_core.messages.human import HumanMessage
 from langchain_core.messages.ai import AIMessage
 import logging
 logging.basicConfig(level=logging.INFO)
+import websocket as ws_comfy
+import uuid
+import json
+import urllib.request
+import urllib.parse
+import json
+from urllib import request
+from dotenv import load_dotenv
+import os
+load_dotenv()
 from controllers.chats_controller import get_user_conversation, add_conversation
 
 def save_messages_state_to_file(messages_state: MessagesState, file_path: str):
@@ -110,46 +119,37 @@ async def chatbot_node(state:MessagesState,config:Config):
 
     return {"messages": [response_message]}
 
-import json
-from urllib import request
 
-def queue_prompt(prompt):
-    p = {"prompt": prompt}
+# def queue_prompt(prompt):
+#     p = {"prompt": prompt}
 
 
-    data = json.dumps(p).encode('utf-8')
-    req =  request.Request("http://127.0.0.1:8188/prompt", data=data)
-    request.urlopen(req)
+#     data = json.dumps(p).encode('utf-8')
+#     req =  request.Request("http://127.0.0.1:8188/prompt", data=data)
+#     request.urlopen(req)
 
 
-import websocket as ws_comfy
-import uuid
-import json
-import urllib.request
-import urllib.parse
 
-server_address = "127.0.0.1:8188"
-client_id = str(uuid.uuid4())
 
-def queue_prompt(prompt, prompt_id):
+def queue_prompt(prompt, prompt_id,client_id):
     p = {"prompt": prompt, "client_id": client_id, "prompt_id": prompt_id}
     data = json.dumps(p).encode('utf-8')
-    req = urllib.request.Request("http://{}/prompt".format(server_address), data=data)
+    req = urllib.request.Request("http://{}/prompt".format(os.getenv("SERVER_ADDRESS")), data=data)
     urllib.request.urlopen(req).read()
 
 def get_image(filename, subfolder, folder_type):
     data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
     url_values = urllib.parse.urlencode(data)
-    with urllib.request.urlopen("http://{}/view?{}".format(server_address, url_values)) as response:
+    with urllib.request.urlopen("http://{}/view?{}".format(os.getenv("SERVER_ADDRESS"), url_values)) as response:
         return response.read()
 
 def get_history(prompt_id):
-    with urllib.request.urlopen("http://{}/history/{}".format(server_address, prompt_id)) as response:
+    with urllib.request.urlopen("http://{}/history/{}".format(os.getenv("SERVER_ADDRESS"), prompt_id)) as response:
         return json.loads(response.read())
 
-def get_images(ws, prompt):
+def get_images(ws, prompt,client_id):
     prompt_id = str(uuid.uuid4())
-    queue_prompt(prompt, prompt_id)
+    queue_prompt(prompt, prompt_id,client_id)
     output_images = {}
     while True:
         out = ws.recv()
@@ -184,6 +184,7 @@ async def image_generator(state:MessagesState,config):
         "event": "Generating image..."
     })
     logging.info(f"image_prompt---{config["configurable"]["userInput"]}    {config["configurable"]["tools"]["image_tools"]["api_json"]}  {config["configurable"]["tools"]["image_tools"]["positive_prompt_node"]}")
+    client_id = str(uuid.uuid4())
 
 
     prompt = config["configurable"]["tools"]["image_tools"]["api_json"]
@@ -191,9 +192,9 @@ async def image_generator(state:MessagesState,config):
     prompt[str(config["configurable"]["tools"]["image_tools"]["positive_prompt_node"])]["inputs"]["text"] = config["configurable"]["userInput"]
     try:
 
-        ws = ws_comfy.create_connection("ws://{}/ws?clientId={}".format(server_address, client_id))
-        ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
-        images =  get_images(ws, prompt)
+        ws = ws_comfy.create_connection("ws://{}/ws?clientId={}".format(os.getenv("SERVER_ADDRESS"), client_id))
+        ws.connect("ws://{}/ws?clientId={}".format(os.getenv("SERVER_ADDRESS"), client_id))
+        images =  get_images(ws, prompt,client_id)
         ws.close() # for in case this example is used in an environment where it will be repeatedly called, like in a Gradio app. otherwise, you'll randomly receive connection timeouts
        
         for node_id in images:

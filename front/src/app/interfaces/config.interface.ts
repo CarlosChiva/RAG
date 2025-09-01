@@ -7,6 +7,6 @@ export interface Config {
     tools:Object;
 }
 export interface ToolConfigPayload {
-  type: 'image' | 'mcp';          
+  type: 'image' | 'mcp'| null;          
   config: any;                    
 }

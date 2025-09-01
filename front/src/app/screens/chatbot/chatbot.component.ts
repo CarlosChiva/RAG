@@ -377,41 +377,46 @@ cerrarMCPModal() {
 
     this.loadChats();
   }
-  onToolConfigSelected(config: ToolConfigPayload): void {
-    const cfg = config.config;          // the value you want to test
+  onToolConfigSelected(config: ToolConfigPayload| null): void {
+    if (config?.type === null || config?.config === null) {
+      this.mcp_comfy_config = {};
+      return;
+    }else{
+      const cfg = config!.config;          // the value you want to test
 
-    // 1️⃣  Is it really missing?
-    const missing = !cfg;
+      // 1️⃣  Is it really missing?
+      const missing = !cfg;
 
-    // 2️⃣  Is it an array and empty?
-    const emptyArray = Array.isArray(cfg) && cfg.length === 0;
+      // 2️⃣  Is it an array and empty?
+      const emptyArray = Array.isArray(cfg) && cfg.length === 0;
 
-    // 3️⃣  Is it a plain object with no own keys?
-    const emptyObject = cfg && typeof cfg === 'object' && !Array.isArray(cfg)
-                        && Object.keys(cfg).length === 0;
+      // 3️⃣  Is it a plain object with no own keys?
+      const emptyObject = cfg && typeof cfg === 'object' && !Array.isArray(cfg)
+                          && Object.keys(cfg).length === 0;
 
-    // 4️⃣  Combine the conditions
-    const isEmpty = missing || emptyArray || emptyObject;
+      // 4️⃣  Combine the conditions
+      const isEmpty = missing || emptyArray || emptyObject;
 
-    console.log('payload:', config);
-    console.log('cfg:', cfg);
-    console.log('isEmpty:', isEmpty);
+      console.log('payload:', config);
+      console.log('cfg:', cfg);
+      console.log('isEmpty:', isEmpty);
 
-    if (config.type === 'image') {
-      if (isEmpty) {
-        console.log('No se encontraron datos', config);
-        this.mostrarImageModal = true;
-      } else {
-        this.mcp_comfy_config = cfg;
+      if (config!.type === 'image') {
+        if (isEmpty) {
+          console.log('No se encontraron datos', config);
+          this.mostrarImageModal = true;
+        } else {
+          this.mcp_comfy_config = cfg;
+        }
+      } else {   // 'mcp'
+        if (isEmpty) {
+          console.log('No se encontraron datos', config);
+          this.mostrarMCPModal = true;
+        } else {
+          this.mcp_comfy_config = cfg;
+        }
+        } 
       }
-    } else {   // 'mcp'
-      if (isEmpty) {
-        console.log('No se encontraron datos', config);
-        this.mostrarMCPModal = true;
-      } else {
-        this.mcp_comfy_config = cfg;
-      }
-    }
   }
  
 }
