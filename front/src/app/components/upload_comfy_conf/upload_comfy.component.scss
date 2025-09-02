@@ -183,7 +183,40 @@ input::placeholder {
     transform: scale(1);
   }
 }
+.json-textarea-wrapper {
+  margin: width 90%;
+}
 
+/* label for the textarea */
+.json-textarea-wrapper label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 16px;
+  color: #fff;        /* matches the text color of other fields */
+}
+
+/* the textarea itself */
+.json-textarea-wrapper textarea {
+  width: 90%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #555;   /* same dark background as #dropzone */
+  color: #fff;
+  resize: vertical;          /* user can grow it vertically */
+  min-height: 120px;        /* a bit taller than the default */
+}
+
+/* placeholder colour (keeps the same style as other inputs) */
+.json-textarea-wrapper textarea::placeholder {
+  color: #aaa;
+}
+
+/* focus state – subtle white outline */
+.json-textarea-wrapper textarea:focus {
+  outline: 2px solid #32567c;  /* same colour as the Upload button */
+}
 
 
 
