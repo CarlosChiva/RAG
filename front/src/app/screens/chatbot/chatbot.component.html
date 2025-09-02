@@ -51,12 +51,16 @@
      <!-- Ventana Emergente -->
      <div class="overlay" *ngIf="mostrarImageModal">
        <div class="modal">
-         <app-upload-Comfy (cerrarImageModal)="cerrarImageModal()"></app-upload-Comfy>
+         <app-upload-Comfy
+          [editConfig]="currentEditConfig"
+          (cerrarImageModal)="cerrarImageModal()"></app-upload-Comfy>
        </div>
      </div>
      <div class="overlay" *ngIf="mostrarMCPModal">
        <div class="modal">
-         <app-upload-mcp (cerrarMCPModal)="cerrarMCPModal()"></app-upload-mcp>
+         <app-upload-mcp 
+          [editConfig]="currentEditConfig"
+          (cerrarMCPModal)="cerrarMCPModal()"></app-upload-mcp>
        </div>
      </div>
     </div>

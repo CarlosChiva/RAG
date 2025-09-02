@@ -1,5 +1,5 @@
 // upload.component.ts
-import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Output, EventEmitter, Input } from '@angular/core';
 import { Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
@@ -16,6 +16,7 @@ import { ModelsService } from '../../services/models.service';
 export class UploadComfyComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @Output() cerrarImageModal = new EventEmitter<void>(); // Evento para cerrar el modal
+  @Input() editConfig: any = null; // Nueva propiedad para recibir la config
 
   collections: string[] = [];
   positivePromptNode: string = '';

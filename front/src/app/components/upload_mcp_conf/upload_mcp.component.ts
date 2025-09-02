@@ -1,4 +1,4 @@
-import { Component, ElementRef, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, ElementRef, Output, EventEmitter, ViewChild, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -15,6 +15,7 @@ import { ModelsService } from '../../services/models.service';
 export class UploadMCPComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('jsonTextarea') jsonTextarea!: ElementRef<HTMLTextAreaElement>;
+  @Input() editConfig: any = null; // Nueva propiedad para recibir la config
 
   @Output() cerrarMCPModal = new EventEmitter<void>();
 
@@ -25,7 +26,13 @@ export class UploadMCPComponent {
   showPreview = false;   // show textarea after file is loaded
 
   constructor(private router: Router, private modelsService: ModelsService) {}
-
+  ngOnInit(): void {
+    console.log('editConfig:', this.editConfig);
+    if (this.editConfig != null) {
+      this.useFile=false;
+      this.jsonInput = JSON.stringify(this.editConfig.api_json, null, 2);
+    }
+  }
   /* ----------  Toggle mode (checkbox)  ---------- */
   onUseFileChange(): void {
     if (!this.useFile) {
