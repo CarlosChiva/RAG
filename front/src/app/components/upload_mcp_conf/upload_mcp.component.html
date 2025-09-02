@@ -48,7 +48,16 @@
       #jsonTextarea
       [(ngModel)]="jsonInput"
       rows="10"
-      placeholder='{"some":"json"}'></textarea>
+      placeholder='
+            "math": {
+              "url": "http://localhost:8000/mcp/",
+              "transport": "sse",
+            },
+            "weather": {
+              "url": "http://localhost:8000/mcp/",
+              "transport": "streamable_http",
+            }'>
+    </textarea>
   </div>
 
 
