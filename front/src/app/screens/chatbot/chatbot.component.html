@@ -44,7 +44,8 @@
     [sendButtonText]="'Send'"
     (messageChange)="onMessageChange($event)"
     (sendMessage)="sendMessage($event)"
-    (toolConfigSelected)="onToolConfigSelected($event)">
+    (toolConfigSelected)="onToolConfigSelected($event)"
+    (editToolConfig)="openEditModal($event)">
   </app-user-input-chatbot> 
 
      <!-- Ventana Emergente -->

@@ -253,7 +253,15 @@ cerrarMCPModal() {
       }
     });
   }
-
+  openEditModal(tool: string) {
+    // `tool` será 'image' o 'mcp'
+    // Aquí puedes abrir un modal o redirigir a la página de edición
+    if (tool === 'image') {
+      this.mostrarImageModal = true;
+    } else if (tool === 'mcp') {
+      this.mostrarMCPModal = true;
+    }
+  }
   handlChatbottMessage(data: any): void {
     console.log('aaaaaaaaa',data);
     if (this.currentBotMessageIndex === null) return;
