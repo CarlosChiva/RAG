@@ -52,7 +52,7 @@ export class ChatbotComponent implements OnInit {
 
   private currentBotMessageIndex: number | null = null;
   messages: ChatMessage[] = [];
-
+  currentEditConfig:any={};
   selectedModel: ModelItem = { name: '', size: '' };  
   // Application state
   sidebarCollapsed = false;
@@ -100,7 +100,7 @@ export class ChatbotComponent implements OnInit {
       document.body.classList.remove('modal-open');
       this.ngOnInit();
   }
-cerrarMCPModal() {
+  cerrarMCPModal() {
       this.mostrarMCPModal = false;
       document.body.classList.remove('modal-open');
       this.ngOnInit();
@@ -253,12 +253,18 @@ cerrarMCPModal() {
       }
     });
   }
-  openEditModal(tool: string) {
+  openEditModal(tool: Object) {
     // `tool` será 'image' o 'mcp'
     // Aquí puedes abrir un modal o redirigir a la página de edición
-    if (tool === 'image') {
+    console.log("aaaaaaaaaaaaaaaaaa",tool);
+
+    if ('image_tools'in tool) {
+      this.currentEditConfig = tool.image_tools;
+
       this.mostrarImageModal = true;
-    } else if (tool === 'mcp') {
+    }
+    if ('mcp_tools'in tool) {
+      this.currentEditConfig = tool.mcp_tools;
       this.mostrarMCPModal = true;
     }
   }
@@ -367,23 +373,23 @@ cerrarMCPModal() {
   }
 
   createChat(event: Event): void {
-  let nameChat = "New_chat";
-  let counter = 1;
-    console.log("this.collections:",this.chats)
+    let nameChat = "New_chat";
+    let counter = 1;
+      console.log("this.collections:",this.chats)
 
-  // Check if the default name exists and increment the counter until a unique name is found
-  while (this.chats.includes(nameChat)) {
-    console.log("this.collections:",this.chats)
-    nameChat = `New_chat_${counter}`;
-    counter++;
-  }
+    // Check if the default name exists and increment the counter until a unique name is found
+    while (this.chats.includes(nameChat)) {
+      console.log("this.collections:",this.chats)
+      nameChat = `New_chat_${counter}`;
+      counter++;
+    }
 
-    this.ModelsService.createChat(nameChat).subscribe({
-      next: () => { },
-      error: (error) => console.error('Error fetching collections:', error)
-    });
+      this.ModelsService.createChat(nameChat).subscribe({
+        next: () => { },
+        error: (error) => console.error('Error fetching collections:', error)
+      });
 
-    this.loadChats();
+      this.loadChats();
   }
   onToolConfigSelected(config: ToolConfigPayload| null): void {
     if (config?.type === null || config?.config === null) {

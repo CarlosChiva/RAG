@@ -18,7 +18,7 @@ export class UserInputChatbotComponent implements OnInit {
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
   @Output() toolConfigSelected = new EventEmitter<ToolConfigPayload | null>();
-  @Output() editToolConfig = new EventEmitter<string>();
+  @Output() editToolConfig = new EventEmitter<Object>();
 
   dropdownDirection: 'up' | 'down' = 'down';
   toolSelected: string | null = null;
@@ -78,8 +78,24 @@ export class UserInputChatbotComponent implements OnInit {
 
  onEditTool(tool: string): void {
     // Emite el nombre del tool que se quiere editar
-    this.editToolConfig.emit(tool);
-    // Si quieres abrir directamente un modal, puedes hacerlo aquí.
+    
+    if (tool === 'image') {
+      const  playload={
+        "image_tools":this.comfyui_conf
+      }
+      this.editToolConfig.emit(playload);  
+    }
+    if (tool === 'mcp') {
+      const  playload={
+        "mcp_tools":this.mcp_conf
+      }
+      this.editToolConfig.emit(playload);  
+    }
+    else {
+      // unknown option – you could skip emission or send a default payload
+      return;
+    }
+    
   }
 
   onInputChange(event: Event): void {
