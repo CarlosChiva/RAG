@@ -18,7 +18,8 @@ export class UserInputChatbotComponent implements OnInit {
   @Output() messageChange = new EventEmitter<string>();
   @Output() sendMessage = new EventEmitter<string>();
   @Output() toolConfigSelected = new EventEmitter<ToolConfigPayload | null>();
-  
+  @Output() editToolConfig = new EventEmitter<string>();
+
   dropdownDirection: 'up' | 'down' = 'down';
   toolSelected: string | null = null;
   mcp_conf:Object={};
@@ -27,11 +28,20 @@ export class UserInputChatbotComponent implements OnInit {
   private _message: string = '';
   constructor(private modelsService: ModelsService) {}  
 
-  ngOnInit(): void {
-        this.loadComfy();
+  ngOnInit():void {
+      this.loadConfigs();
   }
+    hasImageConfig(): boolean {
+    return Object.keys(this.comfyui_conf).length > 0;
+  }
+
+  hasMcpConfig(): boolean {
+    return Object.keys(this.mcp_conf).length > 0;
+  }
+
   // method to load comfyui configuration
-  loadComfy() {
+
+  loadConfigs() {
     this.modelsService.getToolsConf().subscribe({
       next: (data: any) => {
         console.log(data);
@@ -47,10 +57,9 @@ export class UserInputChatbotComponent implements OnInit {
         if ('mcp_tools' in data_json) {
           this.mcp_conf = data_json.mcp_tools;
         }
-        else{
-          console.log("No se encontraron datos",data);
-          return 
-        }
+      // Debug: verificar que los métodos funcionen correctamente
+      console.log('hasImageConfig():', this.hasImageConfig());
+      console.log('hasMcpConfig():', this.hasMcpConfig());
 
       },
       error: (error) => console.error('Error fetching collections:', error)
@@ -67,6 +76,11 @@ export class UserInputChatbotComponent implements OnInit {
     this.messageChange.emit(value);
   }
 
+ onEditTool(tool: string): void {
+    // Emite el nombre del tool que se quiere editar
+    this.editToolConfig.emit(tool);
+    // Si quieres abrir directamente un modal, puedes hacerlo aquí.
+  }
 
   onInputChange(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -111,22 +125,25 @@ export class UserInputChatbotComponent implements OnInit {
 
   // Método para toggle del dropdown
   toggleDropdown(): void {
-  this.isDropdownOpen = !this.isDropdownOpen;
-  
-  if (this.isDropdownOpen) {
-    // Detectar si hay espacio suficiente abajo
-    setTimeout(() => {
-      const button = document.getElementById('dropdownButton');
-      if (button) {
-        const rect = button.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const spaceAbove = rect.top;
-        const menuHeight = 120; // Altura estimada del menú (ajustar según necesites)
-        
-        this.dropdownDirection = spaceBelow >= menuHeight ? 'down' : 'up';
-      }
-    }, 0);
-  }  }
+    this.isDropdownOpen = !this.isDropdownOpen;
+        // Debug: verificar que los métodos funcionen correctamente
+      console.log('hasImageConfig():', this.hasImageConfig());
+      console.log('hasMcpConfig():', this.hasMcpConfig());
+    if (this.isDropdownOpen) {
+      // Detectar si hay espacio suficiente abajo
+      setTimeout(() => {
+        const button = document.getElementById('dropdownButton');
+        if (button) {
+          const rect = button.getBoundingClientRect();
+          const spaceBelow = window.innerHeight - rect.bottom;
+          const spaceAbove = rect.top;
+          const menuHeight = 120; // Altura estimada del menú (ajustar según necesites)
+          
+          this.dropdownDirection = spaceBelow >= menuHeight ? 'down' : 'up';
+        }
+      }, 0);
+    }
+  }
 
   // Método para seleccionar una opción del dropdown
 selectOption(option: string): void {

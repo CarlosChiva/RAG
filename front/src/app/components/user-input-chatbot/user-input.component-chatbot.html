@@ -1,5 +1,5 @@
 <div class="input-area">
-<ng-container *ngIf="isToolSelected; else showAddButton">
+<ng-container *ngIf="isToolSelected ; else showAddButton">
   <div class="button-group">
     <!-- Botón con dropdown -->
     <div class="dropdown-container">
@@ -15,8 +15,26 @@
           class="dropdown-menu" 
           [class.dropdown-up]="dropdownDirection === 'up'"
           [class.dropdown-down]="dropdownDirection === 'down'">
-        <li (click)="selectOption('image')">Image</li>
-        <li (click)="selectOption('mcp')">MCP</li>
+            <!-- 1. Opción Image -->
+        <li (click)="selectOption('image')" class="dropdown-item">
+          <span>Image</span>
+          <!-- Botón Edit solo si hay config -->
+          <button *ngIf="hasImageConfig()" 
+                  class="edit-btn" 
+                  (click)="onEditTool('image'); $event.stopPropagation()">
+            ⚙
+          </button>
+        </li>
+
+        <!-- 2. Opción MCP -->
+        <li (click)="selectOption('mcp')" class="dropdown-item">
+          <span>MCP</span>
+          <button *ngIf="hasMcpConfig()" 
+                  class="edit-btn" 
+                  (click)="onEditTool('mcp'); $event.stopPropagation()">
+            ⚙
+          </button>
+        </li>
       </ul>
     </div>
 
@@ -42,14 +60,31 @@
       ▼
     </button>
             
-    <ul *ngIf="isDropdownOpen" 
-        class="dropdown-menu" 
-        [class.dropdown-up]="dropdownDirection === 'up'"
-        [class.dropdown-down]="dropdownDirection === 'down'">
-      <li (click)="selectOption('image')">Image</li>
-      <li (click)="selectOption('mcp')">MCP</li>
+   <ul *ngIf="isDropdownOpen" 
+          class="dropdown-menu" 
+          [class.dropdown-up]="dropdownDirection === 'up'"
+          [class.dropdown-down]="dropdownDirection === 'down'">
+            <!-- 1. Opción Image -->
+        <li (click)="selectOption('image')" class="dropdown-item">
+          <span>Image</span>
+          <!-- Botón Edit solo si hay config -->
+          <button *ngIf="hasImageConfig()" 
+                  class="edit-btn" 
+                  (click)="onEditTool('image'); $event.stopPropagation()">
+            ⚙
+          </button>
+        </li>
 
-    </ul>
+        <!-- 2. Opción MCP -->
+        <li (click)="selectOption('mcp')" class="dropdown-item">
+          <span>MCP</span>
+          <button *ngIf="hasMcpConfig()" 
+                  class="edit-btn" 
+                  (click)="onEditTool('mcp'); $event.stopPropagation()">
+            ⚙
+          </button>
+        </li>
+      </ul>
   </div>
 </ng-template>
 
