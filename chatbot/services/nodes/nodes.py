@@ -122,27 +122,43 @@ async def chatbot_node(state:MessagesState,config:Config):
 
     return {"messages": [response_message]}
 
-async def mcp_agent_node(state:MessagesState,config:Config):
+async def mcp_agent(state:MessagesState,config):
     logging.info(f"----------Enter Agent node------------")
+    try:
+        model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
+        websocket = config["configurable"].get("websocket")
+        await websocket.send_json({
+            "event": "calling agent..."
+        })
+        
+        tools_config = config["configurable"]["tools"]["config"]["config"]
+        api_json = tools_config["api_json"]
+        logging.info(f"mcp_conf: {api_json}")
+        mcp_conf= config["configurable"]["tools"]["config"]["config"]["api_json"]
+        thread_id = config["configurable"]["thread_id"]
+        agent_conf={"configurable":{"thread_id":thread_id}}
+        from langchain_mcp_adapters.client import MultiServerMCPClient
+        try:
+            client = MultiServerMCPClient(
+                mcp_conf
+            )
+            tools = await client.get_tools()
+        except Exception as e:
+            logging.error(f"Error getting tools: {e}")
+            logging.info(f"tools: {tools}")
+        agent = create_react_agent(model, tools)
+        async for step in agent.astream({"messages":state["messages"][-1]},agent_conf, stream_mode="values"):
+            logging.info(f"------------------------")
+            logging.info(f"step: {step}")
+            await websocket.send_json({
+                    "event": "Using tools..."
+                })
+    except Exception as e:  
+        logging.info(f"Exception: {e}")
+        logging.info(f"------------------------")
 
-    model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
-    websocket = config["configurable"].get("websocket")
-    await websocket.send_json({
-        "event": "calling agent..."
-    })
-    mcp_conf= config["configurable"]["tools"]["config"]["config"]["api_json"]
-    logging.info(f"mcp_conf: {mcp_conf}")
-    from langchain_mcp_adapters.client import MultiServerMCPClient
-    
-    client = MultiServerMCPClient(
-        mcp_conf
-    )
-    tools = await client.get_tools()
-    agent = create_react_agent(model, tools)
-    async for step in agent.astream({"messages":state["messages"][-1]},stream_mode='messages'):
-        logging.info(f"step: {step}")
-
-
+    finally:
+        return state
 
 
 def queue_prompt(prompt, prompt_id,client_id):

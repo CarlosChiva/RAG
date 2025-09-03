@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END, MessagesState
 from langgraph.checkpoint.redis import RedisSaver
-from services.nodes.nodes import chatbot_node, orquestator,image_generator,mcp_agent_node
+from services.nodes.nodes import chatbot_node, orquestator,image_generator,mcp_agent
 from services.state import Config
 from langgraph.checkpoint.memory import MemorySaver
 import logging 
@@ -55,7 +55,7 @@ builder.add_node("orquestator", orquestator)
 builder.add_node("chatbot", chatbot_node)
 
 builder.add_node("image_generator", image_generator)
-builder.add_node("mcp_agent", mcp_agent_node)
+builder.add_node("mcp_agent", mcp_agent)
 
 builder.add_edge(START, "orquestator")
 
