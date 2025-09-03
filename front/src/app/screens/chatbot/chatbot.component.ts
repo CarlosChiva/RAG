@@ -254,9 +254,6 @@ export class ChatbotComponent implements OnInit {
     });
   }
   openEditModal(tool: Object) {
-    // `tool` será 'image' o 'mcp'
-    // Aquí puedes abrir un modal o redirigir a la página de edición
-    console.log("aaaaaaaaaaaaaaaaaa",tool);
 
     if ('image_tools'in tool) {
       this.currentEditConfig = tool.image_tools;
@@ -415,19 +412,19 @@ export class ChatbotComponent implements OnInit {
       console.log('cfg:', cfg);
       console.log('isEmpty:', isEmpty);
 
-      if (config!.type === 'image') {
+      if (config!.type == 'image') {
         if (isEmpty) {
           console.log('No se encontraron datos', config);
           this.mostrarImageModal = true;
         } else {
-          this.mcp_comfy_config = cfg;
+          this.mcp_comfy_config = {"type":"image", "config":config};
         }
       } else {   // 'mcp'
         if (isEmpty) {
           console.log('No se encontraron datos', config);
           this.mostrarMCPModal = true;
         } else {
-          this.mcp_comfy_config = cfg;
+          this.mcp_comfy_config = {"type":"mcp", "config":config};
         }
         } 
       }

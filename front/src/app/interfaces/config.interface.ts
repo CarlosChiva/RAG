@@ -4,7 +4,7 @@ export interface Config {
     conversation: string;
     modelName: string;
     userInput: string;
-    tools:Object;
+    tools:any;
 }
 export interface ToolConfigPayload {
   type: 'image' | 'mcp'| null;          
