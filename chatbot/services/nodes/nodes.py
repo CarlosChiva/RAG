@@ -14,6 +14,9 @@ import json
 import urllib.request
 import urllib.parse
 import json
+from langchain_mcp_adapters.tools import load_mcp_tools
+from langgraph.prebuilt import create_react_agent
+
 from urllib import request
 from dotenv import load_dotenv
 import os
@@ -119,14 +122,25 @@ async def chatbot_node(state:MessagesState,config:Config):
 
     return {"messages": [response_message]}
 
+async def mcp_agent_node(state:MessagesState,config:Config):
+    logging.info(f"----------Enter Agent node------------")
 
-# def queue_prompt(prompt):
-#     p = {"prompt": prompt}
-
-
-#     data = json.dumps(p).encode('utf-8')
-#     req =  request.Request("http://127.0.0.1:8188/prompt", data=data)
-#     request.urlopen(req)
+    model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
+    websocket = config["configurable"].get("websocket")
+    await websocket.send_json({
+        "event": "calling agent..."
+    })
+    mcp_conf= config["configurable"]["tools"]["config"]["config"]["api_json"]
+    logging.info(f"mcp_conf: {mcp_conf}")
+    from langchain_mcp_adapters.client import MultiServerMCPClient
+    
+    client = MultiServerMCPClient(
+        mcp_conf
+    )
+    tools = await client.get_tools()
+    agent = create_react_agent(model, tools)
+    async for step in agent.astream({"messages":state["messages"][-1]},stream_mode='messages'):
+        logging.info(f"step: {step}")
 
 
 
@@ -178,38 +192,182 @@ def get_images(ws, prompt,client_id):
     return output_images
 
 import base64
-async def image_generator(state:MessagesState,config):
+import logging
+import uuid
+import json
+
+async def image_generator(state: MessagesState, config):
+    """
+    Generador de imágenes con manejo mejorado de errores
+    """
     websocket = config["configurable"].get("websocket")
-    await websocket.send_json({
-        "event": "Generating image..."
-    })
-    logging.info(f"image_prompt---{config["configurable"]["userInput"]}    {config["configurable"]["tools"]["image_tools"]["api_json"]}  {config["configurable"]["tools"]["image_tools"]["positive_prompt_node"]}")
-    client_id = str(uuid.uuid4())
-
-
-    prompt = config["configurable"]["tools"]["image_tools"]["api_json"]
-    #set the text prompt for our positive CLIPTextEncode
-    prompt[str(config["configurable"]["tools"]["image_tools"]["positive_prompt_node"])]["inputs"]["text"] = config["configurable"]["userInput"]
+    
     try:
-
-        ws = ws_comfy.create_connection("ws://{}/ws?clientId={}".format(os.getenv("SERVER_ADDRESS"), client_id))
-        ws.connect("ws://{}/ws?clientId={}".format(os.getenv("SERVER_ADDRESS"), client_id))
-        images =  get_images(ws, prompt,client_id)
-        ws.close() # for in case this example is used in an environment where it will be repeatedly called, like in a Gradio app. otherwise, you'll randomly receive connection timeouts
-       
-        for node_id in images:
-            for image_data in images[node_id]:
-               # from PIL import Image
-                import io
-                image = image_data#io.BytesIO(image_data)
-       
-        logging.info(f"images---{image}")
-        image_encode = base64.b64encode(image).decode("utf-8")
         await websocket.send_json({
-            "event": "Image generated",
-            "images": image_encode
+            "event": "Generating image..."
         })
+        
+        # Extraer configuración
+        user_input = config["configurable"]["userInput"]
+        tools_config = config["configurable"]["tools"]["config"]["config"]
+        api_json = tools_config["api_json"]
+        positive_prompt_node = tools_config["positive_prompt_node"]
+        
+        logging.info(f"image_prompt--- user_input: {user_input}")
+        logging.info(f"positive_prompt_node: {positive_prompt_node}")
+        
+        client_id = str(uuid.uuid4())
+        prompt = api_json.copy()  # Hacer una copia para no modificar el original
+        
+        # Configurar el prompt positivo
+        prompt[str(positive_prompt_node)]["inputs"]["text"] = user_input
+        
+        # Conectar al WebSocket de ComfyUI
+        ws = ws_comfy.create_connection("ws://{}/ws?clientId={}".format(
+            os.getenv("SERVER_ADDRESS"), client_id
+        ))
+        
+        try:
+            # Generar imágenes
+            images = get_images(ws, prompt, client_id)
+            
+            # Procesar las imágenes
+            all_images_encoded = []
+            image_count = 0
+            
+            for node_id in images:
+                logging.info(f"Processing node: {node_id}")
+                for image_data in images[node_id]:
+                    if image_data:  # Verificar que image_data no esté vacío
+                        try:
+                            # Codificar imagen en base64
+                            image_encoded = base64.b64encode(image_data).decode("utf-8")
+                            all_images_encoded.append(image_encoded)
+                            image_count += 1
+                            logging.info(f"Image {image_count} encoded successfully")
+                        except Exception as encode_error:
+                            logging.error(f"Error encoding image: {encode_error}")
+                            continue
+            
+            # Verificar si se generaron imágenes
+            if all_images_encoded:
+                await websocket.send_json({
+                    "event": "Image generated",
+                    "images": all_images_encoded,  # Enviar todas las imágenes
+                    "count": len(all_images_encoded)
+                })
+                logging.info(f"Successfully sent {len(all_images_encoded)} images")
+            else:
+                await websocket.send_json({
+                    "event": "Error",
+                    "message": "No images were generated"
+                })
+                logging.warning("No images were generated")
+                
+        finally:
+            # Asegurar que el WebSocket se cierre siempre
+            ws.close()
+            
+    except KeyError as ke:
+        error_msg = f"Configuration error: Missing key {ke}"
+        logging.error(error_msg)
+        try:
+            await websocket.send_json({
+                "event": "Error",
+                "message": error_msg
+            })
+        except:
+            logging.error("Failed to send KeyError to websocket")
+            
     except Exception as e:
-        logging.error(f"Error sending websocket message: {e}")
+        error_msg = f"Error generating image: {str(e)}"
+        logging.error(error_msg)
+        try:
+            await websocket.send_json({
+                "event": "Error", 
+                "message": error_msg
+            })
+        except:
+            logging.error("Failed to send error to websocket")
+    
+    # Retornar el estado actualizado
+    return state
 
-    pass
+
+# También mejora la función get_images para mejor manejo de errores:
+def get_images(ws, prompt, client_id):
+    """
+    Función mejorada para obtener imágenes de ComfyUI
+    """
+    prompt_id = str(uuid.uuid4())
+    
+    try:
+        queue_prompt(prompt, prompt_id, client_id)
+        output_images = {}
+        
+        while True:
+            try:
+                out = ws.recv()
+                if isinstance(out, str):
+                    message = json.loads(out)
+                    if message['type'] == 'executing':
+                        data = message['data']
+                        if data['node'] is None and data['prompt_id'] == prompt_id:
+                            break  # Execution is done
+                else:
+                    continue  # previews are binary data
+            except Exception as recv_error:
+                logging.error(f"Error receiving WebSocket message: {recv_error}")
+                break
+
+        # Obtener historial y procesar imágenes
+        try:
+            history = get_history(prompt_id)[prompt_id]
+            for node_id in history['outputs']:
+                node_output = history['outputs'][node_id]
+                images_output = []
+                if 'images' in node_output:
+                    for image in node_output['images']:
+                        try:
+                            image_data = get_image(image['filename'], image['subfolder'], image['type'])
+                            if image_data:  # Verificar que los datos no estén vacíos
+                                images_output.append(image_data)
+                        except Exception as img_error:
+                            logging.error(f"Error getting image {image['filename']}: {img_error}")
+                            continue
+                output_images[node_id] = images_output
+                
+        except Exception as history_error:
+            logging.error(f"Error processing history: {history_error}")
+            
+        return output_images
+        
+    except Exception as e:
+        logging.error(f"Error in get_images: {e}")
+        return {}
+
+
+# Función auxiliar para verificar la estructura de configuración
+def validate_image_config(config):
+    """
+    Valida que la configuración tenga todos los campos necesarios para generar imágenes
+    """
+    required_keys = ["tools", "userInput"]
+    configurable = config.get("configurable", {})
+    
+    for key in required_keys:
+        if key not in configurable:
+            raise KeyError(f"Missing required key: {key}")
+    
+    tools = configurable["tools"]
+    if not tools:
+        raise KeyError("tools configuration is empty")
+    
+    tool_config = tools.get("config", {}).get("config", {})
+    if "api_json" not in tool_config:
+        raise KeyError("api_json not found in tools configuration")
+    
+    if "positive_prompt_node" not in tool_config:
+        raise KeyError("positive_prompt_node not found in tools configuration")
+    
+    return True
