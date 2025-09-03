@@ -148,6 +148,7 @@ async def mcp_agent(state:MessagesState,config):
             logging.info(f"tools: {tools}")
         agent = create_react_agent(model=model, tools=tools)
         full_response = ""
+        thinking=False
 
         async for msg_chunk,metadata in agent.astream({"messages":state["messages"][-1]},agent_conf, stream_mode="messages"):
             
