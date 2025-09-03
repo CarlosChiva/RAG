@@ -5,7 +5,7 @@ from config import Config
 import json
 from langgraph.graph.message import MessagesState,BaseMessage
 from langchain_core.messages.human import HumanMessage
-from langchain_core.messages.ai import AIMessage
+from langchain_core.messages.ai import AIMessage, AIMessageChunk
 import logging
 logging.basicConfig(level=logging.INFO)
 import websocket as ws_comfy
@@ -75,19 +75,19 @@ async def chatbot_node(state:MessagesState,config:Config):
     websocket = config["configurable"].get("websocket")
     full_response = ""
     thinking=False
-    async for chunk in model.astream(state["messages"]):
+    async for msg_chunk in model.astream(state["messages"]):
             
-            if hasattr(chunk, 'content') and chunk.content:
+            if hasattr(msg_chunk, 'content') and msg_chunk.content:
              
-                full_response += chunk.content
+                full_response += msg_chunk.content
                 
                 if websocket:
                     
-                    if chunk.content=="<think>":
+                    if msg_chunk.content=="<think>":
                         thinking=True
                         continue
                     
-                    elif chunk.content=="</think>":
+                    elif msg_chunk.content=="</think>":
                         thinking=False
                         continue
                     
@@ -95,7 +95,7 @@ async def chatbot_node(state:MessagesState,config:Config):
                         await websocket.send_json({
                             "event": "response",
                             "step":"thinking",
-                            "token": chunk.content,                
+                            "token": msg_chunk.content,                
                         })
 
                     else:
@@ -104,7 +104,7 @@ async def chatbot_node(state:MessagesState,config:Config):
                             await websocket.send_json({
                                 "event": "response",
                                 "step":"response",
-                                "response":chunk.content                                
+                                "response":msg_chunk.content                                
                             })
                         except Exception as e:
                             logging.error(f"Error sending websocket message: {e}")
@@ -146,19 +146,73 @@ async def mcp_agent(state:MessagesState,config):
         except Exception as e:
             logging.error(f"Error getting tools: {e}")
             logging.info(f"tools: {tools}")
-        agent = create_react_agent(model, tools)
-        async for step in agent.astream({"messages":state["messages"][-1]},agent_conf, stream_mode="values"):
-            logging.info(f"------------------------")
-            logging.info(f"step: {step}")
-            await websocket.send_json({
-                    "event": "Using tools..."
-                })
+        agent = create_react_agent(model=model, tools=tools)
+        full_response = ""
+
+        async for msg_chunk,metadata in agent.astream({"messages":state["messages"][-1]},agent_conf, stream_mode="messages"):
+            
+            #logging.info(f"step: {step}")
+          
+            if hasattr(msg_chunk, "tool_calls") and msg_chunk.tool_calls:
+                logging.info(f"🔧 Tool Call: {msg_chunk.tool_calls}   meta={metadata}")
+                await websocket.send_json({
+                    "event": f"Using Tool {msg_chunk.tool_calls[0]['name']}",
+                })  
+            if hasattr(msg_chunk, 'content') and msg_chunk.content:
+             
+                full_response += msg_chunk.content
+                
+                if websocket:
+                    
+                    if msg_chunk.content=="<think>":
+                        thinking=True
+                        continue
+                    
+                    elif msg_chunk.content=="</think>":
+                        thinking=False
+                        continue
+                    
+                    if thinking:
+                        await websocket.send_json({
+                            "event": "response",
+                            "step":"thinking",
+                            "token": msg_chunk.content,                
+                        })
+
+                    else:
+
+                        try:
+                            await websocket.send_json({
+                                "event": "response",
+                                "step":"response",
+                                "response":msg_chunk.content                                
+                            })
+                        except Exception as e:
+                            logging.error(f"Error sending websocket message: {e}")
     except Exception as e:  
         logging.info(f"Exception: {e}")
-        logging.info(f"------------------------")
+        logging.info(f"------------------------")  
+    response_message = AIMessage(content=full_response)
+    
+    # Guardar conversación
+    await add_conversation(
+        chat_name=config["configurable"]['conversation'],
+        credentials=config["configurable"]['thread_id'],
+        user_input=state["messages"][-1].content,
+        bot_output=full_response
+    )
+    
 
-    finally:
-        return state
+    return {"messages": [response_message]}
+
+
+    #         await websocket.send_json({
+    #                 "event": "Using tools..."
+    #             })
+
+
+    # finally:
+    #     return state
 
 
 def queue_prompt(prompt, prompt_id,client_id):
