@@ -1,27 +1,22 @@
-from urllib import request
 from langchain_ollama import ChatOllama
 from langgraph.graph import  MessagesState
 from config import Config
-import json
 from langgraph.graph.message import MessagesState,BaseMessage
 from langchain_core.messages.human import HumanMessage
-from langchain_core.messages.ai import AIMessage, AIMessageChunk
-import logging
-logging.basicConfig(level=logging.INFO)
+from langchain_core.messages.ai import AIMessage
 import websocket as ws_comfy
+import json
+import base64
 import uuid
-import json
-import urllib.request
-import urllib.parse
-import json
-from langchain_mcp_adapters.tools import load_mcp_tools
-from langgraph.prebuilt import create_react_agent
+from controllers.chats_controller import get_user_conversation, add_conversation
+from .images_utils import get_images
 
-from urllib import request
+from langgraph.prebuilt import create_react_agent
 from dotenv import load_dotenv
 import os
 load_dotenv()
-from controllers.chats_controller import get_user_conversation, add_conversation
+import logging
+logging.basicConfig(level=logging.INFO)
 
 def save_messages_state_to_file(messages_state: MessagesState, file_path: str):
     messages_state_dict = messages_state.dict()
@@ -67,48 +62,57 @@ async def orquestator(state:MessagesState,config:Config):
         conversation = state["messages"]
     
         return {"messages": conversation}
+thinking=False
+async def send_message(websocket, msg_chunk):
+    global thinking
+
+    if hasattr(msg_chunk, "tool_calls") and msg_chunk.tool_calls:
+        logging.info(f"🔧 Tool Call: {msg_chunk.tool_calls}")
+        await websocket.send_json({
+            "event": f"Using Tool {msg_chunk.tool_calls[0]['name']}",
+        }) 
+    if hasattr(msg_chunk, 'content') and msg_chunk.content:
+        
+        if websocket:
+            
+            if msg_chunk.content=="<think>":
+                thinking=True
+                return
+                
+                
+            elif msg_chunk.content=="</think>":
+                thinking=False
+                return
+            if thinking:
+                await websocket.send_json({
+                    "event": "response",
+                    "step":"thinking",
+                    "token": msg_chunk.content,                
+                })
+
+            else:
+
+                try:
+                    await websocket.send_json({
+                        "event": "response",
+                        "step":"response",
+                        "response":msg_chunk.content                                
+                    })
+                except Exception as e:
+                    logging.error(f"Error sending websocket message: {e}")
 
 async def chatbot_node(state:MessagesState,config:Config):
+    global  thinking
     logging.info(f"----------Enter chatbot node------------")
 
     model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
     websocket = config["configurable"].get("websocket")
-    full_response = ""
-    thinking=False
-    async for msg_chunk in model.astream(state["messages"]):
-            
-            if hasattr(msg_chunk, 'content') and msg_chunk.content:
-             
-                full_response += msg_chunk.content
-                
-                if websocket:
-                    
-                    if msg_chunk.content=="<think>":
-                        thinking=True
-                        continue
-                    
-                    elif msg_chunk.content=="</think>":
-                        thinking=False
-                        continue
-                    
-                    if thinking:
-                        await websocket.send_json({
-                            "event": "response",
-                            "step":"thinking",
-                            "token": msg_chunk.content,                
-                        })
+    full_response=""
+    async for msg_chunk  in model.astream(state["messages"]):
+        full_response += msg_chunk.content
+        await send_message(websocket,msg_chunk)
 
-                    else:
-
-                        try:
-                            await websocket.send_json({
-                                "event": "response",
-                                "step":"response",
-                                "response":msg_chunk.content                                
-                            })
-                        except Exception as e:
-                            logging.error(f"Error sending websocket message: {e}")
-  
+    logging.info(f"full_response: {full_response}")
     response_message = AIMessage(content=full_response)
     
     # Guardar conversación
@@ -118,11 +122,12 @@ async def chatbot_node(state:MessagesState,config:Config):
         user_input=state["messages"][-1].content,
         bot_output=full_response
     )
-    
+    thinking=False
 
     return {"messages": [response_message]}
 
 async def mcp_agent(state:MessagesState,config):
+    global  thinking
     logging.info(f"----------Enter Agent node------------")
     try:
         model=ChatOllama(model=config["metadata"]["modelName"], temperature=0)
@@ -147,49 +152,11 @@ async def mcp_agent(state:MessagesState,config):
             logging.error(f"Error getting tools: {e}")
             logging.info(f"tools: {tools}")
         agent = create_react_agent(model=model, tools=tools)
-        full_response = ""
-        thinking=False
-
+        full_response=""
         async for msg_chunk,metadata in agent.astream({"messages":state["messages"][-1]},agent_conf, stream_mode="messages"):
-            
-            #logging.info(f"step: {step}")
-          
-            if hasattr(msg_chunk, "tool_calls") and msg_chunk.tool_calls:
-                logging.info(f"🔧 Tool Call: {msg_chunk.tool_calls}   meta={metadata}")
-                await websocket.send_json({
-                    "event": f"Using Tool {msg_chunk.tool_calls[0]['name']}",
-                })  
-            if hasattr(msg_chunk, 'content') and msg_chunk.content:
-             
-                full_response += msg_chunk.content
-                
-                if websocket:
-                    
-                    if msg_chunk.content=="<think>":
-                        thinking=True
-                        continue
-                    
-                    elif msg_chunk.content=="</think>":
-                        thinking=False
-                        continue
-                    
-                    if thinking:
-                        await websocket.send_json({
-                            "event": "response",
-                            "step":"thinking",
-                            "token": msg_chunk.content,                
-                        })
+            full_response += msg_chunk.content
+            await send_message(websocket,msg_chunk)
 
-                    else:
-
-                        try:
-                            await websocket.send_json({
-                                "event": "response",
-                                "step":"response",
-                                "response":msg_chunk.content                                
-                            })
-                        except Exception as e:
-                            logging.error(f"Error sending websocket message: {e}")
     except Exception as e:  
         logging.info(f"Exception: {e}")
         logging.info(f"------------------------")  
@@ -203,69 +170,8 @@ async def mcp_agent(state:MessagesState,config):
         bot_output=full_response
     )
     
-
+    full_response=""
     return {"messages": [response_message]}
-
-
-    #         await websocket.send_json({
-    #                 "event": "Using tools..."
-    #             })
-
-
-    # finally:
-    #     return state
-
-
-def queue_prompt(prompt, prompt_id,client_id):
-    p = {"prompt": prompt, "client_id": client_id, "prompt_id": prompt_id}
-    data = json.dumps(p).encode('utf-8')
-    req = urllib.request.Request("http://{}/prompt".format(os.getenv("SERVER_ADDRESS")), data=data)
-    urllib.request.urlopen(req).read()
-
-def get_image(filename, subfolder, folder_type):
-    data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
-    url_values = urllib.parse.urlencode(data)
-    with urllib.request.urlopen("http://{}/view?{}".format(os.getenv("SERVER_ADDRESS"), url_values)) as response:
-        return response.read()
-
-def get_history(prompt_id):
-    with urllib.request.urlopen("http://{}/history/{}".format(os.getenv("SERVER_ADDRESS"), prompt_id)) as response:
-        return json.loads(response.read())
-
-def get_images(ws, prompt,client_id):
-    prompt_id = str(uuid.uuid4())
-    queue_prompt(prompt, prompt_id,client_id)
-    output_images = {}
-    while True:
-        out = ws.recv()
-        if isinstance(out, str):
-            message = json.loads(out)
-            if message['type'] == 'executing':
-                data = message['data']
-                if data['node'] is None and data['prompt_id'] == prompt_id:
-                    break #Execution is done
-        else:
-            # If you want to be able to decode the binary stream for latent previews, here is how you can do it:
-            # bytesIO = BytesIO(out[8:])
-            # preview_image = Image.open(bytesIO) # This is your preview in PIL image format, store it in a global
-            continue #previews are binary data
-
-    history = get_history(prompt_id)[prompt_id]
-    for node_id in history['outputs']:
-        node_output = history['outputs'][node_id]
-        images_output = []
-        if 'images' in node_output:
-            for image in node_output['images']:
-                image_data = get_image(image['filename'], image['subfolder'], image['type'])
-                images_output.append(image_data)
-        output_images[node_id] = images_output
-
-    return output_images
-
-import base64
-import logging
-import uuid
-import json
 
 async def image_generator(state: MessagesState, config):
     """
@@ -364,81 +270,3 @@ async def image_generator(state: MessagesState, config):
     # Retornar el estado actualizado
     return state
 
-
-# También mejora la función get_images para mejor manejo de errores:
-def get_images(ws, prompt, client_id):
-    """
-    Función mejorada para obtener imágenes de ComfyUI
-    """
-    prompt_id = str(uuid.uuid4())
-    
-    try:
-        queue_prompt(prompt, prompt_id, client_id)
-        output_images = {}
-        
-        while True:
-            try:
-                out = ws.recv()
-                if isinstance(out, str):
-                    message = json.loads(out)
-                    if message['type'] == 'executing':
-                        data = message['data']
-                        if data['node'] is None and data['prompt_id'] == prompt_id:
-                            break  # Execution is done
-                else:
-                    continue  # previews are binary data
-            except Exception as recv_error:
-                logging.error(f"Error receiving WebSocket message: {recv_error}")
-                break
-
-        # Obtener historial y procesar imágenes
-        try:
-            history = get_history(prompt_id)[prompt_id]
-            for node_id in history['outputs']:
-                node_output = history['outputs'][node_id]
-                images_output = []
-                if 'images' in node_output:
-                    for image in node_output['images']:
-                        try:
-                            image_data = get_image(image['filename'], image['subfolder'], image['type'])
-                            if image_data:  # Verificar que los datos no estén vacíos
-                                images_output.append(image_data)
-                        except Exception as img_error:
-                            logging.error(f"Error getting image {image['filename']}: {img_error}")
-                            continue
-                output_images[node_id] = images_output
-                
-        except Exception as history_error:
-            logging.error(f"Error processing history: {history_error}")
-            
-        return output_images
-        
-    except Exception as e:
-        logging.error(f"Error in get_images: {e}")
-        return {}
-
-
-# Función auxiliar para verificar la estructura de configuración
-def validate_image_config(config):
-    """
-    Valida que la configuración tenga todos los campos necesarios para generar imágenes
-    """
-    required_keys = ["tools", "userInput"]
-    configurable = config.get("configurable", {})
-    
-    for key in required_keys:
-        if key not in configurable:
-            raise KeyError(f"Missing required key: {key}")
-    
-    tools = configurable["tools"]
-    if not tools:
-        raise KeyError("tools configuration is empty")
-    
-    tool_config = tools.get("config", {}).get("config", {})
-    if "api_json" not in tool_config:
-        raise KeyError("api_json not found in tools configuration")
-    
-    if "positive_prompt_node" not in tool_config:
-        raise KeyError("positive_prompt_node not found in tools configuration")
-    
-    return True
