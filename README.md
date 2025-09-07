@@ -99,19 +99,10 @@ http://localhost:4200
 
 ---
 
-## Last Relases
-
- - [x] Check out and Implement llama3.2 Vision to OCR system.(I've not implemented it because its too much hardware and time spended to extract text from large documentations)
- - [x] Add re-ranking models for extense documents in colleciton (Not implemented to change it at the future for news forms to search information in vectorial databases)
- 
----
-
----
-
 ## Next Relases
 
- - [ ] Add calling to Comfyui from chatbot screen to return image based on json API extracted by Comfyui.
- - [ ] Change the interaction with models in all services by Websocket communication.
+ - [x] Add calling to Comfyui from chatbot screen to return image based on json API extracted by Comfyui.
+ - [x] Change the interaction with models in all services by Websocket communication.
  - [ ] Add RAG system to multimedia sources.
  - [ ] Add RAG system to Excels files
  
