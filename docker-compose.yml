@@ -1,62 +1,66 @@
 version: '3.8'
 
 services:
-  db:
-    container_name: mysql
-    image: mysql:8.0
-    restart: always
-    env_file: 
-      - "./mysql/.env"
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  # db:
+  #   container_name: mysql
+  #   image: mysql:8.0
+  #   restart: always
+  #   env_file: 
+  #     - "./mysql/.env"
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #     - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  db_service:
-    container_name: mysql_connector
-    build: ./ddbb
-    env_file: 
-      - "./ddbb/.env"
-    ports:
-      - "8001:8001"
-    depends_on:
-      - db
-    links:
-      - db  
+  # db_service:
+  #   container_name: mysql_connector
+  #   build: ./ddbb
+  #   env_file: 
+  #     - "./ddbb/.env"
+  #   ports:
+  #     - "8001:8001"
+  #   depends_on:
+  #     - db
+  #   links:
+  #     - db  
 
-  rag_documents:
-    build: ./RAG_documents
-    ports:
-      - "8000:8000"
-    env_file: 
-      - "./RAG_documents/.env"
-    network_mode: host
-    volumes:
-      - RAG_documents:/app/PersistDirectory
-      - conversations:/app/conversations
-  rag_ddbb:
-    build: ./RAG_ddbb
-    ports:
-      - "8002:8002"
-    env_file: 
-      - "./RAG_ddbb/.env"
-    network_mode: host
-    volumes:
-      - rag_ddbb:/app/configs_folder
-  chatbot:
-    build: ./chatbot
-    volumes:
-      - chats:/app/chats
+  # rag_documents:
+  #   build: ./RAG_documents
+  #   ports:
+  #     - "8000:8000"
+  #   env_file: 
+  #     - "./RAG_documents/.env"
+  #   network_mode: host
+  #   volumes:
+  #     - RAG_documents:/app/PersistDirectory
+  #     - conversations:/app/conversations
+  # rag_ddbb:
+  #   build: ./RAG_ddbb
+  #   ports:
+  #     - "8002:8002"
+  #   env_file: 
+  #     - "./RAG_ddbb/.env"
+  #   network_mode: host
+  #   volumes:
+  #     - rag_ddbb:/app/configs_folder
+  # chatbot:
+  #   build: ./chatbot
+  #   volumes:
+  #     - chats:/app/chats
 
-    ports:
-      - "8003:8003"
-    network_mode: host       
-  front:
-    build: ./front
-    ports:
-      - "4200:4200"
-    network_mode: host 
+  #   ports:
+  #     - "8003:8003"
+  #   network_mode: host       
+  # front:
+  #   build: ./front
+  #   ports:
+  #     - "4200:4200"
+  #   network_mode: host 
+
+  excel:
+    build: ./RAG_excels
+
 volumes:
   RAG_documents:
   db_data:
