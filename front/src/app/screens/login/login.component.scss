@@ -142,3 +142,53 @@ button:active {
 .fade-transition {
     animation: fadeOutIn 0.5s ease-in-out;
 }
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    input[type="text"], 
+    input[type="password"] {
+        padding: 10px;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    label {
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+    
+    button {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .singin {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+    .container {
+        padding: 30px;
+    }
+    
+    input[type="text"], 
+    input[type="password"] {
+        padding: 11px;
+        font-size: 15px;
+    }
+    
+    button {
+        padding: 11px;
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 901px) {
+    /* Keep desktop styles as is */
+}

@@ -14,7 +14,7 @@
   
   h1 {
     color: #6bb2ec;
-    font-size: 28px;
+    font-size: 2.5vh; /* Responsive font size */
     margin-top: 5vh;
     margin-bottom: 5vh;
     text-align: center;
@@ -32,7 +32,7 @@
   .icon-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 30px;
+    gap: 20px;
     justify-content: center;
     margin: 0 auto;
     padding: 20px;
@@ -103,10 +103,10 @@
   .sidebar {
     position: fixed;
     top: 0;
-    right: -300px; /* Valor fijo en píxeles para mejor consistencia */
-    width: 250px; /* Ancho fijo para mejor experiencia */
+    right: -300px;
+    width: 250px;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.089); /* Más oscuro para mejor contraste */
+    background: rgba(0, 0, 0, 0.089);
     box-shadow: -4px 0 8px rgba(0, 0, 0, 0.2);
     padding: 20px;
     transition: right 0.3s ease-in-out;
@@ -114,10 +114,34 @@
     flex-direction: column;
     align-items: center;
     z-index: 100;
+    max-width: 80vw; /* Prevent sidebar from taking up entire screen on mobile */
   }
   
   .sidebar.active {
     right: 0;
+  }
+  
+  /* Make sidebar icons distribute more evenly */
+  .sidebar-icons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1; /* Take available space */
+    gap: 15px;
+  }
+  
+  .icon-sidebar-button {
+    text-decoration: none;
+    width: 100%;
+    max-width: 120px; /* Maximum width for icons */
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 auto; /* Don't grow or shrink */
+    margin: 0 10px; /* Horizontal margin for better spacing */
   }
   
   .close-button {
@@ -131,21 +155,13 @@
   
   .sidebar h2 {
     color: white;
-    font-size: 20px;
+    font-size: 1.5rem;
     text-align: center;
     margin-top: 20px;
     margin-bottom: 30px;
   }
   
   /************ sidebar icons ************/
-  .sidebar-icons {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-    width: 100%;
-  }
-  
   .icon-sidebar-button {
     text-decoration: none;
     width: 80px;
@@ -181,5 +197,113 @@
     
     .sidebar {
       width: 200px;
+    }
+    
+    h1 {
+      font-size: 2vh;
+    }
+  }
+  
+  /* Extra small devices (phones, less than 480px) */
+  @media (max-width: 480px) {
+    .container {
+      width: 90%;
+      padding: 10px;
+    }
+    
+    .icon-container {
+      gap: 15px;
+    }
+    
+    .icon-button {
+      width: 70px;
+      height: 70px;
+      margin: 5px;
+    }
+    
+    .icon-sidebar-button {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .sidebar {
+      width: 180px;
+      max-width: 90vw; /* Ensure sidebar doesn't take up entire screen on very small devices */
+    }
+    
+    h1 {
+      font-size: 2vh;
+    }
+    
+    .logout-button {
+      padding: 10px 20px;
+      font-size: 12px;
+    }
+    
+    .add-button {
+      width: 45px;
+      height: 45px;
+      font-size: 24px;
+    }
+  }
+  
+  /* Small devices (landscape phones, less than 576px) */
+  @media (max-width: 576px) {
+    .icon-container {
+      gap: 10px;
+    }
+    
+    .icon-button {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .icon-sidebar-button {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .sidebar {
+      width: 160px;
+    }
+    
+    .sidebar h2 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  /* Medium devices (tablets, less than 768px) */
+  @media (max-width: 768px) and (min-width: 577px) {
+    .icon-button {
+      width: 70px;
+      height: 70px;
+    }
+    
+    .sidebar {
+      width: 180px;
+    }
+  }
+  
+  /* Large devices (desktops, less than 1024px) */
+  @media (max-width: 1024px) and (min-width: 769px) {
+    .icon-button {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .sidebar {
+      width: 200px;
+    }
+  }
+  
+  /* Extra large devices (large desktops) */
+  @media (min-width: 1025px) {
+    .icon-button {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .sidebar {
+      width: 250px;
     }
   }

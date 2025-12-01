@@ -3,8 +3,6 @@
 
 <div class="container">
   <div class="icon-container" id="iconContainer">
-    <!-- Botón Chat siempre visible -->
-    
     <!-- Servicios del usuario -->
     <a *ngFor="let service of services" [routerLink]="['/' + service]" class="icon-button">
       <img [src]="icons[service]" [alt]="service">
@@ -27,5 +25,3 @@
     </a>
   </div>
 </div>
-
-<button class="logout-button" id="logoutButton" (click)="logout()">Log Out</button>

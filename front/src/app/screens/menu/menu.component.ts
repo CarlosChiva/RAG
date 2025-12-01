@@ -1,5 +1,5 @@
 // menu.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -43,6 +43,14 @@ export class MenuComponent implements OnInit {
     this.username = this.authService.getUsername();
     this.fetchServices();
     this.fetchAvailableServices();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    // Close sidebar on small screens when resizing to larger screens
+    if (window.innerWidth >= 768) {
+      this.sidebarActive = false;
+    }
   }
 
   logout(): void {
