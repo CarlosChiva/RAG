@@ -1,12 +1,10 @@
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
 from langchain_core.documents import Document
 from .tools import buscar_en_excel, editar_excel, explorar_excel
 from .excel_loader import load_and_process_excel, load_existing_vectorstore, save_vectorstore
 import os
-
-# Configurar API key
-os.environ["OPENAI_API_KEY"] = "tu-api-key-aqui"
+from fastapi import  WebSocket
 
 class ExcelAgent:
     """Clase singleton para gestionar el agente de Excel."""
@@ -62,7 +60,7 @@ class ExcelAgent:
         buscar_en_excel.__func__ = buscar_en_excel_with_retriever
         
         # Configurar agente
-        self.llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        self.llm = ChatOllama(model="gpt-oss:latest", temperature=0.1)
         self.tools = [buscar_en_excel, editar_excel, explorar_excel]
         
         system_prompt = """Eres un asistente experto en gestión de Excel.
@@ -87,8 +85,14 @@ FLUJOS TÍPICOS:
             raise Exception("El agente no ha sido inicializado. Llama a initialize() primero.")
         return self.agent
     
-    def query(self, query: str):
+    async def query(self, question:str,
+              collection_name:str,
+              credentials:str,
+              websocket:WebSocket):
         """Realiza una consulta al agente."""
+        config={"configurable":{"thread_id":credentials}}
+
         if self.agent is None:
             raise Exception("El agente no ha sido inicializado. Llama a initialize() primero.")
-        return self.agent.invoke({"messages": [{"role": "user", "content": query}]})
+        async for result in  self.agent.astream({"messages": question},config,stream_mode="values"):
+            websocket.send_text(result[-1].content)

@@ -3,6 +3,7 @@ from credentials_controllers import verify_jws
 from fastapi import HTTPException, File, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 import json
+from models.agent import ExcelAgent
 
 # Global variable to track active WebSocket connections
 active_connections = {}
@@ -83,6 +84,8 @@ async def upload_file_edited_controller(file: UploadFile = File(...), credential
 
 async def websocket_handler(websocket: WebSocket):
     """Method to handle WebSocket connections and LLM queries"""
+    agent=ExcelAgent() 
+
     # Aceptar conexión
     await websocket.accept()
     
@@ -115,7 +118,7 @@ async def websocket_handler(websocket: WebSocket):
             
             
             # Procesar la solicitud
-            await controllers.querier(
+            await agent.query(
                 question=input_text,
                 collection_name=collection_name,
                 credentials=credentials,
