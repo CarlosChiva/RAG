@@ -1,7 +1,7 @@
 import pandas as pd
 from langchain_community.document_loaders import UnstructuredExcelLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 import os
@@ -25,7 +25,7 @@ def load_and_process_excel(file_path: str = EXCEL_PATH):
     splits = text_splitter.split_documents(docs)
 
     # 3. Crear vector store
-    embeddings = OpenAIEmbeddings()
+    embeddings = OllamaEmbeddings()
     vectorstore = FAISS.from_documents(splits, embeddings)
     retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
     
@@ -33,7 +33,7 @@ def load_and_process_excel(file_path: str = EXCEL_PATH):
 
 def load_existing_vectorstore(index_path: str = "excel_index"):
     """Carga un vector store existente."""
-    embeddings = OpenAIEmbeddings()
+    embeddings = OllamaEmbeddings()
     vectorstore = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
     retriever = vectorstore.as_retriever()
     return vectorstore, retriever, embeddings

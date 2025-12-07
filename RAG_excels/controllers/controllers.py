@@ -4,9 +4,14 @@ from fastapi import HTTPException, File, UploadFile, WebSocket, WebSocketDisconn
 from fastapi.responses import FileResponse
 import json
 from models.agent import ExcelAgent
-
-# Global variable to track active WebSocket connections
+import os
+from dotenv import load_dotenv
+load_dotenv()
 active_connections = {}
+
+def get_user_folder_path(user_id):
+    return os.path.join(os.getenv("USER_FOLDERS"), user_id)
+        
 
 async def upload_file_controller(file: UploadFile = File(...), credentials: dict = None):
     """Method to save excel file
@@ -17,7 +22,8 @@ async def upload_file_controller(file: UploadFile = File(...), credentials: dict
     """
     try:
         # Create directory for user if not exists
-        user_dir = os.path.join("user_files", credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials.get("user_id"))
+
         os.makedirs(user_dir, exist_ok=True)
         
         # Save file
@@ -36,7 +42,7 @@ async def list_files_controller(credentials: dict = None):
         credentials(dict): JWT credentials from header
     Return: List with name of files saved """
     try:
-        user_dir = os.path.join("user_files", credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials.get("user_id"))
         if os.path.exists(user_dir):
             files = os.listdir(user_dir)
             return {"files": files}
@@ -45,14 +51,14 @@ async def list_files_controller(credentials: dict = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def get_file_controller(name_file: str, credentials: dict = None):
+async def get_file_controller(name_file: str, credentials: dict = None)->FileResponse:
     """Method to get a file saved 
     Args:
         name_file(str): name of file to get. 
         credentials(dict): JWT credentials from header
     Return: File saved """
     try:
-        user_dir = os.path.join("user_files", credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials.get("user_id"))
         file_path = os.path.join(user_dir, name_file)
         
         if os.path.exists(file_path):
@@ -62,6 +68,13 @@ async def get_file_controller(name_file: str, credentials: dict = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+def get_path_file(name_file,user_id)->str:
+    user_dir = get_user_folder_path(user_id)
+    file_path = os.path.join(user_dir, name_file)
+    
+    if os.path.exists(file_path):
+        return file_path
+
 async def upload_file_edited_controller(file: UploadFile = File(...), credentials: dict = None):
     """Method to list files saved 
     Args:
@@ -69,7 +82,7 @@ async def upload_file_edited_controller(file: UploadFile = File(...), credential
     Return: List with name of files saved """
     try:
         # Create directory for user if not exists
-        user_dir = os.path.join("user_files", credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials.get("user_id"))
         os.makedirs(user_dir, exist_ok=True)
         
         # Save file
@@ -114,13 +127,14 @@ async def websocket_handler(websocket: WebSocket):
                 continue  # Continuar esperando más mensajes
                         
             input_text = message_data.get("input")
-            collection_name = message_data.get("collection_name")
+            file_name = message_data.get("file_name")
             
             
             # Procesar la solicitud
+            # llamar a querier
             await agent.query(
                 question=input_text,
-                collection_name=collection_name,
+                file_name=get_path_file(file_name,credentials),
                 credentials=credentials,
                 websocket=websocket
             )

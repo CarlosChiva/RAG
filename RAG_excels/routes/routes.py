@@ -44,7 +44,6 @@ async def upload_file_edited(file: UploadFile = File(...),credentials  = Depends
     Return: List with name of files saved """
     return await upload_file_edited_controller(file, credentials)
 
-active_connections = {}
 
 @router.websocket("/llm-query")
 async def llm_response_websocket(websocket: WebSocket):

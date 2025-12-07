@@ -5,11 +5,24 @@ import os
 from pathlib import Path
 from typing import Optional
 import shutil
+from ..services.excel_loader import load_and_process_excel, load_existing_vectorstore, save_vectorstore
 
 # Configuración global
 EXCEL_PATH = "tu_archivo.xlsx"
 BACKUP_DIR = "backups_excel"
 os.makedirs(BACKUP_DIR, exist_ok=True)
+
+
+
+if use_existing:
+    # Cargar vectorstore existente
+    self.vectorstore, self.retriever, self.embeddings = load_existing_vectorstore()
+else:
+    # Crear nuevo vectorstore
+    self.vectorstore, self.retriever, self.embeddings = load_and_process_excel(file_path)
+    # Guardar para reutilizar
+    save_vectorstore(self.vectorstore)
+
 
 def create_backup():
     """Crea backup automático antes de cualquier edición"""
@@ -21,10 +34,18 @@ def create_backup():
 @tool(response_format="content_and_artifact")
 def buscar_en_excel(query: str) -> tuple[str, list[Document]]:
     """Busca información relevante en el archivo Excel para responder preguntas."""
-    # Esta función necesita acceder al retriever, que se inyectará desde el agente
-    # Por ahora, se deja como plantilla, se inyectará el retriever en la clase agente
-    pass
-
+    docs = retriever.invoke(query)
+    
+    # Serializar para LLM (con metadata)
+    context = "\n\n".join([
+        f"Hoja: {doc.metadata.get('sheet_name', 'N/A')}\n"
+        f"Celda: {doc.metadata.get('cell', 'N/A')}\n"
+        f"Contenido: {doc.page_content[:300]}..."
+        for doc in docs
+    ])
+    
+    return context, docs  # LLM ve 'context', app ve 'docs'
+        
 @tool
 def editar_excel(
     hoja: str,
