@@ -17,7 +17,7 @@ async def upload_file(file: UploadFile = File(...),credentials  = Depends(creden
         Credentials(JWT at header of request)
     Return : Message to confirmation of operation or error
         """
-    return await upload_file_controller(file, credentials)
+    return {"Result":await upload_file_controller(file, credentials)}
 
 @router.get("/list_files")
 async def list_files(credentials  = Depends(credentials_controllers.verify_jws)):

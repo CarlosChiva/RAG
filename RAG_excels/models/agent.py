@@ -3,8 +3,8 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
 from langchain_core.documents import Document
-from .tools import buscar_en_excel, editar_excel, explorar_excel
-from ..services.excel_loader import load_and_process_excel, load_existing_vectorstore, save_vectorstore
+from models.tools import buscar_en_excel, editar_excel, explorar_excel, set_retriever
+from services.excel_loader import load_and_process_excel, load_existing_vectorstore, save_vectorstore
 import os
 from fastapi import  WebSocket
 
@@ -12,27 +12,41 @@ from fastapi import  WebSocket
 class Agent: # Remove singleton because each user_session has a agent specifly to file
     
     def __init__(self, file_path: str , use_existing: bool = False):
+        self.file_path = file_path
+        self.use_existing = use_existing
         self.initialize(file_path, use_existing)
         self.agent=self.build_agent()
-        return self.agent        
+    
+    def initialize(self, file_path, use_existing):
+        """Initialize the agent with vector store and retriever"""
+        if use_existing:
+            # Cargar vectorstore existente
+            self.vectorstore, self.retriever, self.embeddings = load_existing_vectorstore()
+        else:
+            # Crear nuevo vectorstore
+            self.vectorstore, self.retriever, self.embeddings = load_and_process_excel(file_path)
+            # Guardar para reutilizar
+            save_vectorstore(self.vectorstore)
+        
+        # Set the retriever for tools
+        set_retriever(self.retriever)
     
     def get_model(self):
         return ChatOllama(model="gpt-oss:latest", temperature=0.1)
 
     def get_tools(self):
-# Inyectar el retriever en la herramienta buscar_en_excel
-        # Creamos una versión especializada de la herramienta con el retriever inyectado
-
-        # Reemplazar la herramienta original con la versión especializada
         # Configurar agente
         self.tools = [buscar_en_excel, editar_excel, explorar_excel]
         
     def build_agent(self):
-                self.agent = create_agent(self.get_model(),
-                                            self.get_tools(),
-                                            self.get_prompt(),
-                                            checkpointer=MemorySaver()
-                                        )
+        self.get_tools()
+        self.agent = create_agent(self.get_model(),
+                                    self.tools,
+                                    self.get_prompt(),
+                                    checkpointer=MemorySaver()
+                                )
+        return self.agent
+    
     def get_prompt(self):
         return"""Eres un asistente experto en gestión de Excel.
 CAPACIDADES:
@@ -47,11 +61,3 @@ FLUJOS TÍPICOS:
 
 ⚠️ NUNCA edites sin confirmacion='SI'
 ⚠️ Siempre informa qué backup se creó"""
-        
-        
-
-
-
-    
-
-

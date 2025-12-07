@@ -1,9 +1,9 @@
 import os
-from credentials_controllers import verify_jws
+from controllers.credentials_controllers import verify_jws
 from fastapi import HTTPException, File, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 import json
-from models.agent import ExcelAgent
+from services.excel_service import ExcelAgent
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -13,7 +13,7 @@ def get_user_folder_path(user_id):
     return os.path.join(os.getenv("USER_FOLDERS"), user_id)
         
 
-async def upload_file_controller(file: UploadFile = File(...), credentials: dict = None):
+async def upload_file_controller(file: UploadFile = File(...), credentials:str=None):
     """Method to save excel file
     Args:
         file(UploadFile): the excel file
@@ -22,7 +22,7 @@ async def upload_file_controller(file: UploadFile = File(...), credentials: dict
     """
     try:
         # Create directory for user if not exists
-        user_dir = get_user_folder_path(credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials)
 
         os.makedirs(user_dir, exist_ok=True)
         

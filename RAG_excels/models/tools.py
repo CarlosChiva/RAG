@@ -1,28 +1,23 @@
-import pandas as pd
 from langchain.tools import tool
+import pandas as pd
 from langchain_core.documents import Document
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 import shutil
-from ..services.excel_loader import load_and_process_excel, load_existing_vectorstore, save_vectorstore
 
 # Configuración global
 EXCEL_PATH = "tu_archivo.xlsx"
 BACKUP_DIR = "backups_excel"
 os.makedirs(BACKUP_DIR, exist_ok=True)
 
+# Global retriever variable (will be set by the agent)
+retriever = None
 
-
-if use_existing:
-    # Cargar vectorstore existente
-    self.vectorstore, self.retriever, self.embeddings = load_existing_vectorstore()
-else:
-    # Crear nuevo vectorstore
-    self.vectorstore, self.retriever, self.embeddings = load_and_process_excel(file_path)
-    # Guardar para reutilizar
-    save_vectorstore(self.vectorstore)
-
+def set_retriever(global_retriever):
+    """Set the global retriever for tools"""
+    global retriever
+    retriever = global_retriever
 
 def create_backup():
     """Crea backup automático antes de cualquier edición"""
@@ -34,6 +29,9 @@ def create_backup():
 @tool(response_format="content_and_artifact")
 def buscar_en_excel(query: str) -> tuple[str, list[Document]]:
     """Busca información relevante en el archivo Excel para responder preguntas."""
+    if retriever is None:
+        return "❌ ERROR: No se ha configurado el retriever para buscar en Excel", []
+    
     docs = retriever.invoke(query)
     
     # Serializar para LLM (con metadata)

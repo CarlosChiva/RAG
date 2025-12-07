@@ -1,15 +1,16 @@
 import pandas as pd
 from langchain_community.document_loaders import UnstructuredExcelLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 # Configuración global
-EXCEL_PATH = "tu_archivo.xlsx"
 
-def load_and_process_excel(file_path: str = EXCEL_PATH):
+embedding_model=os.getenv("EMBEDDING_MODEL")
+def load_and_process_excel(file_path: str = None):
     """Carga y procesa un archivo Excel para crear un vector store."""
     
     # 2. Cargar y procesar Excel
@@ -25,7 +26,7 @@ def load_and_process_excel(file_path: str = EXCEL_PATH):
     splits = text_splitter.split_documents(docs)
 
     # 3. Crear vector store
-    embeddings = OllamaEmbeddings()
+    embeddings = OllamaEmbeddings(model=embedding_model)
     vectorstore = FAISS.from_documents(splits, embeddings)
     retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
     
@@ -33,7 +34,7 @@ def load_and_process_excel(file_path: str = EXCEL_PATH):
 
 def load_existing_vectorstore(index_path: str = "excel_index"):
     """Carga un vector store existente."""
-    embeddings = OllamaEmbeddings()
+    embeddings = OllamaEmbeddings(model=embedding_model)
     vectorstore = FAISS.load_local(index_path, embeddings, allow_dangerous_deserialization=True)
     retriever = vectorstore.as_retriever()
     return vectorstore, retriever, embeddings
