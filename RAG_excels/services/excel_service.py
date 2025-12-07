@@ -1,7 +1,8 @@
 from typing import Dict
 from models.user import UserSession
 from fastapi import  WebSocket
-
+import logging 
+logging.basicConfig(level=logging.INFO)
 class ExcelAgent: # Change to querier who collect user_sessions
     """Clase singleton para gestionar el agente de Excel."""
     _instance = None
@@ -22,12 +23,13 @@ class ExcelAgent: # Change to querier who collect user_sessions
               credentials:str,
               websocket:WebSocket):
         """Realiza una consulta al agente."""
-        
+        logging.info("Enter to query")
         if not credentials in self.user_session.keys():
             # Create new UserSession instance
             session = UserSession(filename=file_path, user_id=credentials)
             self.user_session[credentials] = session
         else:
             session = self.user_session[credentials]
+
             
         await session.query_agent(websocket=websocket, query=question)

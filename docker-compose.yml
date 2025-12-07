@@ -62,6 +62,7 @@ services:
     build: ./RAG_excels
     ports:
       - 8000:8000
+    network_mode: host
 
 volumes:
   RAG_documents:

@@ -8,11 +8,20 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 active_connections = {}
+import logging 
+logging.basicConfig(level=logging.INFO)
+
 
 def get_user_folder_path(user_id):
     return os.path.join(os.getenv("USER_FOLDERS"), user_id)
         
-
+def get_path_file(name_file,user_id)->str:
+    user_dir = get_user_folder_path(user_id)
+    file_path = os.path.join(user_dir, name_file)
+    logging.info(f"get_path_file  {file_path}    user_dir  {user_dir}")
+    if os.path.exists(file_path):
+        return file_path
+    
 async def upload_file_controller(file: UploadFile = File(...), credentials:str=None):
     """Method to save excel file
     Args:
@@ -36,13 +45,13 @@ async def upload_file_controller(file: UploadFile = File(...), credentials:str=N
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def list_files_controller(credentials: dict = None):
+async def list_files_controller(credentials: str = None):
     """Method to list files saved 
     Args:
         credentials(dict): JWT credentials from header
     Return: List with name of files saved """
     try:
-        user_dir = get_user_folder_path(credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials)
         if os.path.exists(user_dir):
             files = os.listdir(user_dir)
             return {"files": files}
@@ -58,22 +67,17 @@ async def get_file_controller(name_file: str, credentials: dict = None)->FileRes
         credentials(dict): JWT credentials from header
     Return: File saved """
     try:
-        user_dir = get_user_folder_path(credentials.get("user_id"))
+        user_dir = get_user_folder_path(credentials)
         file_path = os.path.join(user_dir, name_file)
         
-        if os.path.exists(file_path):
-            return FileResponse(file_path)
-        else:
+        if not os.path.exists(file_path):
             raise HTTPException(status_code=404, detail="File not found")
+   
+        return FileResponse(file_path,filename= name_file)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def get_path_file(name_file,user_id)->str:
-    user_dir = get_user_folder_path(user_id)
-    file_path = os.path.join(user_dir, name_file)
-    
-    if os.path.exists(file_path):
-        return file_path
+
 
 async def upload_file_edited_controller(file: UploadFile = File(...), credentials: dict = None):
     """Method to list files saved 
@@ -114,6 +118,7 @@ async def websocket_handler(websocket: WebSocket):
 
             # Verificar credenciales (puedes reutilizar tu función existente)
             # Verificar credenciales
+            logging.info(f"All data recived:  {message_data}")
             try:
                 credentials = await verify_jws(message_data.get("auth"))
             except HTTPException as e:
@@ -126,15 +131,16 @@ async def websocket_handler(websocket: WebSocket):
                 await websocket.send_text(json.dumps(error_response))
                 continue  # Continuar esperando más mensajes
                         
+
             input_text = message_data.get("input")
             file_name = message_data.get("file_name")
-            
+            logging.info(f"filename controller  {get_path_file(file_name,credentials)}")
             
             # Procesar la solicitud
             # llamar a querier
             await agent.query(
                 question=input_text,
-                file_name=get_path_file(file_name,credentials),
+                file_path=get_path_file(file_name,credentials),
                 credentials=credentials,
                 websocket=websocket
             )
