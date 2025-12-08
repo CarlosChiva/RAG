@@ -30,7 +30,7 @@ def create_backup(file_path):
     shutil.copy2(file_path, backup_path)
     return str(backup_path)
 
-def initialize(file_path, use_existing):
+def initialize(file_path, use_existing:bool=False):
     """Initialize the agent with vector store and retriever"""
     if use_existing:
         # Cargar vectorstore existente
