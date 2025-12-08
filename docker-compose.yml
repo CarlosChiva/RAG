@@ -52,11 +52,11 @@ services:
   #   ports:
   #     - "8003:8003"
   #   network_mode: host       
-  # front:
-  #   build: ./front
-  #   ports:
-  #     - "4200:4200"
-  #   network_mode: host 
+  front:
+    build: ./front
+    ports:
+      - "4200:4200"
+    network_mode: host 
 
   excel:
     build: ./RAG_excels
