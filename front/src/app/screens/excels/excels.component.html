@@ -1,1 +1,50 @@
-<p>excels works!</p>
+<div class="container">
+
+   <app-sidebar class="sidebar"
+      [title]="'Collecitons'"
+      [sidebarCollapsed]="sidebarCollapsed" 
+      >
+      <div sidebarContent>
+        <ul id="collections-list">
+          <app-sidebar-item 
+            *ngFor="let collection of collections"
+            [collection]="collection"
+            [isSelected]="selectedCollection === collection"
+            [displayField]="'collection'"
+            (selectItem)="selectCollection($event)"
+            (conversationLoaded)="renderConversation($event)"
+            (itemDeleted)="deleteCollection($event)">
+          </app-sidebar-item>
+        </ul>
+        <app-button-container></app-button-container>
+    </div>
+    </app-sidebar>
+    <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
+
+    <div class="main-content" [class.expanded]="sidebarCollapsed">
+        <div class="chat-area" id="chat-area">
+        <div class="chat-output">
+            <app-chat-output id="chat-output" [messages]="messages" [showTables]="false"></app-chat-output>
+        </div>
+        <app-user-input
+            class="user-input"
+            [placeholder]="'Type your message here...'"
+            [isSending]="isSending"
+            [message]="currentMessage"
+            [disabled]="!selectedCollection"
+            [sendButtonText]="'Send'"
+            (messageChange)="onMessageChange($event)"
+            (sendMessage)="sendMessage($event)">
+        </app-user-input> 
+
+        <!-- <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button> -->
+
+        <!-- Ventana Emergente -->
+        <div class="overlay" *ngIf="mostrarModal">
+        <div class="modal">
+            <app-upload-pdf (cerrarModal)="cerrarModal()"></app-upload-pdf>
+        </div>
+        </div>
+        </div>
+    </div>
+</div>
