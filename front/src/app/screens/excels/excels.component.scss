@@ -1,181 +1,193 @@
-/* Responsive styles for excels screen */
-.container {
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
   display: flex;
   height: 100vh;
-  width: 100%;
-  overflow: hidden;
+  background-color: #504f4f;
 }
 
-.sidebar {
-  width: 250px;
-  background: linear-gradient(to bottom, #333, #504f4f);
+.container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #504f4f;
+
+}
+// -------------------------------- sidebar ---------------------------------------
+.sidebar{
+  background: linear-gradient(to right,#333, #504f4f);
+
+  ::ng-deep{
+
+
+   
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 20px;
+    }
+
+    .sidebar ul li:hover, .sidebar ul li.selected {
+      background-color: #555;
+    }
+    .collection-item {
+    position: relative; /* Relativo para que el botón pueda posicionarse dentro del contenedor */
+    padding-right: 60px; /* Dar espacio al botón dentro del contenedor */
+    margin-bottom: 10px; /* Espaciado entre los elementos de la lista */
+    }
+  }
+}
+.collapse-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color:transparent;
   color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 10px;
+  z-index: 1; /* Asegura que el botón esté por encima de todo */
+}
+// ------------------------------- Chat area -------------------------------------
+.chat-area {
+  width: 100%;
+  display: flex;
+  background-color: #504f4f;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 20px;
   box-sizing: border-box;
   transition: width 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  height: 100vh;
-  z-index: 10;
+
 }
 
-.sidebar.collapsed {
-  width: 50px;
-  overflow: hidden;
+.chat-area.expanded {
+  width: 100%;
 }
 
-.collapse-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background: #444;
+.chat-area.collapsed {
+  width: calc(100% - 50px); 
+}
+
+
+// -------------------------------  Upload collections ------------------------------
+#uploadButton{
+  position: absolute;
+  margin: 10px;
+  top: 8px; /* Ajusta la distancia desde el borde superior */
+  right: 8px; /* Ajusta la distancia desde el borde derecho */
+  padding: 0 20px; /* Añade más padding horizontal para acomodar el texto */
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
+  border-radius: 20px;
   cursor: pointer;
-  z-index: 20;
-  font-size: 18px;
-  transition: all 0.3s ease;
-}
+  display: inline-flex; /* Usa inline-flex para centrar el contenido horizontal y verticalmente */
+  align-items: center; /* Centra verticalmente el texto dentro del botón */
+  justify-content: center; /* Centra horizontalmente el texto dentro del botón */
+  text-align: center; /* Asegura que el texto esté centrado */
+  text-decoration: none;
+  z-index: 100;
+  height: 5vh;
+  width: 10vh;
+  font-size: clamp(1px, 1vw, 2vh); /* Ajusta el tamaño de fuente según el tamaño del botón */
 
+}
+#uploadButton:hover {
+  background-color: #377cc7;
+}
+/* Estilos para el área de chat */
+.chat-output{
+    position: relative;
+  overflow: hidden; // clave para recortar los pseudo-elementos
+
+  margin-top: 11px;
+  border: 1px solid #504f4f;
+  background-color: #504f4f;
+  height: 90vh;
+
+  &::before,
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 30px; // Altura del difuminado
+      
+        pointer-events: none;
+      }
+
+      &::before {
+        top: 0;
+        background: linear-gradient(to bottom, #504f4f, transparent);
+      }
+
+      &::after {
+        bottom: 0;
+        background: linear-gradient(to top, #504f4f, transparent);
+      }
+    }
+
+
+/* Contenedor principal de contenido */
 .main-content {
-  flex: 1;
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
+  width: 100%;
+  background-color: #504f4f;
+  flex-grow: 1;
+  transition: margin-left 0.3s;
+  position: relative; /* Necesario para el posicionamiento absoluto del botón */
 }
 
-.chat-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+/* Contenedor expandido */
+.main-content.expanded {
+  margin-left: 5px; /* Reducir el margen cuando la barra lateral esté colapsada */
 }
 
-.chat-output {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
 
-.user-input {
-  padding: 20px;
-//   background: #222;
-//   border-top: 1px solid #444;
-}
 
+/* Fondo oscuro que cubre todo */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6); // Fondo semi-transparente
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1000; // Asegura que esté por encima de todo
 }
 
-.modal {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90%;
-  overflow-y: auto;
-}
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
   }
-  
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    overflow: visible;
-  }
-  
-  .sidebar.collapsed {
-    width: 100%;
-    height: auto;
-  }
-  
-  .collapse-btn {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 100;
-  }
-  
-  .main-content {
-    height: calc(100vh - 50px);
-  }
-  
-  .chat-area {
-    flex-direction: column;
-  }
-  
-  .chat-output {
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  .user-input {
-    padding: 10px;
-  }
-  
-  .modal {
-    width: 95%;
-    margin: 10px;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-@media (max-width: 480px) {
-  .container {
-    height: 100vh;
-  }
-  
-  .sidebar {
-    height: auto;
-  }
-  
-  .main-content {
-    height: calc(100vh - 50px);
-  }
-  
-  .chat-output {
-    padding: 10px;
-  }
-  
-  .user-input {
-    padding: 8px;
-  }
-  
-  .modal {
-    padding: 15px;
-  }
+/* Deshabilitar scroll y clicks en el fondo */
+body.modal-open {
+  overflow: hidden;
 }
+.user-input{
+    height: 5vh;
+    margin-bottom: 1px;
+    margin-bottom: 1vh;
 
-/* Ensure components inside work properly */
-app-sidebar {
-  height: 100%;
-}
-
-app-chat-output {
-  width: 100%;
-  height: 100%;
-}
-
-app-user-input {
-  width: 100%;
 }

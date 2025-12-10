@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit,ViewChild ,ElementRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component'; // Importar componente
 import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
@@ -15,9 +15,11 @@ import {UserInputComponent} from '../../components/user-input/user-input.compone
   styleUrl: './excels.component.scss',
 })
 export class Excels implements OnInit{
-    @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
-    @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
-    @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
+  @ViewChild('chatOutput') chatOutput!: ElementRef;
+  @ViewChild('inputText') inputText!: ElementRef;
+  @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
+  @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
+  @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
   
   // Properties from template
   collections: any[] = [];
@@ -48,6 +50,7 @@ export class Excels implements OnInit{
 
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+    this.sidebarComponent.toggleSidebar();
   }
 
   onMessageChange(message: string): void {
@@ -70,4 +73,7 @@ export class Excels implements OnInit{
   cerrarModal(): void {
     this.mostrarModal = false;
   }
+  
+  // Method to handle sidebar toggle from child component
+  // (Removed since sidebar doesn't emit events in rag_pdf component)
 }
