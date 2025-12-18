@@ -7,7 +7,7 @@
       <div sidebarContent>
         <ul id="collections-list">
           <app-sidebar-item 
-            *ngFor="let collection of collections"
+            *ngFor="let collection of files"
             [collection]="collection"
             [isSelected]="selectedCollection === collection"
             [displayField]="'collection'"

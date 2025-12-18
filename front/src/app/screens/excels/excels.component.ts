@@ -1,26 +1,39 @@
-import { Component, OnInit,ViewChild ,ElementRef} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component'; // Importar componente
-import {ChatOutputComponent} from '../../components/chat-output/chat-output.component';
-import {ButtonContainerComponent} from '../../components/button-container/button-container.component';
+import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component';
+import { ChatOutputComponent } from '../../components/chat-output/chat-output.component';
+import { ButtonContainerComponent } from '../../components/button-container/button-container.component';
+import { ExcelService } from '../../services/excel.service';
+import { Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
-import {SidebarComponent} from '../../components/sidebar/sidebar.component';
-import {SidebarItemComponent} from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
-import {UserInputComponent} from '../../components/user-input/user-input.component';
+import { SidebarComponent } from '../../components/sidebar/sidebar.component';
+import { SidebarItemComponent } from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
+import { UserInputComponent } from '../../components/user-input/user-input.component';
 
 @Component({
   selector: 'app-excels',
-  imports: [CommonModule,UploadComponent,SidebarComponent,SidebarItemComponent,ChatOutputComponent,ButtonContainerComponent,UserInputComponent],
+  imports: [
+    HttpClientModule,
+    CommonModule,
+    UploadComponent,
+    SidebarComponent,
+    SidebarItemComponent,
+    ChatOutputComponent,
+    ButtonContainerComponent,
+    UserInputComponent
+  ],
   templateUrl: './excels.component.html',
-  styleUrl: './excels.component.scss',
+  styleUrl: './excels.component.scss'
 })
-export class Excels implements OnInit{
+export class Excels implements OnInit {
   @ViewChild('chatOutput') chatOutput!: ElementRef;
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
   @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
-  
+
   // Properties from template
   collections: any[] = [];
   selectedCollection: any = null;
@@ -29,15 +42,37 @@ export class Excels implements OnInit{
   currentMessage: string = '';
   sidebarCollapsed: boolean = false;
   mostrarModal: boolean = false;
+  files: string[] = [];
+
+  constructor(
+    private configsService: ExcelService,
+    private router: Router,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit(): void {
-    // Initialize any data if needed
+    this.loadConfigs();
   }
 
-  // Methods from template event handlers
+  toggleSidebar(): void {
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  loadConfigs(): void {
+    this.configsService.listFiles().subscribe({
+      next: (response: any) => {
+        this.files = response.files;
+        console.log(this.files)
+        // if (this.collections.length === 0) {
+        //   this.abrirModal();
+        // }
+      },
+      error: (error: any) => console.error('Error fetching collections:', error)
+    });
+  }
+
   selectCollection(collection: any): void {
     this.selectedCollection = collection;
-    // You might want to load the collection data here
   }
 
   renderConversation(conversation: any): void {
@@ -46,11 +81,6 @@ export class Excels implements OnInit{
 
   deleteCollection(collection: any): void {
     // Handle collection deletion
-  }
-
-  toggleSidebar(): void {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
-    this.sidebarComponent.toggleSidebar();
   }
 
   onMessageChange(message: string): void {
@@ -73,7 +103,4 @@ export class Excels implements OnInit{
   cerrarModal(): void {
     this.mostrarModal = false;
   }
-  
-  // Method to handle sidebar toggle from child component
-  // (Removed since sidebar doesn't emit events in rag_pdf component)
 }

@@ -1,5 +1,23 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:venv",
     "python-envs.defaultPackageManager": "ms-python.python:pip",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+  // Enable strict type checking and full Angular language support
+  "typescript.enableStrictMode": true,
+  "typescript.validate.enable": true,
+
+  // Turn on Angular-specific diagnostics provided by the Angular Language Service
+  "angular.enable-strict-language-service": true,
+
+  // Treat all files as part of the workspace so path mapping for @angular/* is resolved correctly
+  "typeAcquisition:autoUpdate": true,
+
+  // Exclude common non-source folders from validation to keep diagnostics focused on source code
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/*.meta.ts": true,
+    "**/*.typings.ts": true
+  }
+
 }
