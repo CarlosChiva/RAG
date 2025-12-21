@@ -37,13 +37,13 @@
             (sendMessage)="sendMessage($event)">
         </app-user-input> 
 
-        <!-- <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
+         <!-- <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button> -->
 
         <div class="overlay" *ngIf="mostrarModal">
         <div class="modal">
-            <app-excel-uploader (cerrarModal)="cerrarModal()"></app-excel-uploader>
+            <app-excel-uploader (cerrarModal)="cerrarModal()" (fileUploaded)="onFileUploaded()"></app-excel-uploader>
         </div>
-        </div> -->
+        </div>
         </div>
     </div>
 </div>

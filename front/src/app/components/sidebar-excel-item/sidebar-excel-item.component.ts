@@ -21,14 +21,15 @@ export class SidebarExcelItemComponent {
 
   onDelete(): void {
     this.deleteItem.emit(this.itemName);
+    // Eliminar el archivo del backend primero
     this.excelService.deleteFile(this.itemName).subscribe({
       next: () => {
         console.log(`File ${this.itemName} deleted successfully`);
-        // Optionally refresh the file list or show a notification
+        // No recargar aquí, el padre se encargará de actualizar la lista
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(`Error deleting file ${this.itemName}:`, err);
-        // Optionally show an error notification
+        // Opcionalmente mostrar notificación de error
       }
     });
   }

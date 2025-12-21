@@ -1,14 +1,18 @@
-<div class="upload-box">
+<div class="upload-box" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
   <input
     type="file"
     accept=".xlsx"
     (change)="onSelect($event)"
     class="file-input"
+    id="fileInput"
   />
   <label for="fileInput" class="file-label">
     <span class="upload-icon">📁</span>
     <span class="upload-text">Seleccionar archivo Excel (.xlsx)</span>
   </label>
+  <div class="drop-area" [class.drag-over]="isDragOver">
+    <span class="drop-text">o arrastra y suelta aquí</span>
+  </div>
   @if (selectedFileName) {
     <div class="uploaded-name">
       Archivo seleccionado: {{ selectedFileName }}

@@ -39,17 +39,21 @@ export class ExcelService {
   }
 
   /** POST /upload_file  (multipart/form-data) */
-  uploadFile(file: any): Observable<any> {
+  uploadFile(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/upload_file`, formData, { headers: this.getHeaders() });
+    // For multipart/form-data, we should not set Content-Type header
+    // The browser will set it with the correct boundary
+    return this.http.post(`${this.apiUrl}/upload_file`, formData);
   }
 
   /** POST /upload_file_edited (multipart/form-data) */
-  uploadEditedFile(file: any): Observable<any> {
+  uploadEditedFile(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/upload_file_edited`, formData, { headers: this.getHeaders() });
+    // For multipart/form-data, we should not set Content-Type header
+    // The browser will set it with the correct boundary
+    return this.http.post(`${this.apiUrl}/upload_file_edited`, formData);
   }
 
   /** GET /configs */

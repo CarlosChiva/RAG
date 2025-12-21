@@ -64,9 +64,10 @@ export class Excels implements OnInit {
       next: (response: any) => {
         this.files = response.files;
         console.log(this.files)
-        // if (this.collections.length === 0) {
-        //   this.abrirModal();
-        // }
+        // Open modal if no files are available
+        if (this.files.length === 0) {
+          this.abrirModal();
+        }
       },
       error: (error: any) => console.error('Error fetching collections:', error)
     });
@@ -86,6 +87,10 @@ export class Excels implements OnInit {
     // Optionally, if the deleted collection was selected, deselect it
     if (this.selectedCollection === collection) {
       this.selectedCollection = null;
+    }
+    // Check if we need to open the modal when there are no files left
+    if (this.files.length === 0) {
+      this.abrirModal();
     }
   }
 
@@ -113,5 +118,13 @@ export class Excels implements OnInit {
 
   cerrarModal(): void {
     this.mostrarModal = false;
+    // Reload files after closing the modal (to show newly uploaded files)
+    this.loadConfigs();
+  }
+
+  onFileUploaded(): void {
+    // This method is called when a file is successfully uploaded
+    // Reload the file list to show the new file
+    this.loadConfigs();
   }
 }
