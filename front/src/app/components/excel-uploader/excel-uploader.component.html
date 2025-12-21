@@ -1,0 +1,17 @@
+<div class="upload-box">
+  <input
+    type="file"
+    accept=".xlsx"
+    (change)="onSelect($event)"
+    class="file-input"
+  />
+  <label for="fileInput" class="file-label">
+    <span class="upload-icon">📁</span>
+    <span class="upload-text">Seleccionar archivo Excel (.xlsx)</span>
+  </label>
+  @if (selectedFileName) {
+    <div class="uploaded-name">
+      Archivo seleccionado: {{ selectedFileName }}
+    </div>
+  }
+</div>

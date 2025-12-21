@@ -32,6 +32,12 @@ export class ExcelService {
     return this.http.get(`${this.apiUrl}/get_file`, { headers: this.getHeaders(), params });
   }
 
+  /** DELETE /delete_file  (requires name_file query param) */
+  deleteFile(name_file: string): Observable<any> {
+    const params = new HttpParams().set('name_file', name_file);
+    return this.http.delete(`${this.apiUrl}/delete_file`, { headers: this.getHeaders(), params });
+  }
+
   /** POST /upload_file  (multipart/form-data) */
   uploadFile(file: any): Observable<any> {
     const formData = new FormData();
@@ -58,18 +64,18 @@ export class ExcelService {
    * Mirrors `CollectionsService.sendMessage` but uses our own ws URL and
    * passes parameters required by the rag_excels `/llm-query` route.
    */
-  sendMessage(message: string, collectionName?: string): Observable<string> {
+  sendMessage(message: string, fileName?: string): Observable<string> {
     const wsUrl = `${this.apiUrlWs}/llm-query`;
     return new Observable(observer => {
       try {
-        const ws = new WebSocket(`${wsUrl}?${this._buildWsParams(message, collectionName)}`);
+        const ws = new WebSocket(`${wsUrl}?${this._buildWsParams(message, fileName)}`);
 
         ws.onopen = () => {
           console.log('WebSocket connected (Excel service)');
           // Forward auth header payload if needed
           const initMsg = JSON.stringify({
             input: message,
-            collection_name: collectionName,
+            file_name: fileName,
             auth: this.getHeaders().get('Authorization')
           });
           ws.send(initMsg);
@@ -91,11 +97,11 @@ export class ExcelService {
   }
 
   /** Helper to encode WS query parameters */
-  private _buildWsParams(message: string, collectionName?: string): string {
+  private _buildWsParams(message: string, fileName?: string): string {
     const params = new URLSearchParams();
     params.set('input', message);
-    if (collectionName) {
-      params.set('collection_name', collectionName);
+    if (fileName) {
+      params.set('file_name', fileName);
     }
     return params.toString();
   }

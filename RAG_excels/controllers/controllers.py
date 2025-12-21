@@ -14,6 +14,15 @@ logging.basicConfig(level=logging.INFO)
 
 def get_user_folder_path(user_id):
     return os.path.join(os.getenv("USER_FOLDERS"), user_id)
+def remove_file(credentials:str,name_file:str):
+    user_dir = get_user_folder_path(credentials)
+    file_path=os.path.join(user_dir,name_file)        
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+   
+    os.remove(file_path)
+    return {"message": "File deleted successfully"}
+
         
 def get_path_file(name_file,user_id)->str:
     user_dir = get_user_folder_path(user_id)

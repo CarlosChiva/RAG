@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UploadComponent } from '../../components/upload_pdf/upload_pdf.component';
 import { ChatOutputComponent } from '../../components/chat-output/chat-output.component';
 import { ButtonContainerComponent } from '../../components/button-container/button-container.component';
 import { ExcelService } from '../../services/excel.service';
@@ -9,20 +8,22 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { SidebarItemComponent } from '../../components/sidebar-pdf-item/sidebar-pdf-item.component';
+import { SidebarExcelItemComponent } from '../../components/sidebar-excel-item/sidebar-excel-item.component';
 import { UserInputComponent } from '../../components/user-input/user-input.component';
+import { ExcelUploaderComponent } from '../../components/excel-uploader/excel-uploader.component';
 
 @Component({
   selector: 'app-excels',
   imports: [
     HttpClientModule,
     CommonModule,
-    UploadComponent,
     SidebarComponent,
-    SidebarItemComponent,
+    
+    SidebarExcelItemComponent,
     ChatOutputComponent,
     ButtonContainerComponent,
-    UserInputComponent
+    UserInputComponent,
+    ExcelUploaderComponent
   ],
   templateUrl: './excels.component.html',
   styleUrl: './excels.component.scss'
@@ -32,7 +33,7 @@ export class Excels implements OnInit {
   @ViewChild('inputText') inputText!: ElementRef;
   @ViewChild(ChatOutputComponent) chatOutputComponent!: ChatOutputComponent;
   @ViewChild(SidebarComponent) sidebarComponent!: SidebarComponent;
-  @ViewChild(SidebarItemComponent) sidebarItemComponent!: SidebarItemComponent;
+  @ViewChild(SidebarExcelItemComponent) sidebarItem!: SidebarExcelItemComponent;
 
   // Properties from template
   collections: any[] = [];
@@ -80,7 +81,17 @@ export class Excels implements OnInit {
   }
 
   deleteCollection(collection: any): void {
-    // Handle collection deletion
+    // Remove the collection from the files array
+    this.files = this.files.filter(file => file !== collection);
+    // Optionally, if the deleted collection was selected, deselect it
+    if (this.selectedCollection === collection) {
+      this.selectedCollection = null;
+    }
+  }
+
+  toggleShowFile(file: string): void {
+    // Handle file show/hide toggle
+    console.log('Toggle show for file:', file);
   }
 
   onMessageChange(message: string): void {

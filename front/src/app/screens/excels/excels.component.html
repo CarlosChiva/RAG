@@ -6,15 +6,15 @@
       >
       <div sidebarContent>
         <ul id="collections-list">
-          <app-sidebar-item 
-            *ngFor="let collection of files"
-            [collection]="collection"
-            [isSelected]="selectedCollection === collection"
-            [displayField]="'collection'"
+          <app-sidebar-excel-item 
+            *ngFor="let file of files"
+            [itemName]="file"
+            [isSelected]="selectedCollection === file"
+            [isShown]="true"
             (selectItem)="selectCollection($event)"
-            (conversationLoaded)="renderConversation($event)"
-            (itemDeleted)="deleteCollection($event)">
-          </app-sidebar-item>
+            (deleteItem)="deleteCollection($event)"
+            (toggleShow)="toggleShowFile($event)">
+          </app-sidebar-excel-item>
         </ul>
         <app-button-container></app-button-container>
     </div>
@@ -37,14 +37,13 @@
             (sendMessage)="sendMessage($event)">
         </app-user-input> 
 
-        <!-- <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button> -->
+        <!-- <button (click)="abrirModal()" id="uploadButton" class="button">Subir Archivo</button>
 
-        <!-- Ventana Emergente -->
         <div class="overlay" *ngIf="mostrarModal">
         <div class="modal">
-            <app-upload-pdf (cerrarModal)="cerrarModal()"></app-upload-pdf>
+            <app-excel-uploader (cerrarModal)="cerrarModal()"></app-excel-uploader>
         </div>
-        </div>
+        </div> -->
         </div>
     </div>
 </div>

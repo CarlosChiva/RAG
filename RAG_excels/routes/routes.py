@@ -1,7 +1,7 @@
 from http.client import HTTPException
 from fastapi import *
 from controllers import controllers, credentials_controllers
-from controllers.controllers import upload_file_controller, list_files_controller, get_file_controller, upload_file_edited_controller, websocket_handler
+from controllers.controllers import remove_file,upload_file_controller, list_files_controller, get_file_controller, upload_file_edited_controller, websocket_handler
 import tempfile
 import os
 from pydantic import BaseModel
@@ -44,6 +44,20 @@ async def upload_file_edited(file: UploadFile = File(...),credentials  = Depends
     Return: List with name of files saved """
     return await upload_file_edited_controller(file, credentials)
 
+
+@router.delete("/delete_file")
+async def delete_file(name_file: str, credentials = Depends(credentials_controllers.verify_jws)):
+    """Method to delete a file saved 
+    Args:
+        name_file(str): name of file to delete.
+        credentials(JWT at header of request)
+    Return: Message to confirmation of operation or error"""
+    try:
+
+        return remove_file(credentials,name_file)
+    except Exception as e:
+        print(f"ERROR in delete_file: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.websocket("/llm-query")
 async def llm_response_websocket(websocket: WebSocket):

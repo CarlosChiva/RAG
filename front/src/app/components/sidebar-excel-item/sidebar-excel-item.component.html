@@ -1,0 +1,23 @@
+<li 
+  class="collection-item"
+  [class.selected]="isSelected"
+  (click)="onSelect()"
+>
+  <span class="item-name">{{ itemName }}</span>
+  <div class="item-actions">
+    <button 
+      class="toggle-show-btn" 
+      (click)="onToggleShow(); $event.stopPropagation()"
+      [title]="isShown ? 'Hide' : 'Show'"
+    >
+      {{ isShown ? '👁️' : '🙈' }}
+    </button>
+    <button 
+      class="delete-btn" 
+      (click)="onDelete(); $event.stopPropagation()"
+      title="Delete"
+    >
+      🗑️
+    </button>
+  </div>
+</li>
