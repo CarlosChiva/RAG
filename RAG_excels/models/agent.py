@@ -24,7 +24,6 @@ class Agent: # Remove singleton because each user_session has a agent specifly t
 
         
     def build_agent(self):
-        logging.info(f"Prompt:  {self.get_prompt()}")
         self.agent = create_agent(model=self.get_model(),
                                     tools=get_tools(),
                                     system_prompt=self.get_prompt(),

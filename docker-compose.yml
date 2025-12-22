@@ -61,8 +61,8 @@ services:
   excel:
     build: ./RAG_excels
     ports:
-      - 8004:8000
-
+      - 8004:8004
+    network_mode: host
 
 volumes:
   RAG_documents:

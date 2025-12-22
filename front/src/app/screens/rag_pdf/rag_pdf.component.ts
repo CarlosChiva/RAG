@@ -219,38 +219,6 @@ sendMessage(messageFromChild?: string): void {
     return this.sanitizer.bypassSecurityTrustHtml(message as string);
   }
 
-  // Eliminar la función typeTextInMessage ya que no la necesitamos más
-  // typeTextInMessage(messageIndex: number, fullText: string, speed: number = 20): void {
-  //   let index = 0;
-  //   const message = this.messages[messageIndex];
-  //   
-  //   const addNextChar = () => {
-  //     if (index < fullText.length) {
-  //       const markdownText = marked(fullText.substring(0, index + 1))
-  //       const messageRenderized = this.markdownRender(markdownText)
-  //       this.messages[messageIndex] = {
-  //         ...message,
-  //         text: messageRenderized,
-  //         isTyping: true
-  //       };
-  //       
-  //       index++;
-  //       setTimeout(addNextChar, speed);
-  //     } else {
-  //       const markdownText = marked(fullText);
-  //       const safeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownText as string);
-  //       
-  //       this.messages[messageIndex] = {
-  //         ...message,
-  //         text: safeHtml,
-  //         isTyping: false
-  //       };
-  //       this.isSending = false;
-  //     }
-  //   };
-  //   
-  //   addNextChar();
-  // }  
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       this.sendMessage();

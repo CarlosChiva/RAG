@@ -8,6 +8,7 @@ import { Observable, Subject } from 'rxjs';
 export class ExcelService {
   private apiUrl = 'http://localhost:8004';          // REST API base
   private apiUrlWs = 'ws://localhost:8004';          // WebSocket base
+  private ws?: WebSocket;
 
   constructor(private http: HttpClient) {}
 
@@ -68,11 +69,17 @@ export class ExcelService {
    * Mirrors `CollectionsService.sendMessage` but uses our own ws URL and
    * passes parameters required by the rag_excels `/llm-query` route.
    */
-  sendMessage(message: string, fileName?: string): Observable<string> {
-    const wsUrl = `${this.apiUrlWs}/llm-query`;
+  sendMessage(message: string, fileName: string): Observable<string> {
+    const params = new URLSearchParams({
+      input: message,
+      collection_name: fileName
+    });
+    const token= this.getHeaders();
+    const wsUrl=`${this.apiUrlWs}/llm-query?${params.toString()}`    
+    const ws = new WebSocket(`${wsUrl}?${this._buildWsParams(message, fileName)}`);
+
     return new Observable(observer => {
       try {
-        const ws = new WebSocket(`${wsUrl}?${this._buildWsParams(message, fileName)}`);
 
         ws.onopen = () => {
           console.log('WebSocket connected (Excel service)');
@@ -85,8 +92,24 @@ export class ExcelService {
           ws.send(initMsg);
         };
 
-        ws.onmessage = ev => observer.next(ev.data as string);
+        ws.onmessage = (event: MessageEvent) => {
+try {
+          const data = JSON.parse(event.data);
 
+          /* ---- 1. Mensaje de “fin” ---- */
+          if (data.end && data.end === '__END__') {
+            observer.complete();          // Completa el observable
+            this.ws!.close();       // Cierra la conexión
+            return;
+          }
+
+          /* ---- 2. Mensaje de respuesta regular ---- */
+          observer.next(data);           // Envío al suscriptor
+        } catch (e) {
+          // Si no era JSON (por ejemplo un error de texto plano)
+          observer.next(event.data);
+        }
+      };
         ws.onerror = err => {
           console.error('WebSocket error (Excel service)', err);
           observer.error(err);
@@ -97,6 +120,20 @@ export class ExcelService {
       } catch (err) {
         observer.error(err);
       }
+
+      return () => {
+              if (
+                this.ws &&
+                (this.ws.readyState === WebSocket.OPEN ||
+                  this.ws.readyState === WebSocket.CONNECTING)
+              ) {
+                console.log('Closing WebSocket due to unsubscription.');
+                this.ws.close();
+              }
+            };
+
+
+
     });
   }
 

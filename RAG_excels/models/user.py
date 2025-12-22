@@ -4,7 +4,8 @@ logging.basicConfig(level=logging.INFO)
 class UserSession: # who create a agent specictly with file and agent
     _instance = None
     _initialized = False
-    
+    thinking=False
+
     def __new__(cls, filename=None, user_id=None):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -23,14 +24,14 @@ class UserSession: # who create a agent specictly with file and agent
             if websocket:
                 
                 if msg_chunk.content=="<think>":
-                    thinking=True
+                    self.thinking=True
                     return
                     
                     
                 elif msg_chunk.content=="</think>":
-                    thinking=False
+                    self.thinking=False
                     return
-                if thinking:
+                if self.thinking:
                     await websocket.send_json({
                         "event": "response",
                         "step":"thinking",
@@ -62,5 +63,6 @@ class UserSession: # who create a agent specictly with file and agent
             logging.info(f"result  {result}")
             logging.info(f"result  {result.content}")
             await self.send_message(websocket=websocket,
-                                    msg_chunk=result.content
+                                    msg_chunk=result
                                     )
+        await websocket.send_json({"end":"__END__"})
