@@ -69,7 +69,7 @@ export class ExcelService {
    * Mirrors `CollectionsService.sendMessage` but uses our own ws URL and
    * passes parameters required by the rag_excels `/llm-query` route.
    */
-  sendMessage(message: string, fileName: string): Observable<string> {
+  sendMessage(message: string, fileName: string): Observable<any> {
     const params = new URLSearchParams({
       input: message,
       collection_name: fileName
@@ -78,7 +78,7 @@ export class ExcelService {
     const wsUrl=`${this.apiUrlWs}/llm-query?${params.toString()}`    
     const ws = new WebSocket(`${wsUrl}?${this._buildWsParams(message, fileName)}`);
 
-    return new Observable(observer => {
+    return new Observable((observer) => {
       try {
 
         ws.onopen = () => {
