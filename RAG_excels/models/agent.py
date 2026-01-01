@@ -19,7 +19,7 @@ class Agent: # Remove singleton because each user_session has a agent specifly t
 
     
     def get_model(self):
-        return ChatOllama(model="gpt-oss:latest", temperature=0.1)
+        return ChatOllama(model="gpt-oss:latest", temperature=0.1,reasoning=True,num_ctx=70000)
 
 
         
@@ -45,5 +45,6 @@ FLUJOS TÍPICOS:
 
 ⚠️ NUNCA edites sin confirmacion='SI'
 ⚠️ Siempre informa qué backup se creó
+⚠️ Solo devuelve la informacion que te ha pedido el usuario
 
 All answers and actions user ask are about next file {self.file_path}"""

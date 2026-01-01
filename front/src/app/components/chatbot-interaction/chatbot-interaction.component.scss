@@ -1,0 +1,171 @@
+/* Shared UI layer – combines common layout rules extracted from 
+   chatbot & excels screens to eliminate duplication */
+
+:host {
+  display: block;
+}
+
+/* Global dark theme shared by both screens */
+body, .container {
+  background-color: #504f4f;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh; /* Match viewport height for full-screen layout */
+}
+
+/* Sidebar styling – unified gradient & interaction rules */
+.sidebar {
+  background: linear-gradient(to right, #333, #504f4f);
+  
+  ::ng-deep .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  ::ng-deep .sidebar ul li {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px; /* Slightly larger radius for modern look */
+    margin-bottom: 6px; /* Consistent spacing between items */
+  }
+  ::ng-deep .sidebar ul li:hover,
+  ::ng-deep .sidebar ul li.selected {
+    background-color: #555;
+  }
+
+  /* Fixed action button inside sidebar (e.g., "Add Chat") */
+  .add-button {
+    padding: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;               /* Perfectly round */
+    background-color: rgb(2, 146, 146); /* Primary accent */
+    color: aliceblue;
+    border: none;
+    display: flex;                     /* Center icon text */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;                /* Scale with theme */
+    cursor: pointer;
+    transition: background-color .2s ease;
+
+    &:hover {
+      background-color: #005f73;       /* Darker on hover */
+    }
+  }
+
+  /* Side content area – wraps user‑specific widgets */
+  .sidebarContent {
+    padding: 16px;
+  }
+}
+
+/* Collapse toggle button – reused across panels */
+.collapse-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: transparent;
+  color: white;
+  border: none;
+  font-size: 1.8rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  z-index: 10;                        /* Above sidebar content */
+}
+
+/* Main flex area – shared chat region */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #504f4f;
+  transition: margin-left .25s ease;
+}
+.main-content.expanded {
+  margin-left: 64px;   /* Account for expanded sidebar width */
+}
+
+/* Chat area core */
+.chat-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.chat-output {
+  position: relative;
+  overflow: hidden;
+
+  margin-top: 12px;
+  height: calc(100vh - 250px); /* Reserve space for input/footer */
+  background-color: #504f4f;
+  border: 1px solid #504f4f;
+  flex-shrink: 1;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 28px; /* Diffuse effect height */
+    pointer-events: none;
+  }
+  &::before { top: 0; background: linear-gradient(to bottom, #504f4f, transparent); }
+  &::after  { bottom: 0; background: linear-gradient(to top,   #504f4f, transparent); }
+}
+
+/* Input line – common to both screens */
+.input-area {
+  margin-top: 8px;
+  border-radius: 10px;
+}
+.user-input {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+}
+#sendButton, #uploadButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  font-size: 1rem;
+}
+
+/* Overlay (modal) – shared dark veil */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal {
+  background-color: #fff;    /* Light dialog surface */
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+/* Utility helpers (spinner, focus outline) */
+.spinner {
+  border: 4px solid rgba(255, 255, 255, .3);
+  border-top-color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
