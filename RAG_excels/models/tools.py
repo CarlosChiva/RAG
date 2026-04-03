@@ -105,8 +105,8 @@ def column_index_to_letter(col_idx: int) -> str:
         col_idx //= 26
     return result
 
-@tool(response_format="content_and_artifact")
-def buscar_en_excel(file_path: str, query: str, max_results: int = 5, 
+@tool()#(response_format="content_and_artifact")
+def buscar_en_excel(file_path: str, query: str,  
                     filter_sheet: Optional[str] = None) -> Tuple[str, List[Document]]:
     """
     Busca información relevante en el archivo Excel usando búsqueda semántica.
@@ -114,7 +114,6 @@ def buscar_en_excel(file_path: str, query: str, max_results: int = 5,
     Args:
         file_path: Ruta al archivo Excel
         query: Pregunta o término de búsqueda
-        max_results: Número máximo de resultados (default: 5)
         filter_sheet: Opcional - filtrar solo por una hoja específica
     
     Returns:
@@ -136,9 +135,7 @@ def buscar_en_excel(file_path: str, query: str, max_results: int = 5,
         if filter_sheet:
             docs = [doc for doc in docs if doc.metadata.get('sheet_name') == filter_sheet]
         
-        # Limitar resultados
-        docs = docs[:max_results]
-        
+         
         if not docs:
             return f"ℹ️ No se encontraron resultados para: '{query}'", []
         
@@ -178,7 +175,7 @@ def buscar_en_excel(file_path: str, query: str, max_results: int = 5,
     except Exception as e:
         return f"❌ Error en búsqueda: {str(e)}", []
 
-@tool
+@tool()
 def editar_excel(file_path: str, hoja: str, celda: str, nuevo_valor: Any, 
                  confirmacion: Optional[str] = None) -> str:
     """
@@ -295,16 +292,15 @@ def editar_excel(file_path: str, hoja: str, celda: str, nuevo_valor: Any,
     except Exception as e:
         return f"❌ Error al editar: {str(e)}\n\n💡 Tip: Verifica el formato de la celda y que el archivo no esté abierto"
 
-@tool
+@tool()
 def explorar_excel(file_path: str, hoja: Optional[str] = None, 
-                   filas_muestra: int = 5, mostrar_columnas: bool = True) -> str:
+                    mostrar_columnas: bool = True) -> str:
     """
     Explora la estructura del archivo Excel: hojas, dimensiones, columnas y datos de muestra.
     
     Args:
         file_path: Ruta al archivo Excel
         hoja: Opcional - Nombre de hoja específica para explorar en detalle
-        filas_muestra: Número de filas a mostrar en la vista previa (default: 5)
         mostrar_columnas: Si se deben mostrar los nombres de columnas (default: True)
     
     Returns:
@@ -380,15 +376,12 @@ def explorar_excel(file_path: str, hoja: Optional[str] = None,
                     f"{col_letter}. '{col_name}' ({dtype}) - {non_null} valores"
                 )
         
-        # Vista previa de datos
-        info_parts.append(f"\n🔍 VISTA PREVIA (Primeras {min(filas_muestra, len(df_with_header))} filas):")
-        info_parts.append("-" * 40)
+
         
         # Formatear preview con ancho limitado para mejor legibilidad
-        preview = df_with_header.head(filas_muestra).to_string(
+        preview = df_with_header.to_string(
             max_colwidth=30,
-            index=True,
-            max_rows=filas_muestra
+            index=True
         )
         info_parts.append(preview)
         
@@ -404,7 +397,7 @@ def explorar_excel(file_path: str, hoja: Optional[str] = None,
     except Exception as e:
         return f"❌ Error explorando archivo: {str(e)}"
 
-@tool
+@tool()
 def buscar_columna(file_path: str, nombre_columna: str, hoja: Optional[str] = None) -> str:
     """
     Busca una columna por su nombre en el Excel y muestra información sobre ella.
@@ -472,7 +465,7 @@ def buscar_columna(file_path: str, nombre_columna: str, hoja: Optional[str] = No
     except Exception as e:
         return f"❌ Error buscando columna: {str(e)}"
 
-@tool
+@tool()
 def buscar_por_filtro(file_path: str, columna: str, valor_busqueda: Any, 
                       hoja: Optional[str] = None, operador: str = "igual",
                       max_resultados: int = 10) -> str:
@@ -588,7 +581,7 @@ def buscar_por_filtro(file_path: str, columna: str, valor_busqueda: Any,
     except Exception as e:
         return f"❌ Error en búsqueda por filtro: {str(e)}"
 
-@tool(response_format="content_and_artifact")
+@tool()#(response_format="content_and_artifact")
 def consulta_libre_excel(file_path: str, consulta: str, incluir_contexto: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Realiza una consulta libre sobre el Excel usando búsqueda semántica Y análisis estructural.
@@ -633,7 +626,7 @@ def consulta_libre_excel(file_path: str, consulta: str, incluir_contexto: bool =
             response_parts.append("\n🔍 BÚSQUEDA SEMÁNTICA:")
             response_parts.append("-" * 40)
             
-            docs = retriever.invoke(consulta)[:5]
+            docs = retriever.invoke(consulta)#[:5]
             
             if docs:
                 for i, doc in enumerate(docs, 1):

@@ -207,7 +207,6 @@ export class Excels implements OnInit {
     });
   }
   handleIncoming(data: any): void {
-    console.log('aaaaaaaaa', data);
     if (this.currentBotMessageIndex === null) return;
 
     const currentMessage = this.messages[this.currentBotMessageIndex];
