@@ -28,7 +28,7 @@ services:
   rag_documents:
     build: ./RAG_documents
     ports:
-      - "8000:8000"
+      - "8005:8005"
     env_file: 
       - "./RAG_documents/.env"
     network_mode: host
@@ -64,9 +64,21 @@ services:
       - 8004:8004
     network_mode: host
 
+  multimedia:
+    build: ./RAG_multimedia
+    ports:
+      - "8006:8006"
+    network_mode: host
+    volumes:
+      - multimedia_storage:/app/storage/videos
+      - multimedia_conversations:/app/conversations
+    env_file: ./RAG_multimedia/.env
+
 volumes:
   RAG_documents:
   db_data:
   rag_ddbb:
   conversations:
   chats:
+  multimedia_storage:
+  multimedia_conversations:

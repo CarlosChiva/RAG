@@ -17,7 +17,7 @@ export class SidebarItemComponent {
   @Output() selectItem = new EventEmitter<any>();
   @Output() deleteItem = new EventEmitter<any>();
   @Output() itemDeleted = new EventEmitter<any>();
-  @Output() conversationLoaded = new EventEmitter<any[]>();
+  @Output() conversationLoaded = new EventEmitter<any>();
 
   editing: boolean = false;
   newCollectionName: string = '';

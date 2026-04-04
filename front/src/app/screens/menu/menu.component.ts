@@ -8,7 +8,7 @@ import { AuthService } from '../../services/auth.service'; // Ajusta la ruta seg
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RouterLink],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss']
 })
@@ -17,15 +17,19 @@ export class MenuComponent implements OnInit {
   sidebarActive: boolean = false;
   
   // Usa rutas relativas a la carpeta assets
-  icons: {[key: string]: string} = {
-    "pdf": "icons/pdf.png",
-    "excel": "icons/excel.png",
-    "multimedia": "icons/multimedia.png",
-    "audio": "icons/chatbot.png",
-    "ddbb": "icons/ddbb.png",
-    "chatbot": "icons/chatbot.png"
+  icons: {
+    [key: string]: string;
+  } = {
+    pdf: "icons/pdf.png",
+    excel: "icons/excel.png",
+    multimedia: "icons/multimedia.png",
+    audio: "icons/chatbot.png",
+    ddbb: "icons/ddbb.png",
+    chatbot: "icons/chatbot.png"
   };
-  services: string[] = [];
+  services: {
+    [key: string]: boolean;
+  } = {};
   availableServices: string[] = [];
 
   constructor(
@@ -69,7 +73,11 @@ export class MenuComponent implements OnInit {
   fetchServices(): void {
     this.authService.getServices().subscribe({
       next: (response) => {
-        this.services = response.services;
+        // Convert array to object with boolean flags
+        this.services = {};
+        response.services.forEach((service: string) => {
+          this.services[service] = true;
+        });
       },
       error: (error) => {
         console.error('Error al obtener servicios:', error);
@@ -98,5 +106,13 @@ export class MenuComponent implements OnInit {
         console.error('Error al añadir servicio:', error);
       }
     });
+  }
+
+  navigateTo(route: string): void {
+    this.router.navigate([`/${route}`]);
+  }
+
+  getIcon(service: string): string {
+    return this.icons[service] || '';
   }
 }

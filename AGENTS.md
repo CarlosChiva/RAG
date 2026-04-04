@@ -117,6 +117,26 @@ Configuración inicial y esquema de base de datos para el servicio MySQL del pro
 
 ---
 
+### RAG_multimedia
+**API RAG Multimedia - Gestión de Videos con LLM**
+
+API FastAPI para gestión de videos con RAG (Retrieval-Augmented Generation). Permite subir, consultar y analizar archivos de video usando LLMs locales (Ollama) con LangGraph.
+
+**Puerto:** 8006
+
+**Tecnologías:** FastAPI, LangGraph, Ollama, PyJWT, aiofiles
+
+**Funcionalidades:**
+- Upload, list, download, delete de archivos de video
+- Consultas LLM vía WebSocket con streaming
+- Aislamiento multi-usuario con JWT
+- Almacenamiento intercambiable (LocalStorage implementado)
+- Conversaciones persistentes en JSON
+
+→ [Documentación detallada](./RAG_multimedia/AGENTS.md)
+
+---
+
 ### front
 **Frontend RAG - Aplicación Angular**
 
@@ -127,9 +147,9 @@ Frontend de la aplicación RAG construido con Angular 19.2.0. Permite a los usua
 **Tecnologías:** Angular 19.2.0, TypeScript 5.7.2, RxJS, marked, prismjs
 
 **Funcionalidades:**
-- 6 pantallas: login, menu, excels, chatbot, rag_ddbb, rag_pdf
-- 18 componentes reutilizables
-- 5 servicios especializados
+- 7 pantallas: login, menu, excels, chatbot, rag_ddbb, rag_pdf, multimedia
+- 19 componentes reutilizables (incluye video-player)
+- 6 servicios especializados (incluye multimedia.service)
 - Autenticación JWT con interceptores
 - Comunicación híbrida HTTP/WebSocket
 - Standalone components sin NgModules
@@ -141,19 +161,19 @@ Frontend de la aplicación RAG construido con Angular 19.2.0. Permite a los usua
 ## Arquitectura General
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Frontend Angular (Port 4200)                 │
-│  - Login/Menu - Excels - Chatbot - RAG DDBB - RAG PDF          │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │ HTTP/WS + JWT
-                            ↓
-┌───────────────────────────▼─────────────────────────────────────┐
-│  API ddbb (Port 8001) - Autenticación y Gestión de Servicios   │
-│  - /log-in, /sing_up - /get-services - MySQL (users, services) │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        ↓                   ↓                   ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                    Frontend Angular (Port 4200)                  │
+│  - Login/Menu - Excels - Chatbot - RAG DDBB - RAG PDF - Multimedia│
+└─────────────────────────────┬────────────────────────────────────┘
+                              │ HTTP/WS + JWT
+                              ↓
+┌─────────────────────────────▼────────────────────────────────────┐
+│  API ddbb (Port 8001) - Autenticación y Gestión de Servicios    │
+│  - /log-in, /sing_up - /get-services - MySQL (users, services)  │
+└─────────────────────────────┬────────────────────────────────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          ↓                   ↓                   ↓
 ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
 │  RAG_excels   │  │ RAG_documents │  │   RAG_ddbb    │
 │  (Port 8004)  │  │  (Port 8000)  │  │  (Port 8002)  │
@@ -161,15 +181,23 @@ Frontend de la aplicación RAG construido con Angular 19.2.0. Permite a los usua
 │  - LangGraph  │  │  - ChromaDB   │  │  - PostgreSQL │
 │  - FAISS      │  │  - Ollama     │  │  - MySQL      │
 └───────────────┘  └───────────────┘  └───────────────┘
-        │                   │                   │
-        ↓                   ↓                   ↓
+          │                   │                   │
+          ↓                   ↓                   ↓
 ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
-│   chatbot     │  │    mysql      │  │    Ollama     │
-│  (WebSocket)  │  │   (MySQL DB)  │  │  (LLM Local)  │
-│  - LangGraph  │  │   - users     │  │  - gpt-oss    │
-│  - ComfyUI    │  │   - services  │  │  - llama3.2   │
-│  - MCP Agent  │  └───────────────┘  │  - bge-m3     │
-└───────────────┘                      └───────────────┘
+│   chatbot     │  │  multimedia   │  │    Ollama     │
+│  (WebSocket)  │  │  (Port 8006)  │  │  (LLM Local)  │
+│  - LangGraph  │  │  - Video RAG  │  │  - gpt-oss    │
+│  - ComfyUI    │  │  - LocalStorage│ │  - llama3.2   │
+│  - MCP Agent  │  │  - JSON conv  │  │  - bge-m3     │
+└───────────────┘  └───────────────┘  └───────────────┘
+                              │
+                              ↓
+                      ┌───────────────┐
+                      │    mysql      │
+                      │   (MySQL DB)  │
+                      │   - users     │
+                      │   - services  │
+                      └───────────────┘
 ```
 
 ---
@@ -201,5 +229,6 @@ Frontend de la aplicación RAG construido con Angular 19.2.0. Permite a los usua
 | RAG_documents | 8000 | python:3.10-slim |
 | RAG_ddbb | 8002 | python:3.12-slim |
 | RAG_excels | 8004 | python:3.12-slim-trixie |
+| RAG_multimedia | 8006 | python:3.12-slim |
 | chatbot | - | python:3.12 |
 | mysql | 3306 | mysql:5.7+ |

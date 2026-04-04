@@ -1,0 +1,74 @@
+<div class="container">
+
+  <app-sidebar class="sidebar"
+    [title]="'Conversations'"
+    [sidebarCollapsed]="sidebarCollapsed" 
+    >
+    <div sidebarContent>
+      <button id="createChatButton"
+        (click)="createChat($event)" 
+        class="add-button">
+      +
+      </button>
+      <ul>
+        <app-sidebar-conversations-item 
+          *ngFor="let conversation of conversations"
+          [collection]="conversation"
+          [isSelected]="selectedChat === conversation.id"
+          [displayField]="'name'"
+          (selectItem)="selectChat(conversation.id)"
+          (conversationLoaded)="renderConversation($event)"
+          (itemDeleted)="deleteChat($event)">
+        </app-sidebar-conversations-item>
+      </ul>
+      <app-button-container></app-button-container>
+  </div>
+  </app-sidebar>
+  <button id="toggleSidebar" class="collapse-btn" (click)="toggleSidebar()">☰</button> 
+
+  <div class="main-content" [class.expanded]="sidebarCollapsed">
+    <div class="chat-area" id="chat-area">
+      
+      <!-- Video Player Section -->
+      <div class="video-section" *ngIf="selectedVideo">
+        <app-video-player
+          [videoUrl]="videoUrl || ''"
+          [autoPlay]="false"
+          [conversationId]="selectedChat"
+          (videoEnded)="onVideoEnded()"
+          (playbackStateChanged)="onPlaybackStateChanged($event)">
+        </app-video-player>
+        <app-button-container>
+          <button (click)="playVideo()" class="button">Play Video</button>
+        </app-button-container>
+      </div>
+
+      <!-- Upload Section -->
+      <div class="upload-section">
+        <input type="file" 
+               accept="video/*" 
+               (change)="handleVideoUpload($event)" 
+               id="videoUpload" />
+        <label for="videoUpload">Upload Video</label>
+      </div>
+
+      <!-- Chat Output -->
+      <div class="chat-output">
+        <app-chat-output-chatbot #chatOutput id="chat-output" [messages]="messages"></app-chat-output-chatbot>
+      </div>
+
+      <!-- User Input -->
+      <app-user-input-chatbot #inputText
+        class="user-input"
+        [placeholder]="'Type your message here...'"
+        [isSending]="isSending"
+        [message]="currentMessage"
+        [disabled]="!selectedChat"
+        [sendButtonText]="'Send'"
+        (messageChange)="onMessageChange($event)"
+        (sendMessage)="sendMessage($event)">
+      </app-user-input-chatbot> 
+
+    </div>
+  </div>
+</div>

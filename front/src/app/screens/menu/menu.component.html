@@ -4,9 +4,41 @@
 <div class="container">
   <div class="icon-container" id="iconContainer">
     <!-- Servicios del usuario -->
-    <a *ngFor="let service of services" [routerLink]="['/' + service]" class="icon-button">
-      <img [src]="icons[service]" [alt]="service">
-    </a>
+    <div class="card" *ngIf="services['chatbot']" (click)="navigateTo('chatbot')">
+      <div class="icon">
+        <img [src]="icons['chatbot']" alt="chatbot">
+      </div>
+      <h3>Chatbot</h3>
+      <p>Chat general con IA</p>
+    </div>
+    <div class="card" *ngIf="services['pdf']" (click)="navigateTo('pdf')">
+      <div class="icon">
+        <img [src]="icons['pdf']" alt="pdf">
+      </div>
+      <h3>PDF</h3>
+      <p>Analiza documentos PDF</p>
+    </div>
+    <div class="card" *ngIf="services['multimedia']" (click)="navigateTo('multimedia')">
+      <div class="icon">
+        <img [src]="icons['multimedia']" alt="multimedia">
+      </div>
+      <h3>Multimedia</h3>
+      <p>Gestiona videos y multimedia</p>
+    </div>
+    <div class="card" *ngIf="services['excel']" (click)="navigateTo('excel')">
+      <div class="icon">
+        <img [src]="icons['excel']" alt="excel">
+      </div>
+      <h3>Excel</h3>
+      <p>Analiza archivos Excel</p>
+    </div>
+    <div class="card" *ngIf="services['ddbb']" (click)="navigateTo('ddbb')">
+      <div class="icon">
+        <img [src]="icons['ddbb']" alt="ddbb">
+      </div>
+      <h3>Base de Datos</h3>
+      <p>Consulta bases de datos</p>
+    </div>
   </div>
 </div>
 
@@ -21,7 +53,7 @@
        href="javascript:void(0)" 
        class="icon-sidebar-button" 
        (click)="selectService(service)">
-      <img [src]="icons[service]" [alt]="service">
+      <img [src]="getIcon(service)" [alt]="service">
     </a>
   </div>
 </div>

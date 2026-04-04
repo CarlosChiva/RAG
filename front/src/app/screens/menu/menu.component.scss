@@ -38,6 +38,56 @@
     padding: 20px;
   }
   
+  .card {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  .card .icon {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .card .icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+  }
+  
+  .card .icon img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card h3 {
+    margin: 5px 0;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .card p {
+    margin: 0;
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.8;
+  }
+  
   .icon-button {
     text-decoration: none;
     width: 100px;
@@ -190,6 +240,16 @@
       width: 95%;
     }
     
+    .card {
+      width: 80px;
+      height: 120px;
+    }
+    
+    .card .icon {
+      width: 80px;
+      height: 80px;
+    }
+    
     .icon-button {
       width: 80px;
       height: 80px;
@@ -213,6 +273,24 @@
     
     .icon-container {
       gap: 15px;
+    }
+    
+    .card {
+      width: 70px;
+      height: 110px;
+    }
+    
+    .card .icon {
+      width: 70px;
+      height: 70px;
+    }
+    
+    .card h3 {
+      font-size: 14px;
+    }
+    
+    .card p {
+      font-size: 10px;
     }
     
     .icon-button {
@@ -253,6 +331,24 @@
       gap: 10px;
     }
     
+    .card {
+      width: 60px;
+      height: 100px;
+    }
+    
+    .card .icon {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .card h3 {
+      font-size: 12px;
+    }
+    
+    .card p {
+      font-size: 9px;
+    }
+    
     .icon-button {
       width: 60px;
       height: 60px;
@@ -274,6 +370,16 @@
   
   /* Medium devices (tablets, less than 768px) */
   @media (max-width: 768px) and (min-width: 577px) {
+    .card {
+      width: 70px;
+      height: 110px;
+    }
+    
+    .card .icon {
+      width: 70px;
+      height: 70px;
+    }
+    
     .icon-button {
       width: 70px;
       height: 70px;
@@ -286,6 +392,16 @@
   
   /* Large devices (desktops, less than 1024px) */
   @media (max-width: 1024px) and (min-width: 769px) {
+    .card {
+      width: 80px;
+      height: 120px;
+    }
+    
+    .card .icon {
+      width: 80px;
+      height: 80px;
+    }
+    
     .icon-button {
       width: 80px;
       height: 80px;
@@ -298,6 +414,16 @@
   
   /* Extra large devices (large desktops) */
   @media (min-width: 1025px) {
+    .card {
+      width: 100px;
+      height: 140px;
+    }
+    
+    .card .icon {
+      width: 100px;
+      height: 100px;
+    }
+    
     .icon-button {
       width: 100px;
       height: 100px;

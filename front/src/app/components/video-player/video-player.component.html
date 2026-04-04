@@ -1,0 +1,111 @@
+<div class="video-player-container" [class.loading]="isLoading" [class.error]="isError" [class.fullscreen]="isFullscreen">
+  
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading video...</p>
+  </div>
+
+  <!-- Error Overlay -->
+  <div class="error-overlay" *ngIf="isError">
+    <div class="error-icon">⚠️</div>
+    <p>{{ errorMessage }}</p>
+    <button class="retry-button" (click)="reloadVideo()" type="button">Retry</button>
+  </div>
+
+  <!-- Buffering Indicator -->
+  <div class="buffering-indicator" *ngIf="isBuffering && !isLoading">
+    <div class="spinner-small"></div>
+  </div>
+
+  <!-- Video Element -->
+  <video
+    #videoElement
+    [src]="videoUrl"
+    [muted]="isMuted"
+    [class.hidden]="isLoading || isError"
+    preload="metadata"
+    [attr.conversation-id]="conversationId">
+  </video>
+
+  <!-- Custom Controls -->
+  <div class="custom-controls" [class.visible]="!isLoading && !isError">
+    
+    <!-- Progress Bar -->
+    <div class="progress-container" (click)="onProgressClick($event)">
+      <div class="progress-bar">
+        <div class="progress-buffered" [style.width]="bufferedPercentage + '%'"></div>
+        <div class="progress-current" [style.width]="progressPercentage + '%'"></div>
+      </div>
+      <input 
+        type="range" 
+        class="progress-slider"
+        min="0" 
+        max="100" 
+        [value]="progressPercentage"
+        (input)="onSeekInput($event)"
+        [disabled]="duration === 0"
+        aria-label="Video progress"
+      >
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      
+      <!-- Play/Pause Button -->
+      <button 
+        class="control-button play-pause-btn" 
+        (click)="isPlaying ? pause() : play()"
+        [attr.aria-label]="isPlaying ? 'Pause' : 'Play'"
+        [attr.aria-pressed]="isPlaying">
+        <span class="icon" [class.playing]="isPlaying">
+          {{ isPlaying ? '⏸️' : '▶️' }}
+        </span>
+      </button>
+
+      <!-- Time Display -->
+      <div class="time-display">
+        <span class="current-time">{{ formatTime(currentTime) }}</span>
+        <span class="time-separator"> / </span>
+        <span class="total-time">{{ formatTime(duration) }}</span>
+      </div>
+
+      <!-- Volume Controls -->
+      <div class="volume-container">
+        <button 
+          class="control-button volume-btn"
+          (click)="toggleMute()"
+          [attr.aria-label]="isMuted ? 'Unmute' : 'Mute'"
+          [attr.aria-pressed]="isMuted">
+          <span class="icon">{{ isMuted ? '🔇' : '🔊' }}</span>
+        </button>
+        <input 
+          type="range" 
+          class="volume-slider"
+          min="0" 
+          max="1" 
+          step="0.01"
+          [value]="isMuted ? 0 : volume"
+          (input)="setVolume($any($event.target).value)"
+          aria-label="Volume"
+        >
+      </div>
+
+      <!-- Spacer -->
+      <div class="spacer"></div>
+
+      <!-- Fullscreen Button -->
+      <button 
+        class="control-button fullscreen-btn"
+        (click)="toggleFullscreen()"
+        [attr.aria-label]="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'"
+        [attr.aria-pressed]="isFullscreen">
+        <span class="icon" [class.active]="isFullscreen">
+          {{ isFullscreen ? '☐' : '⛶' }}
+        </span>
+      </button>
+
+    </div>
+  </div>
+
+</div>

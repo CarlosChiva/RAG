@@ -50,6 +50,55 @@ Este directorio contiene los servicios que gestionan la comunicación con el bac
 - Búsqueda y recuperación por colección
 - Metadata de colecciones
 
+### multimedia.service.ts
+**Propósito:** Service for video management and multimedia RAG
+**Base URL:** http://localhost:8006
+**WebSocket URL:** ws://localhost:8006
+**Funcionalidades:**
+- Listado y gestión de conversaciones multimedia
+- Upload de archivos de video (multipart/form-data)
+- Obtención y eliminación de videos
+- Creación y eliminación de conversaciones
+- Streaming de respuestas mediante WebSocket con marcador __END__
+**Métodos:**
+- `listConversations()`: GET /api/conversations - returns list of conversations
+- `uploadVideo(file: File, metadata?: string)`: POST /api/upload - upload video with multipart/form-data
+- `getVideo(fileId: string)`: GET /api/media/{file_id} - returns video URL
+- `deleteVideo(fileId: string)`: DELETE /api/media/{file_id}
+- `getConversation(conversationId: string)`: GET /api/conversations/{id}
+- `createConversation(name: string)`: POST /api/conversations - create a new conversation
+- `deleteConversation(conversationId: string)`: DELETE /api/conversations/{id}
+- `sendMessage(conversationId: string, message: string, onMessage: (data: any) => void)`: WebSocket streaming
+**Autenticación:** JWT via getHeaders() - `Authorization: Bearer ${localStorage.getItem('access_token')}`
+**Uso:**
+```typescript
+constructor(private multimediaService: MultimediaService) {}
+
+// List conversations
+this.multimediaService.listConversations().subscribe({
+  next: (data) => {
+    this.conversations = data.conversations || [];
+  }
+});
+
+// Upload video
+this.multimediaService.uploadVideo(file).subscribe({
+  next: (response) => {
+    this.videoUrl = response.url;
+  }
+});
+
+// Send message with streaming
+this.multimediaService.sendMessage(conversationId, message, (data) => {
+  this.handleMultimediaMessage(data);
+}).subscribe({
+  next: (data) => {},
+  complete: () => {
+    this.isSending = false;
+  }
+});
+```
+
 ## Integración
 
 Estos servicios son consumidos por:

@@ -23,6 +23,9 @@ Este directorio contiene las 6 pantallas principales de la aplicación RAG. Cada
 ### Pantalla de Chatbot General
 - [chatbot](./chatbot/AGENTS.md) - Chatbot general con soporte de herramientas (ComfyUI, MCP) y generación de imágenes
 
+### Pantalla de Multimedia
+- [multimedia](./multimedia/AGENTS.md) - Video management and RAG interaction screen (upload, playback, conversation management, chat)
+
 ## Archivos a Nivel de Directorio
 
 No hay archivos TypeScript adicionales a este nivel. Todas las pantallas están encapsuladas en sus respectivos subdirectorios siguiendo la estructura:
