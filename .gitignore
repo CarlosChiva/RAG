@@ -45,3 +45,6 @@ testem.log
 Thumbs.db
 .vscode/
 .venv/
+.agents
+.claude
+.ruff_cache
