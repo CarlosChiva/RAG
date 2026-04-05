@@ -195,3 +195,132 @@ RAG (Retrieval-Augmented Generation) system with multiple microservices.
 - **Standalone components:** Mantener patrón Angular sin NgModules
 - **Volumen Docker para persistencia:** Usar volumes para videos y conversaciones
 - **Puerto recomendado:** 8006 (8005 reservado para futuro)
+
+---
+
+## ANÁLISIS PARA MIGRACIÓN A UV (2026-04-05)
+
+### E.1 Estado de Paquetería por Servicio
+
+| Servicio | Gestor Actual | Dependencies | Estado UV |Archivo Lock | Acción Requerida |
+|------|--------------|-------------|----------|------------|-----------------|
+| **RAG_documents** | pip | 166 | ❌ NO | requirements.txt | Migrar a uv |
+| **RAG_ddbb** | pip | 64 | ❌ NO | requirements.txt | Migrar a uv + agregar psycopg2 |
+| **RAG_excels** | uv | 17 | ✅ SÍ | uv.lock + pyproject.toml | REFERENCIA |
+| **RAG_multimedia** | pip | 6 | ❌ NO | requirements.txt | Migrar a uv |
+| **chatbot** | pip | 72 | ❌ NO | requirements.txt | Migrar a uv |
+
+### E.2 Puntos Críticos por Servicio
+
+#### RAG_documents (Complejidad: Media)
+- **Problema:** Dockerfile tiene 2 comandos `pip install` separados
+  - 1. `pip install --no-cache-dir -r requirements.txt`
+  - 2. `pip install pdfplumber[poppler]`
+- **Solución:** Consolidar en un solo `uv sync`
+- **Debian deps:** tesseract-ocr, libtesseract-dev, poppler-utils
+- **Total deps:** 166 (más grande set)
+
+#### RAG_ddbb (Complejidad: Media)
+- **Problema:** `psycopg2-binary` y `psycopg2` NO están en requirements.txt
+- **Están instalados en Dockerfile:** 
+  - `pip install psycopg2-binary`
+  - `pip install psycopg2`
+- **Solución:** Agregar psycopg2-binary y psycopg2 a requirements.txt ANTES de migrar
+- **Debian deps:** libpq-dev, gcc, python3-dev (para compilar psycopg2)
+- **Total deps:** 64
+
+#### RAG_excels (YA MIGRADO - REFERENCIA)
+- ✅ Tiene: pyproject.toml, uv.lock, .python-version
+- ✅ Dockerfile usa: `uv sync --locked --compile-bytecode`
+- ✅ 17 dependencias en pyproject.toml
+- **USAR COMO MODELO:** Copiar estrategia Dockerfile
+
+#### RAG_multimedia (Complejidad: Baja)
+- **Más simple:** Solo 6 dependencias
+- **Nota:** `aiofiles` sin versión especificada (compatible con uv)
+- **Sin deps sistema**
+- **Total deps:** 6
+
+#### chatbot (Complejidad: Media)
+- **Problema:** Archivo llamado `dockerfile` (minúsculas) en vez de `Dockerfile`
+- **Dependencias especiales:** langgraph, langchain-mcp-adapters
+- **Versiones diferentes:** fastapi 0.115.12, langchain 0.3.23, ollama 0.4.8
+- **Total deps:** 72
+
+### E.3 Matriz de Versiones entre Servicios
+
+| Paquete | RAG_documents | RAG_ddbb | RAG_excels | chatbot | Observación |
+|--------|--------------|---------|-----------|---------|------------|
+| fastapi | 0.115.9 | 0.115.9 | >=0.123.0 | 0.115.12 | Versión diferente en RAG_excels y chatbot |
+| uvicorn | 0.30.6 | 0.34.0 | >=0.38.0 | 0.34.2 | Versiones inconsistentes |
+| langchain | 0.3.26 | 0.3.26 | >=1.1.2 | 0.3.23 | RAG_excels con v1.x |
+| langchain-ollama | 0.3.3 | 0.3.3 | >=1.0.0 | 0.3.2 | Versiones diferentes |
+| PyJWT | 2.10.1 | 2.10.1 | >=2.10.1 | 2.9.0 | chatbot con 2.9.0 |
+| python-dotenv | 1.0.1 | 1.0.1 | 1.0.1 | 1.0.1 | ✅ Compatible |
+| pydantic | 2.11.5 | 2.10.6 | - | 2.11.3 | Versiones cercanas |
+
+**Recomendación:** Mantener las versiones actuales en cada servicio hasta que se requiera estandarización.
+
+### E.4 Orden Recomendado de Migración
+
+1. **RAG_multimedia** - 6 deps, sin complicaciones, validación rápida
+2. **RAG_ddbb** - 64 deps, requiere corrección previa (agregar psycopg2)
+3. **chatbot** - 72 deps, renombrar dockerfile → Dockerfile
+4. **RAG_documents** - 166 deps, consolidar 2 pip install en 1 uv sync
+
+### E.5 Plantilla de Dockerfile con UV (de RAG_excels)
+
+```dockerfile
+FROM python:3.12-slim-trixie
+
+WORKDIR /app
+
+# Copiar UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Copiar archivos de dependencias
+COPY pyproject.toml uv.lock .
+
+# Sincronizar dependencias con uv
+RUN uv sync --locked --compile-bytecode
+
+# Copiar código
+COPY . .
+
+# Entrypoint
+ENTRYPOINT ["uv", "run", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8004"]
+```
+
+### E.6 Checklist de Migración por Servicio
+
+#### RAG_documents
+- [ ] Leer requirements.txt (166 deps)
+- [ ] Consolidar pdfplumber[poppler] en requirements.txt
+- [ ] Generar uv.lock con `uv lock -r requirements.txt`
+- [ ] Crear pyproject.toml
+- [ ] Actualizar Dockerfile
+- [ ] Probar construcción Docker
+
+#### RAG_ddbb
+- [ ] Agregar psycopg2 y psycopg2-binary a requirements.txt
+- [ ] Leer requirements.txt actualizado (66 deps)
+- [ ] Generar uv.lock con `uv lock -r requirements.txt`
+- [ ] Crear pyproject.toml
+- [ ] Actualizar Dockerfile (mantener libpq-dev, gcc)
+- [ ] Probar construcción Docker
+
+#### RAG_multimedia
+- [ ] Leer requirements.txt (6 deps)
+- [ ] Opcional: Definir versión para aiofiles
+- [ ] Generar uv.lock con `uv lock -r requirements.txt`
+- [ ] Crear pyproject.toml
+- [ ] Actualizar Dockerfile
+- [ ] Probar construcción Docker
+
+#### chatbot
+- [ ] Renombrar dockerfile → Dockerfile
+- [ ] Leer requirements.txt (72 deps)
+- [ ] Generar uv.lock con `uv lock -r requirements.txt`
+- [ ] Crear pyproject.toml
+- [ ] Actualizar Dockerfile
+- [ ] Probar construcción Docker

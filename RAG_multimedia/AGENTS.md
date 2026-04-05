@@ -39,15 +39,31 @@ API FastAPI para gestión de videos con RAG (Retrieval-Augmented Generation). Pe
   - Endpoints: `GET /` (info del servicio), `GET /health` (health check)
   - Ejecución: `uvicorn main:app --host 0.0.0.0 --port 8006`
 
-- **`Dockerfile`**: Configuración de contenedor Docker.
+- **`Dockerfile`**: Configuración de contenedor Docker con UV strategy.
   - Imagen base: `python:3.12-slim`
+  - **Gestor de paquetes:** UV (migrado de pip en abril 2026) ✅
+  - Estrategia: `uv sync --locked --compile-bytecode`
   - Crea directorios: `/app/storage/videos`, `/app/conversations`
   - Expone puerto `8006`
-  - CMD: `uvicorn main:app --host 0.0.0.0 --port 8006`
+  - SIZE: `193 MB` (optimizado con UV)
+  - ENTRYPOINT: `["uv", "run", "--"]` con wrapper UV
 
-- **`requirements.txt`**: Dependencias Python del proyecto.
+- **`pyproject.toml`**: Configuración del proyecto en formato PYPA moderno.
+  - name: `rag-multimedia`
+  - version: `0.1.0`
+  - requires-python: `>=3.12`
+  - 6 dependencias declaradas
+
+- **`uv.lock`**: Lockfile generado por UV para reproducibilidad.
+  - Tamaño: `2 KB`
+  - Paquetes resueltos: `18` (incluyendo transitive dependencies)
+  - Hash SHA256 para builds idénticos
+  - Generado: abril 2026
+
+- **`requirements.txt`**: Dependencias legacy (mantenido como fallback).
   - `fastapi==0.115.9`, `uvicorn==0.30.6`, `python-multipart==0.0.12`
   - `PyJWT==2.10.1`, `python-dotenv==1.0.1`, `aiofiles`
+  - ⚠️ Obsoleto: Migrado a pyproject.toml + uv.lock
 
 - **`.env`**: Variables de entorno de ejemplo.
   - `SECRET_KEY`, `ALGORITHM=HS256`, `STORAGE_PATH=/app/storage/videos`

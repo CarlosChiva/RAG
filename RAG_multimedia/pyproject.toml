@@ -1,0 +1,14 @@
+[project]
+name = "rag-multimedia"
+version = "0.1.0"
+description = "API RAG Multimedia - Gestión de videos con RAG usando LLMs locales"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv==1.0.1",
+    "fastapi>=0.115.9",
+    "uvicorn>=0.30.6",
+    "python-multipart>=0.0.12",
+    "pyjwt>=2.10.1",
+    "aiofiles>=25.1.0",
+]

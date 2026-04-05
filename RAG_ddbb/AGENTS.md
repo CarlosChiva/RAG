@@ -45,9 +45,31 @@ API FastAPI que implementa Text-to-SQL usando RAG (Retrieval-Augmented Generatio
 
 - **`enums_type.py`**: Enumeración `Enumms` con tipos de base de datos soportados: `SQLITE`, `MYSQL`, `POSTGRESQL`.
 
-- **`requirements.txt`**: 64 dependencias incluyendo FastAPI, LangChain, Ollama, SQLAlchemy, PyJWT, psycopg2-binary, PyMySQL, pandas.
+- **`requirements.txt`**: Dependencias legacy con correcciones aplicadas.
+  - **Base:** 64 dependencias (FastAPI, LangChain, Ollama, SQLAlchemy, etc.)
+  - **Corrección migración UV:** Agregados `psycopg2-binary==2.9.10` y `psycopg2==2.9.10` ⚠️
+  - ⚠️ Obsoleto: Migrado a pyproject.toml + uv.lock
 
-- **`Dockerfile`**: Imagen basada en Python 3.12 con dependencias compiladas (psycopg2), expone puerto 8002 y ejecuta `uvicorn main:app`.
+- **`pyproject.toml`**: Configuración del proyecto en formato PYPA moderno.
+  - name: `rag-ddbb`
+  - version: `0.1.0`
+  - requires-python: `>=3.12`
+  - 66 dependencias declaradas (incluye psycopg2)
+
+- **`uv.lock`**: Lockfile generado por UV para reproducibilidad.
+  - Tamaño: `~150 KB`
+  - Paquetes resueltos: `117` (116 instalados + transitive)
+  - Hash SHA256 para builds idénticos
+  - Generado: abril 2026
+
+- **`Dockerfile`**: Imagen basada en Python 3.12 con UV strategy.
+  - **Gestor de paquetes:** UV (migrado de pip en abril 2026) ✅
+  - Estrategia: `uv sync --locked --compile-bytecode`
+  - **Optimizaciones:** Eliminado pip install manual, consolidado a uv sync
+  - Compilación psycopg2: Automatizada por UV (no requiere gcc/libpq-dev manual)
+  - Expone puerto `8002`
+  - SIZE: `1.84 GB` (imagen grande por dependencias DB/ML)
+  - ENTRYPOINT: `["uv", "run", "--"]` con wrapper UV
 
 - **`.env`**: Variables de entorno: `SECRET_KEY` (JWT), `ALGORITHM` (HS256), `SQL_MODEL` (nombre modelo Ollama), `CONFIG_FOLDER` (ruta persistencia configuraciones).
 

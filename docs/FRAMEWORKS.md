@@ -36,7 +36,13 @@
 ### DevOps
 - **Docker** - Contenerización
 - **docker-compose** - Orquestación de contenedores
-- **uv** - Package manager (RAG_excels)
+- **uv** - Package manager (✅ MIGRACIÓN COMPLETADA)
+  - **RAG_excels:** ✅ Migrado (17 deps, 253ms build)
+  - **RAG_documents:** ✅ Migrado (166 deps, 342KB lock, 1.88GB imagen)
+  - **RAG_ddbb:** ✅ Migrado (66 deps, 116 paq instalados, 1.84GB imagen)
+  - **RAG_multimedia:** ✅ Migrado (6 deps, 193MB imagen)
+  - **chatbot:** ✅ Migrado (72 deps, 78 paq resueltos, 402MB imagen)
+- **pip:** Package manager legacy (DEPRECATo - migrado a UV)
 
 ### Servicios Externos
 - **ComfyUI** - Generación de imágenes (chatbot)

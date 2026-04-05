@@ -50,9 +50,10 @@ API FastAPI que permite:
 ---
 
 ### `requirements.txt`
-**Propósito:** Dependencias del proyecto para instalación en entorno de producción o desarrollo.
+**Propósito:** Dependencias legacy del proyecto (mantenido como fallback).
 
 **Paquetes principales:**
+- **Total:** 166 dependencias
 - **Framework:** `fastapi==0.115.9`, `uvicorn==0.30.6`, `python-multipart`
 - **RAG/LangChain:** `langchain==0.3.26`, `langchain-chroma==0.2.4`, `langchain-ollama==0.3.3`
 - **Base de datos vectorial:** `chromadb==1.0.12`, `chroma-hnswlib==0.7.6`
@@ -62,27 +63,54 @@ API FastAPI que permite:
 - **Modelos:** `ollama==0.5.1`, `huggingface-hub==0.24.5`
 - **Utilidades:** `python-dotenv==1.0.1`, `pydantic==2.11.5`
 
-**Instalación:** `pip install -r requirements.txt`
+**Corrección migración UV:** Verificado pdfplumber (sin cambios necesarios) - poppler ya es dep del sistema  
+**Instalación:** ⚠️ Obsoleto - Migrado a `pyproject.toml` + `uv.lock`
+
+---
+
+### `pyproject.toml`
+**Propósito:** Configuración del proyecto en formato PYPA moderno (reemplaza requirements.txt).
+
+**Configuración:**
+- **name:** `rag-documents`
+- **version:** `0.1.0`
+- **requires-python:** `>=3.12`
+- **dependencias:** 166 declaradas
+- **Generado:** abril 2026
+
+---
+
+### `uv.lock`
+**Propósito:** Lockfile generado por UV para reproducibilidad de builds.
+
+**Detalles:**
+- **Tamaño:** `342 KB`
+- **Paquetes resueltos:** ~170 directos + ~613 transitive (783 multi-platforma)
+- **Hash:** SHA256 para builds idénticos
+- **Generado:** abril 2026
 
 ---
 
 ### `Dockerfile`
-**Propósito:** Contenedorización de la aplicación para despliegue en producción.
+**Propósito:** Contenedorización de la aplicación para despliegue en producción con UV strategy.
 
 **Configuración:**
 - **Imagen base:** `python:3.10-slim`
-- **Directorio de trabajo:** `/app`
+- **Gestor de paquetes:** **UV** (migrado de pip en abril 2026) ✅
+- **Estrategia:** `uv sync --locked --compile-bytecode`
+- **Corrección migración UV:** Consolidado 2 `pip install` → 1 `uv sync` ⚠️
 - **Dependencias del sistema:** `tesseract-ocr`, `libtesseract-dev`, `poppler-utils` (para OCR y procesamiento PDF)
+- **Directorio de trabajo:** `/app`
 - **Puerto expuesto:** `8000`
-- **Comando:** `uvicorn main:app --host 0.0.0.0 --port 8000`
+- **Entrypoint:** `["uv", "run", "--"]` (UV wrapper)
+- **SIZE:** `1.88 GB` (imagen grande por dependencias ML/OCR)
 
 **Directorios creados:**
 - `/app/PersistDirectory`: Persistencia de ChromaDB por usuario
 - `/app/conversations`: Almacenamiento de historiales de chat (JSON)
 
-**Build:** `docker build -t rag-app .`
-
-**Run:** `docker run -p 8000:8000 rag-app`
+**Build:** `docker build -t rag-documents:uv-test .`  
+**Run:** `docker run -p 8000:8000 rag-documents:uv-test`
 
 ---
 

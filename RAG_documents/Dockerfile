@@ -1,31 +1,34 @@
-# Usa una imagen base de Python 3.10
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-# Establece el directorio de trabajo en /app
 WORKDIR /app
 
-# Instala las dependencias necesarias para pytesseract
-RUN apt-get update && apt-get install -y tesseract-ocr libtesseract-dev poppler-utils
+# Instalar dependencias del sistema (tesseract, poppler, compilers)
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    libtesseract-dev \
+    poppler-utils \
+    build-essential \
+    gcc && \
+    rm -rf /var/lib/apt/lists/*
 
-# Configura el PATH para que pueda encontrar Tesseract
 ENV PATH="/usr/bin/:$PATH"
 
-# Copia el archivo requirements.txt al directorio de trabajo
-COPY requirements.txt .
+# Instalar UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Instala las dependencias
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install pdfplumber[poppler]
-# Copia todo el contenido del directorio actual al directorio de trabajo en el contenedor
+# Copiar archivos de dependencias
+COPY pyproject.toml uv.lock ./
+
+# Sincronizar dependencias con UV
+RUN uv sync --locked --compile-bytecode
+
+# Copiar código
 COPY . .
 
-# Crea el directorio PersistDirectory si no existe
+# Crear directorios de persistencia
 RUN mkdir -p PersistDirectory
 RUN mkdir -p conversations
 
+EXPOSE 8000
 
-# Expone el puerto en el que se ejecutará la aplicación (ajusta según sea necesario)
-EXPOSE 8005
-
-# Comando para ejecutar la aplicación
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8005"]
+ENTRYPOINT ["uv", "run", "--", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

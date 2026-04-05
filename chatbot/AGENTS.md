@@ -32,24 +32,35 @@ API REST y WebSocket para interacción con modelos LLM locales vía Ollama. Sopo
     - `userInput`: Consulta del usuario.
     - `tools`: Configuración opcional de herramientas (image/mcp).
 
-- **`requirements.txt`**: Dependencias del proyecto.
+- **`requirements.txt`**: Dependencias legacy del proyecto.
   - **Core:** `fastapi`, `uvicorn`, `pydantic`
   - **AI/LLM:** `langgraph`, `langchain-ollama`, `langchain-mcp-adapters`
   - **Autenticación:** `PyJWT`
   - **Websocket:** `websocket-client`
   - **Ollama:** `ollama` (cliente oficial)
+  - **Total:** 72 dependencias
+  - ⚠️ Obsoleto: Migrado a pyproject.toml + uv.lock
 
-- **`.env`**: Variables de entorno sensibles (no commitado).
-  - `SECRET_KEY`: Clave para firma JWT.
-  - `ALGORITHM`: Algoritmo de encriptación (ej: "HS256").
-  - `PATH_CONVERSATIONS`: Ruta al archivo JSON de conversaciones.
-  - `CONFIG_PATH`: Ruta al archivo de configuraciones de usuario.
-  - `PATH_CONFIGS`: Ruta al archivo de configuraciones de herramientas.
-  - `SERVER_ADDRESS`: Address del servidor ComfyUI (ej: "127.0.0.1:8188").
+- **`pyproject.toml`**: Configuración del proyecto en formato PYPA moderno.
+  - name: `chatbot`
+  - version: `0.1.0`
+  - requires-python: `>=3.12`
+  - 72 dependencias declaradas
 
-- **`dockerfile`**: Imagen de contenedor para despliegue.
-  - Basado en imagen Python oficial.
-  - Instala dependencias y expone puerto de la API.
+- **`uv.lock`**: Lockfile generado por UV para reproducibilidad.
+  - Tamaño: `216 KB`
+  - Paquetes resueltos: `78` (72 directas + 6 transitive)
+  - Hash SHA256 para builds idénticos
+  - Generado: abril 2026
+
+- **`Dockerfile`**: Imagen de contenedor para despliegue con UV strategy.
+  - **Corrección migración UV:** Renombrado desde `dockerfile` (estándar Docker) ✅
+  - **Gestor de paquetes:** UV (migrado de pip en abril 2026) ✅
+  - Basado en imagen Python oficial
+  - Estrategia: `uv sync --locked --compile-bytecode`
+  - SIZE: `402 MB` (< 500MB ideal, optimizado con UV)
+  - ENTRYPOINT: `["uv", "run", "--"]` con wrapper UV
+  - Expone puerto de la API (configurable)
 
 - **`README.md`**: Documentación de usuario con descripción de endpoints y ejemplos de uso.
 
